@@ -35,7 +35,11 @@ export default function App() {
         postCaptions: t.postCaptions,
         suspectUrl: t.suspectUrl,
         officialDomain: brand.officialDomain,
-        logoMatchPercent: t.logoMatchPercent
+        logoMatchPercent: t.logoMatchPercent,
+        channel: t.channel,
+        suspectPublisher: t.suspectPublisher,
+        officialApps: brand.officialApps,
+        brand
       });
       return { ...t, calculatedRisk: risk };
     });
@@ -74,7 +78,9 @@ export default function App() {
         postCaptions: freshThreat.postCaptions,
         suspectUrl: freshThreat.suspectUrl,
         officialDomain: selectedBrand.officialDomain,
-        logoMatchPercent: freshThreat.logoMatchPercent
+        logoMatchPercent: freshThreat.logoMatchPercent,
+        channel: freshThreat.channel,
+        brand: selectedBrand
       });
 
       freshThreat.calculatedRisk = risk;

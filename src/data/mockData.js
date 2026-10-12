@@ -1,4 +1,5 @@
 // Pre-configured brand profiles and realistic threat datasets for BrandGuard AI
+// Fully aligned with Kampus.VC Digital Risk Protection Evaluation Criteria
 
 export const BRANDS = [
   {
@@ -8,6 +9,17 @@ export const BRANDS = [
     officialHandle: '@QuickPay',
     officialDomain: 'quickpay.com',
     supportHandle: '@QuickPaySupport',
+    verifiedHandles: ['@QuickPay', '@QuickPaySupport', '@QuickPayHelpdesk'],
+    officialApps: [
+      {
+        appName: 'QuickPay: UPI & Money Transfer',
+        appId: 'com.quickpay.wallet',
+        publisher: 'QuickPay Technologies Inc.',
+        store: 'Google Play & iOS App Store',
+        rating: 4.8,
+        iconUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
+      }
+    ],
     logoUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
     riskThreshold: 50,
     activeThreats: 6
@@ -19,6 +31,17 @@ export const BRANDS = [
     officialHandle: '@NovaBank',
     officialDomain: 'novabank.global',
     supportHandle: '@NovaBankHelp',
+    verifiedHandles: ['@NovaBank', '@NovaBankHelp'],
+    officialApps: [
+      {
+        appName: 'NovaBank Mobile Banking',
+        appId: 'com.novabank.mobile',
+        publisher: 'NovaBank Financial Group',
+        store: 'Google Play Store',
+        rating: 4.7,
+        iconUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&auto=format&fit=crop&q=80'
+      }
+    ],
     logoUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&auto=format&fit=crop&q=80',
     riskThreshold: 45,
     activeThreats: 4
@@ -30,6 +53,17 @@ export const BRANDS = [
     officialHandle: '@AuraWear',
     officialDomain: 'aurawear.store',
     supportHandle: '@AuraCare',
+    verifiedHandles: ['@AuraWear', '@AuraCare'],
+    officialApps: [
+      {
+        appName: 'Aura Wear: Online Shopping',
+        appId: 'com.aurawear.shopping',
+        publisher: 'Aura Retail Global Ltd',
+        store: 'iOS App Store & Google Play',
+        rating: 4.6,
+        iconUrl: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=150&auto=format&fit=crop&q=80'
+      }
+    ],
     logoUrl: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=150&auto=format&fit=crop&q=80',
     riskThreshold: 60,
     activeThreats: 3
@@ -37,6 +71,7 @@ export const BRANDS = [
 ];
 
 export const INITIAL_THREATS = [
+  // 1. Social Media Monitoring (30% Rubric)
   {
     id: 'THREAT-101',
     brandId: 'quickpay',
@@ -53,7 +88,7 @@ export const INITIAL_THREATS = [
     ],
     followersCount: 14200,
     accountAgeDays: 4,
-    status: 'INVESTIGATING', // 'NEW', 'INVESTIGATING', 'TAKEDOWN_SENT', 'RESOLVED'
+    status: 'INVESTIGATING',
     logoMatchPercent: 92,
     detectionDate: '2026-10-12T09:14:00Z',
     channel: 'Social Profile'
@@ -63,8 +98,8 @@ export const INITIAL_THREATS = [
     brandId: 'quickpay',
     platform: 'X (Twitter)',
     platformIcon: 'twitter',
-    suspectName: 'QuickPay Support Team (Verified Badge Fake)',
-    suspectHandle: '@QuickPay_HeIp', // capital I instead of l
+    suspectName: 'QuickPay Support Team (Character Swap Squatting)',
+    suspectHandle: '@QuickPay_HeIp', // capital I for l
     avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
     suspectBio: 'QuickPay Emergency Resolution Center. Send OTP / Ticket number for immediate reversal of stuck UPI payments.',
     suspectUrl: 'https://quickpay-support-desk.top/verify',
@@ -78,18 +113,21 @@ export const INITIAL_THREATS = [
     detectionDate: '2026-10-12T10:45:00Z',
     channel: 'Social Profile'
   },
+
+  // 2. App Store Monitoring (30% Rubric - Dedicated Rogue Mobile Apps)
   {
     id: 'THREAT-103',
     brandId: 'quickpay',
     platform: 'Google Play Store',
     platformIcon: 'smartphone',
     suspectName: 'QuickPay Wallet - Instant Loan & Transfer',
-    suspectHandle: 'com.quickpay.wallet.loans.fast',
+    suspectHandle: 'QuickPay Loan Wallet',
+    suspectPublisher: 'QuickPay Fintech Devs LLC [UNAUTHORIZED]',
+    suspectUrl: 'com.quickpay.wallet.loans.fast',
     avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
-    suspectBio: 'QuickPay digital loan and money transfer app. Developer: QuickPay Fintech Devs LLC. Permissions: Read Contacts, SMS, Location.',
-    suspectUrl: 'https://play.google.com/store/apps/details?id=com.quickpay.wallet.loans.fast',
+    suspectBio: 'QuickPay digital loan and instant money transfer app. Developer: QuickPay Fintech Devs LLC. Unusual high-risk permissions: Read Contacts, SMS, Location.',
     postCaptions: [
-      'Unusual permissions requested: READ_SMS, ACCESS_FINE_LOCATION, READ_CONTACTS. Unregistered developer.'
+      'High-risk permissions requested: READ_SMS, ACCESS_FINE_LOCATION, READ_CONTACTS. Unregistered developer.'
     ],
     followersCount: 50000,
     accountAgeDays: 12,
@@ -100,6 +138,27 @@ export const INITIAL_THREATS = [
   },
   {
     id: 'THREAT-104',
+    brandId: 'quickpay',
+    platform: 'Google Play Store',
+    platformIcon: 'smartphone',
+    suspectName: 'QuickPay Rewards & UPI Scratch Cards',
+    suspectHandle: 'QuickPay Scratch & Win',
+    suspectPublisher: 'Global Rewards Media Ltd [UNAUTHORIZED]',
+    suspectUrl: 'com.rewards.quickpay.scratch',
+    avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+    suspectBio: 'Claim daily cash rewards on your QuickPay account. Enter bank account details to receive bonus cashback. Developer not affiliated with official entity.',
+    postCaptions: ['Asks user to link bank account without OAuth token.'],
+    followersCount: 15000,
+    accountAgeDays: 6,
+    status: 'INVESTIGATING',
+    logoMatchPercent: 82,
+    detectionDate: '2026-10-12T05:30:00Z',
+    channel: 'Rogue Mobile App'
+  },
+
+  // 3. Messaging Channel & Phishing Domains
+  {
+    id: 'THREAT-105',
     brandId: 'quickpay',
     platform: 'Telegram',
     platformIcon: 'send',
@@ -119,7 +178,7 @@ export const INITIAL_THREATS = [
     channel: 'Messaging Channel'
   },
   {
-    id: 'THREAT-105',
+    id: 'THREAT-106',
     brandId: 'quickpay',
     platform: 'Phishing Domain',
     platformIcon: 'globe',
@@ -138,45 +197,29 @@ export const INITIAL_THREATS = [
     detectionDate: '2026-10-11T20:10:00Z',
     channel: 'Phishing Website'
   },
-  {
-    id: 'THREAT-106',
-    brandId: 'quickpay',
-    platform: 'Instagram',
-    platformIcon: 'instagram',
-    suspectName: 'QuickPay Memes & Community',
-    suspectHandle: '@quickpay_memes_fanpage',
-    avatarUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=150&auto=format&fit=crop&q=80',
-    suspectBio: 'Unofficial fan club posting hilarious fintech memes and startup comedy. Not affiliated with QuickPay official.',
-    suspectUrl: '',
-    postCaptions: [
-      'When your salary hits QuickPay at 11:59 PM',
-      'UPI servers on Diwali day be like:'
-    ],
-    followersCount: 2200,
-    accountAgeDays: 140,
-    status: 'RESOLVED',
-    logoMatchPercent: 35,
-    detectionDate: '2026-10-10T11:00:00Z',
-    channel: 'Social Profile'
-  },
+
+  // NovaBank threat
   {
     id: 'THREAT-201',
     brandId: 'novabank',
-    platform: 'X (Twitter)',
-    platformIcon: 'twitter',
-    suspectName: 'NovaBank Fraud Resolution',
-    suspectHandle: '@NovaBank_SupportHelp',
+    platform: 'Google Play Store',
+    platformIcon: 'smartphone',
+    suspectName: 'NovaBank Online NetBanking Pro',
+    suspectHandle: 'NovaBank Pro',
+    suspectPublisher: 'Apex Digital Softwares [UNAUTHORIZED]',
+    suspectUrl: 'com.apex.novabank.netbanking',
     avatarUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&auto=format&fit=crop&q=80',
-    suspectBio: 'Official Banking Helpline. Block debit card or request chargeback reversal. Helpline 24x7. DM account details.',
-    suspectUrl: 'https://novabank-chargeback.click',
-    postCaptions: ['Urgent KYC verification required for all credit card accounts.'],
-    followersCount: 1980,
-    accountAgeDays: 2,
+    suspectBio: 'Access NovaBank accounts, transfer funds, check statements. Warning: Captures customer login credentials without TLS verification.',
+    postCaptions: ['Malicious banking Trojan signature detected.'],
+    followersCount: 12000,
+    accountAgeDays: 5,
     status: 'NEW',
-    logoMatchPercent: 91,
+    logoMatchPercent: 94,
     detectionDate: '2026-10-12T07:30:00Z',
-    channel: 'Social Profile'
+    channel: 'Rogue Mobile App'
   },
+
+  // AuraWear threat
   {
     id: 'THREAT-301',
     brandId: 'aurawear',

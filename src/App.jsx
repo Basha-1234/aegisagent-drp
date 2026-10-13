@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import StatsOverview from './components/StatsOverview';
 import ThreatFeed from './components/ThreatFeed';
@@ -19,12 +19,29 @@ export default function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanToast, setScanToast] = useState(null);
 
+  // Multi-Theme State (Midnight Obsidian, Cyber Emerald, High-Tech Cyan, Clean Enterprise Light)
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem('brandguard_theme') || 'midnight';
+  });
+
+  const handleThemeChange = (newTheme) => {
+    setCurrentTheme(newTheme);
+    localStorage.setItem('brandguard_theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }, [currentTheme]);
+
+  // Feed severity filter driven by StatsOverview or filters bar
+  const [activeFilterSeverity, setActiveFilterSeverity] = useState('ALL');
+
   // Modals state
   const [selectedThreatForModal, setSelectedThreatForModal] = useState(null);
   const [selectedThreatForTakedown, setSelectedThreatForTakedown] = useState(null);
   const [isLiveScannerOpen, setIsLiveScannerOpen] = useState(false);
 
-  // Initialize threats with calculated risks
+  // Initialize threats with calculated explainable risks
   const [threats, setThreats] = useState(() => {
     return INITIAL_THREATS.map(t => {
       const brand = BRANDS.find(b => b.id === t.brandId) || BRANDS[0];
@@ -45,28 +62,27 @@ export default function App() {
     });
   });
 
-  // Trigger simulated surveillance sweep
+  // Simulated autonomous surveillance sweep
   const handleTriggerScan = () => {
     setIsScanning(true);
-    setScanToast('Autonomous sweep initiated across X, Instagram, and App Store APIs...');
+    setScanToast('Autonomous sweep initiated across X, Instagram, Telegram, and App Store APIs...');
 
     setTimeout(() => {
-      // Simulate finding a fresh suspicious handle
       const freshThreat = {
         id: `THREAT-SWEEP-${Date.now().toString().slice(-4)}`,
         brandId: selectedBrand.id,
         platform: 'X (Twitter)',
         platformIcon: 'twitter',
-        suspectName: `${selectedBrand.name} Emergency Relief`,
-        suspectHandle: `${selectedBrand.officialHandle}_HelpDesk_Instant`,
+        suspectName: `${selectedBrand.name} Emergency Relief Desk`,
+        suspectHandle: `${selectedBrand.officialHandle}_InstantHelp`,
         avatarUrl: selectedBrand.logoUrl,
-        suspectBio: 'Direct support line for urgent refund claims and frozen account verification. DM account ID.',
+        suspectBio: 'Direct verification line for urgent refund claims, freeze appeals, and transaction dispute support. DM account ID.',
         suspectUrl: `https://${selectedBrand.officialDomain.split('.')[0]}-resolution.xyz`,
-        postCaptions: ['Replying to customers: DM for instant refund processing.'],
-        followersCount: 840,
+        postCaptions: ['Replying to customers: Send phone number in DM for instant ticket resolution.'],
+        followersCount: 1150,
         accountAgeDays: 1,
         status: 'NEW',
-        logoMatchPercent: 94,
+        logoMatchPercent: 95,
         detectionDate: new Date().toISOString(),
         channel: 'Social Profile'
       };
@@ -87,9 +103,9 @@ export default function App() {
 
       setThreats(prev => [freshThreat, ...prev]);
       setIsScanning(false);
-      setScanToast('Sweep complete! 1 new high-priority impersonation threat detected.');
+      setScanToast('Sweep complete: 1 new high-priority impersonation incident flagged!');
       setTimeout(() => setScanToast(null), 4000);
-    }, 1800);
+    }, 1600);
   };
 
   const handleUpdateStatus = (threatId, newStatus) => {
@@ -98,6 +114,8 @@ export default function App() {
 
   const handleConfirmTakedown = (threatId) => {
     setThreats(prev => prev.map(t => t.id === threatId ? { ...t, status: 'TAKEDOWN_SENT' } : t));
+    setScanToast('Notice officially dispatched! Platform webhook confirmed receipt.');
+    setTimeout(() => setScanToast(null), 4000);
   };
 
   const handleAddCustomThreat = (threatObj) => {
@@ -110,20 +128,25 @@ export default function App() {
     setBrands(prev => [...prev, brandObj]);
     setSelectedBrand(brandObj);
     setActiveTab('feed');
+    setScanToast(`Brand "${brandObj.name}" registered and protected in Brand Vault!`);
+    setTimeout(() => setScanToast(null), 3500);
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-300">
+    <div 
+      data-theme={currentTheme}
+      className="min-h-screen flex flex-col font-sans transition-colors duration-200 selection:bg-[var(--accent-primary)] selection:text-white"
+    >
       
-      {/* Toast Alert */}
+      {/* Toast Notification Alert */}
       {scanToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500/50 text-cyan-300 text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>{scanToast}</span>
+        <div className="fixed bottom-6 right-6 z-50 theme-glass text-[var(--text-main)] text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-[var(--border-accent)] animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)] animate-ping shrink-0"></span>
+          <span className="font-medium">{scanToast}</span>
         </div>
       )}
 
-      {/* Navigation */}
+      {/* Navigation Bar */}
       <Navbar
         brands={brands}
         selectedBrand={selectedBrand}
@@ -133,23 +156,37 @@ export default function App() {
         onTriggerScan={handleTriggerScan}
         isScanning={isScanning}
         onOpenLiveScanner={() => setIsLiveScannerOpen(true)}
+        currentTheme={currentTheme}
+        onChangeTheme={handleThemeChange}
+        threats={threats}
+        onOpenAddBrand={() => setActiveTab('vault')}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        {/* KPI Summary Cards */}
-        <StatsOverview threats={threats} selectedBrand={selectedBrand} />
-
         {/* Dynamic Tab Views */}
         {activeTab === 'feed' && (
-          <ThreatFeed
-            threats={threats}
-            selectedBrand={selectedBrand}
-            onSelectThreat={(threat) => setSelectedThreatForModal(threat)}
-            onUpdateStatus={handleUpdateStatus}
-            onOpenTakedownModal={(threat) => setSelectedThreatForTakedown(threat)}
-          />
+          <div>
+            {/* Contextual Executive KPI Cards */}
+            <StatsOverview 
+              threats={threats} 
+              selectedBrand={selectedBrand} 
+              activeFilterSeverity={activeFilterSeverity}
+              onFilterSeverityChange={setActiveFilterSeverity}
+            />
+
+            {/* Two-Column Threat Operations Stream & Live Forensics */}
+            <ThreatFeed
+              threats={threats}
+              selectedBrand={selectedBrand}
+              onSelectThreat={(threat) => setSelectedThreatForModal(threat)}
+              onUpdateStatus={handleUpdateStatus}
+              onOpenTakedownModal={(threat) => setSelectedThreatForTakedown(threat)}
+              activeFilterSeverity={activeFilterSeverity}
+              onFilterSeverityChange={setActiveFilterSeverity}
+            />
+          </div>
         )}
 
         {activeTab === 'vault' && (
@@ -205,9 +242,18 @@ export default function App() {
         />
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-500">
-        <p>BrandGuard AI • HacXLerate 2026 byteXL Hackathon Solution • Problem Statement #3</p>
+      {/* Executive Footer */}
+      <footer className="border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] py-6 text-center text-xs text-[var(--text-muted)] transition-colors">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold font-mono text-[var(--text-main)]">BrandGuard.AI</span>
+            <span>•</span>
+            <span>Autonomous Digital Risk Protection & Remediation Console</span>
+          </div>
+          <p className="text-[11px] font-mono">
+            HacXLerate 2026 byteXL Hackathon Solution • Problem Statement #3
+          </p>
+        </div>
       </footer>
 
     </div>

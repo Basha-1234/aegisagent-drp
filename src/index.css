@@ -1,30 +1,256 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   BrandGuard AI — Multi-Theme Design System
+   Themes: Midnight Obsidian, Cyber Emerald, High-Tech Cyan, Clean Enterprise Light
+   ========================================================================== */
+
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color-scheme: dark;
+
+  /* Default Theme: Midnight Obsidian */
+  --bg-page: #080b12;
+  --bg-page-gradient: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, rgba(8, 11, 18, 1) 70%);
+  --bg-surface: #0e1526;
+  --bg-surface-hover: #131d33;
+  --bg-surface-elevated: #16223b;
+  --bg-surface-glass: rgba(14, 21, 38, 0.82);
+  --bg-input: #080d18;
+  
+  --border-subtle: #1e2a42;
+  --border-strong: #2e3e60;
+  --border-accent: rgba(99, 102, 241, 0.4);
+  
+  --text-main: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8292a8;
+  --text-faint: #475569;
+  
+  --accent-from: #6366f1;
+  --accent-to: #8b5cf6;
+  --accent-primary: #818cf8;
+  --accent-light: rgba(99, 102, 241, 0.15);
+  --accent-glow: rgba(99, 102, 241, 0.28);
+  --accent-border: rgba(99, 102, 241, 0.35);
+
+  --badge-brand-bg: rgba(99, 102, 241, 0.12);
+  --badge-brand-text: #a5b4fc;
+  --badge-brand-border: rgba(99, 102, 241, 0.3);
+
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --card-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Theme 1: Midnight Obsidian */
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg-page: #080b12;
+  --bg-page-gradient: radial-gradient(circle at 50% -10%, rgba(99, 102, 241, 0.12) 0%, rgba(8, 11, 18, 1) 75%);
+  --bg-surface: #0e1526;
+  --bg-surface-hover: #131d33;
+  --bg-surface-elevated: #16223b;
+  --bg-surface-glass: rgba(14, 21, 38, 0.82);
+  --bg-input: #080d18;
+  --border-subtle: #1e2a42;
+  --border-strong: #2e3e60;
+  --border-accent: rgba(99, 102, 241, 0.4);
+  --text-main: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8292a8;
+  --text-faint: #475569;
+  --accent-from: #6366f1;
+  --accent-to: #8b5cf6;
+  --accent-primary: #818cf8;
+  --accent-light: rgba(99, 102, 241, 0.15);
+  --accent-glow: rgba(99, 102, 241, 0.3);
+  --accent-border: rgba(99, 102, 241, 0.35);
+  --badge-brand-bg: rgba(99, 102, 241, 0.12);
+  --badge-brand-text: #a5b4fc;
+  --badge-brand-border: rgba(99, 102, 241, 0.3);
+}
+
+/* Theme 2: Cyber Defense Emerald (SOC / EDR) */
+[data-theme="emerald"] {
+  color-scheme: dark;
+  --bg-page: #04100b;
+  --bg-page-gradient: radial-gradient(circle at 50% -10%, rgba(16, 185, 129, 0.12) 0%, rgba(4, 16, 11, 1) 75%);
+  --bg-surface: #082117;
+  --bg-surface-hover: #0c2d20;
+  --bg-surface-elevated: #103828;
+  --bg-surface-glass: rgba(8, 33, 23, 0.85);
+  --bg-input: #04140e;
+  --border-subtle: #134633;
+  --border-strong: #1b6348;
+  --border-accent: rgba(16, 185, 129, 0.45);
+  --text-main: #f0fdf4;
+  --text-secondary: #bbf7d0;
+  --text-muted: #6ee7b7;
+  --text-faint: #34d399;
+  --accent-from: #10b981;
+  --accent-to: #059669;
+  --accent-primary: #34d399;
+  --accent-light: rgba(16, 185, 129, 0.15);
+  --accent-glow: rgba(16, 185, 129, 0.3);
+  --accent-border: rgba(16, 185, 129, 0.4);
+  --badge-brand-bg: rgba(16, 185, 129, 0.12);
+  --badge-brand-text: #6ee7b7;
+  --badge-brand-border: rgba(16, 185, 129, 0.35);
+}
+
+/* Theme 3: High-Tech Cyan */
+[data-theme="cyan"] {
+  color-scheme: dark;
+  --bg-page: #060e1a;
+  --bg-page-gradient: radial-gradient(circle at 50% -10%, rgba(6, 182, 212, 0.12) 0%, rgba(6, 14, 26, 1) 75%);
+  --bg-surface: #0a1b32;
+  --bg-surface-hover: #0e2444;
+  --bg-surface-elevated: #13305a;
+  --bg-surface-glass: rgba(10, 27, 50, 0.85);
+  --bg-input: #040c16;
+  --border-subtle: #16365e;
+  --border-strong: #1f4c82;
+  --border-accent: rgba(6, 182, 212, 0.45);
+  --text-main: #f0f9ff;
+  --text-secondary: #bae6fd;
+  --text-muted: #7dd3fc;
+  --text-faint: #38bdf8;
+  --accent-from: #06b6d4;
+  --accent-to: #2563eb;
+  --accent-primary: #22d3ee;
+  --accent-light: rgba(6, 182, 212, 0.15);
+  --accent-glow: rgba(6, 182, 212, 0.3);
+  --accent-border: rgba(6, 182, 212, 0.4);
+  --badge-brand-bg: rgba(6, 182, 212, 0.12);
+  --badge-brand-text: #67e8f9;
+  --badge-brand-border: rgba(6, 182, 212, 0.35);
+}
+
+/* Theme 4: Clean Enterprise Light (Stripe / Vercel style) */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-page: #f8fafc;
+  --bg-page-gradient: radial-gradient(circle at 50% -10%, rgba(99, 102, 241, 0.08) 0%, rgba(248, 250, 252, 1) 85%);
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f5f9;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-glass: rgba(255, 255, 255, 0.9);
+  --bg-input: #f8fafc;
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-accent: rgba(99, 102, 241, 0.4);
+  --text-main: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+  --accent-from: #4f46e5;
+  --accent-to: #6366f1;
+  --accent-primary: #4f46e5;
+  --accent-light: rgba(79, 70, 229, 0.08);
+  --accent-glow: rgba(79, 70, 229, 0.2);
+  --accent-border: rgba(79, 70, 229, 0.3);
+  --badge-brand-bg: rgba(79, 70, 229, 0.08);
+  --badge-brand-text: #4338ca;
+  --badge-brand-border: rgba(79, 70, 229, 0.25);
+  --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  --card-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Global Body Styling */
 body {
   margin: 0;
   padding: 0;
-  background-color: #0b0f19;
-  color: #f3f4f6;
+  background-color: var(--bg-page);
+  background-image: var(--bg-page-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
   min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--bg-page);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: var(--border-subtle);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--border-strong);
+}
+
+/* Theme Helper Classes */
+.theme-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+  box-shadow: var(--card-highlight);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-card:hover {
+  border-color: var(--border-strong);
+}
+
+.theme-glass {
+  background-color: var(--bg-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+}
+
+.theme-badge-accent {
+  background-color: var(--badge-brand-bg);
+  color: var(--badge-brand-text);
+  border: 1px solid var(--badge-brand-border);
+}
+
+.theme-btn-primary {
+  background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 var(--accent-glow);
+  transition: all 0.2s ease;
+}
+
+.theme-btn-primary:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 var(--accent-glow);
+}
+
+.theme-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.theme-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+/* Subtle glowing pulse */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 16px 2px var(--accent-glow);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite;
 }

@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { 
   X, 
-  Search, 
   Sparkles, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Sliders, 
-  CheckCircle2, 
-  AlertTriangle,
   Fingerprint
 } from 'lucide-react';
 import { calculateExplainableRisk } from '../utils/detectionEngine';
@@ -63,29 +57,33 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-cyan-950/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="theme-card rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-[var(--border-strong)] shadow-2xl">
         
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900/95 backdrop-blur border-b border-slate-800 p-5 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-[var(--bg-surface-glass)] backdrop-blur-md border-b border-[var(--border-subtle)] p-5 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <div className="p-2.5 rounded-xl bg-[var(--accent-light)] text-[var(--accent-primary)] border border-[var(--border-accent)]">
               <Fingerprint className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">Live Suspect Profile Analyzer</h3>
-                <span className="text-[10px] font-mono uppercase bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">
-                  Sandbox Engine
+                <h3 className="text-base font-extrabold text-[var(--text-main)] font-mono">
+                  Live Suspect Profile Sandbox
+                </h3>
+                <span className="text-[10px] font-mono uppercase bg-[var(--accent-light)] text-[var(--accent-primary)] border border-[var(--border-accent)] px-2 py-0.5 rounded-full font-bold">
+                  Forensic Simulator
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">Test any handle or URL against {brand.name}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Simulate and test any custom handle or URL against {brand.name}
+              </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+            className="p-1.5 rounded-xl border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -95,7 +93,7 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
         <div className="p-6 space-y-4">
           
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
+            <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
               Candidate / Suspect Handle
             </label>
             <input
@@ -103,12 +101,12 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
               value={suspectHandle}
               onChange={(e) => setSuspectHandle(e.target.value)}
               placeholder="@suspect_brand_support"
-              className="w-full bg-slate-950 border border-slate-800 text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+              className="w-full theme-input text-xs rounded-xl px-3.5 py-2.5 font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
+            <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
               Profile Bio / Social Media Text
             </label>
             <textarea
@@ -116,13 +114,13 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
               value={suspectBio}
               onChange={(e) => setSuspectBio(e.target.value)}
               placeholder="e.g. DM for instant refund support..."
-              className="w-full bg-slate-950 border border-slate-800 text-white text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              className="w-full theme-input text-xs rounded-xl px-3.5 py-2"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
                 Bio Link / Domain
               </label>
               <input
@@ -130,16 +128,16 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
                 value={suspectUrl}
                 onChange={(e) => setSuspectUrl(e.target.value)}
                 placeholder="https://brand-refund.xyz"
-                className="w-full bg-slate-950 border border-slate-800 text-white text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono text-[11px]"
+                className="w-full theme-input text-xs rounded-xl px-3.5 py-2 font-mono text-[11px]"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-300">
+                <label className="text-xs font-semibold text-[var(--text-secondary)]">
                   Logo Visual Overlap
                 </label>
-                <span className="text-xs font-mono font-bold text-cyan-300">{logoMatch}%</span>
+                <span className="text-xs font-mono font-bold text-[var(--accent-primary)]">{logoMatch}%</span>
               </div>
               <input
                 type="range"
@@ -147,7 +145,7 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
                 max="100"
                 value={logoMatch}
                 onChange={(e) => setLogoMatch(Number(e.target.value))}
-                className="w-full accent-cyan-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
+                className="w-full accent-[var(--accent-primary)] cursor-pointer h-2 bg-[var(--bg-input)] rounded-lg"
               />
             </div>
           </div>
@@ -155,7 +153,7 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
           <button
             onClick={runAudit}
             disabled={isAuditing}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-md shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 active:scale-98"
+            className="w-full py-2.5 rounded-xl theme-btn-primary text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-98"
           >
             <Sparkles className={`w-4 h-4 ${isAuditing ? 'animate-spin' : ''}`} />
             <span>{isAuditing ? 'Calculating Forensic Signals...' : 'Run Live Multi-Signal Audit'}</span>
@@ -163,9 +161,9 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
 
           {/* Result Card */}
           {auditResult && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 animate-in fade-in duration-150">
+            <div className="p-4 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-3 animate-in fade-in duration-150">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-300 uppercase">Audit Assessment</span>
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase font-mono">Audit Assessment</span>
                 <span className={`text-xs font-bold font-mono px-2.5 py-0.5 rounded-full border ${
                   auditResult.severity === 'CRITICAL'
                     ? 'bg-red-500/20 text-red-400 border-red-500/40'
@@ -178,30 +176,30 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
               </div>
 
               {/* Signals bar */}
-              <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                <div className="bg-slate-900 p-2 rounded-xl border border-slate-800">
-                  <div className="text-[10px] text-slate-400">Handle</div>
-                  <div className="font-bold font-mono text-cyan-300 text-sm mt-0.5">{auditResult.breakdown.handleScore}%</div>
+              <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono">
+                <div className="bg-[var(--bg-surface)] p-2 rounded-xl border border-[var(--border-subtle)]">
+                  <div className="text-[10px] text-[var(--text-muted)]">Handle</div>
+                  <div className="font-bold text-[var(--accent-primary)] text-sm mt-0.5">{auditResult.breakdown.handleScore}%</div>
                 </div>
-                <div className="bg-slate-900 p-2 rounded-xl border border-slate-800">
-                  <div className="text-[10px] text-slate-400">Logo</div>
-                  <div className="font-bold font-mono text-cyan-300 text-sm mt-0.5">{auditResult.breakdown.logoScore}%</div>
+                <div className="bg-[var(--bg-surface)] p-2 rounded-xl border border-[var(--border-subtle)]">
+                  <div className="text-[10px] text-[var(--text-muted)]">Logo</div>
+                  <div className="font-bold text-[var(--accent-primary)] text-sm mt-0.5">{auditResult.breakdown.logoScore}%</div>
                 </div>
-                <div className="bg-slate-900 p-2 rounded-xl border border-slate-800">
-                  <div className="text-[10px] text-slate-400">Scam Intent</div>
-                  <div className="font-bold font-mono text-red-400 text-sm mt-0.5">{auditResult.breakdown.scamScore}%</div>
+                <div className="bg-[var(--bg-surface)] p-2 rounded-xl border border-[var(--border-subtle)]">
+                  <div className="text-[10px] text-[var(--text-muted)]">Scam Intent</div>
+                  <div className="font-bold text-red-400 text-sm mt-0.5">{auditResult.breakdown.scamScore}%</div>
                 </div>
-                <div className="bg-slate-900 p-2 rounded-xl border border-slate-800">
-                  <div className="text-[10px] text-slate-400">Domain</div>
-                  <div className="font-bold font-mono text-amber-300 text-sm mt-0.5">{auditResult.breakdown.domainScore}%</div>
+                <div className="bg-[var(--bg-surface)] p-2 rounded-xl border border-[var(--border-subtle)]">
+                  <div className="text-[10px] text-[var(--text-muted)]">Domain</div>
+                  <div className="font-bold text-amber-400 text-sm mt-0.5">{auditResult.breakdown.domainScore}%</div>
                 </div>
               </div>
 
               {/* Triggers list */}
               <div className="space-y-1">
                 {auditResult.reasons.map((r, i) => (
-                  <div key={i} className="text-[11px] text-slate-300 flex items-start gap-1.5">
-                    <span className="text-cyan-400">•</span>
+                  <div key={i} className="text-[11px] text-[var(--text-secondary)] flex items-start gap-1.5">
+                    <span className="text-[var(--accent-primary)] font-bold">•</span>
                     <span>{r}</span>
                   </div>
                 ))}
@@ -209,7 +207,7 @@ export default function LiveScanModal({ brand, onClose, onAddCustomThreat }) {
 
               <button
                 onClick={handleAddIncident}
-                className="w-full mt-2 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+                className="w-full mt-2 py-2 rounded-xl theme-btn-primary text-xs font-bold transition-all"
               >
                 + Add Incident to Active Surveillance Feed
               </button>

@@ -31,7 +31,7 @@ While organizations spend heavily on securing internal firewalls and servers, **
 ### 1. 📡 Multi-Channel Threat Radar (Social & App Monitoring)
 - Continuous ingestion across public social channels, mobile app repositories, and deceptive subdomains.
 - Real-time classification into a standardized **4-Tier Threat Hierarchy**:
-  - **Level 4 (Critical):** Invasive Trojan APKs with `READ_SMS`, active P2P banking impersonation campaigns, credential harvesting syndicates.
+  - **Level 4 (Critical):** Invasive Trojan APKs with `READ_SMS`, active credential harvesting portals, coordinated account takeover syndicates.
   - **Level 3 (High):** Verified lookalike handles, counterfeit e-commerce storefronts, stolen trademark logo abuse.
   - **Level 2 (Medium):** Unicode homoglyph registrations, unverified reseller pages lacking clear disclaimers.
   - **Level 1 (Low / Informational):** Parody/satire accounts with bio disclaimers, parked domains without active MX/DNS records.

@@ -221,9 +221,17 @@ export default function AuthPage() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3 text-emerald-400" />
-                    1-CLICK DEMO PERSONAS
+                    1-CLICK EVALUATION PERSONAS
                   </span>
-                  <span className="text-[10px] text-slate-500">Instant Triage</span>
+                  <span className="text-[10px] text-emerald-400 font-mono">Demo Mode</span>
+                </div>
+
+                {/* Evaluator Explanatory Guidance Box */}
+                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/25 text-[11px] text-emerald-200/90 flex items-start gap-2 mb-3">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="leading-snug">
+                    <strong className="text-white font-semibold">Evaluation Quick-Access:</strong> Click any role below to instantly log in as that employee and test their dedicated dashboard without typing credentials.
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <button

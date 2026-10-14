@@ -17,7 +17,7 @@ const DRP_QUOTES = [
   {
     text: "Continuous forensic logo diffing, Unicode spoof detection, and APK permission auditing before customer trust is breached.",
     source: "Zero-Trust Threat Radar",
-    context: "Forensic Investigation Workbench"
+    context: "Threat Radar"
   }
 ];
 
@@ -89,43 +89,52 @@ export default function AuthPage() {
       {/* Top Corporate Ribbon */}
       <header className="relative z-20 w-full px-6 sm:px-12 pt-5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-          <span className="text-xs font-mono font-semibold tracking-wider text-blue-300 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
+          <span 
+            className="text-xs font-mono font-bold tracking-wider text-cyan-200 uppercase"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)' }}
+          >
             AegisAgent DRP • Enterprise Digital Risk Protection
           </span>
         </div>
-        <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        <div 
+          className="hidden sm:flex items-center gap-3 text-xs font-mono text-slate-200 font-semibold"
+          style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
+        >
           <span>SOC 2 Type II Certified</span>
-          <span className="text-slate-500">•</span>
-          <span className="text-blue-400 font-medium">All Defense Engines Operational</span>
+          <span className="text-cyan-400">•</span>
+          <span className="text-cyan-300 font-bold">All Defense Engines Operational</span>
         </div>
       </header>
 
       {/* 2. Main Desktop Stage: Quotations below Logo on Left + Login Card on Right */}
       <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8">
         
-        {/* LEFT COLUMN: Pure Text Quotation directly below the 3D Shield (NO BACKGROUND CARD) */}
-        <div className="w-full lg:max-w-md lg:mb-4 select-none animate-in fade-in duration-500">
+        {/* LEFT COLUMN: Highly Visible Pure Text Quotation Below Shield (No Background Card) */}
+        <div className="w-full lg:max-w-lg lg:mb-2 select-none animate-in fade-in duration-500">
           
-          {/* Threat Directive header with dot switcher */}
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[10px] font-mono text-blue-400 tracking-wider uppercase flex items-center gap-1.5 font-semibold drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-              <Shield className="w-3.5 h-3.5 text-blue-400" />
+          {/* Directive Header & Dot Switcher with High-Contrast Colors */}
+          <div className="flex items-center gap-2.5 mb-2">
+            <span 
+              className="text-xs font-mono text-cyan-300 tracking-widest uppercase flex items-center gap-1.5 font-bold"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 14px rgba(0,0,0,0.9)' }}
+            >
+              <Shield className="w-4 h-4 text-cyan-300" />
               DRP Threat Directive
             </span>
-            <span className="text-slate-500">•</span>
+            <span className="text-slate-400 font-bold">•</span>
             
             {/* Interactive dot switcher */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {DRP_QUOTES.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setActiveQuoteIdx(idx)}
-                  className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                  className={`h-2 rounded-full transition-all cursor-pointer ${
                     activeQuoteIdx === idx 
-                      ? 'w-5 bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.9)]' 
-                      : 'w-1.5 bg-slate-500/80 hover:bg-slate-300'
+                      ? 'w-6 bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,1)]' 
+                      : 'w-2 bg-slate-300/80 hover:bg-white shadow-[0_1px_4px_rgba(0,0,0,0.8)]'
                   }`}
                   title={`View directive ${idx + 1}`}
                 />
@@ -133,16 +142,28 @@ export default function AuthPage() {
             </div>
           </div>
 
-          {/* Pure Quotation Text - No background card */}
-          <p className="text-xs sm:text-[13px] text-slate-100 font-medium italic leading-relaxed min-h-[44px] flex items-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+          {/* High-Visibility Larger Quotation Text */}
+          <p 
+            className="text-sm sm:text-base lg:text-[17px] text-white font-bold italic leading-relaxed min-h-[52px] flex items-center tracking-wide"
+            style={{ 
+              textShadow: '0 2px 8px #000000, 0 0 16px rgba(0,0,0,1), 0 0 24px rgba(2,6,23,1), 0 1px 3px #000000' 
+            }}
+          >
             "{DRP_QUOTES[activeQuoteIdx].text}"
           </p>
 
-          {/* Citation & Context - No background card */}
-          <div className="mt-1.5 text-[11px] font-mono text-slate-300 flex items-center gap-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-            <span className="text-blue-300 font-medium">— {DRP_QUOTES[activeQuoteIdx].source}</span>
-            <span className="text-slate-500">•</span>
-            <span className="text-slate-400 text-[10px]">{DRP_QUOTES[activeQuoteIdx].context}</span>
+          {/* Citation & Context in Bright Cyan / Crisp Slate */}
+          <div 
+            className="mt-2 text-xs sm:text-[13px] font-mono flex items-center gap-2.5 flex-wrap"
+            style={{ textShadow: '0 2px 6px #000000, 0 0 12px rgba(0,0,0,1)' }}
+          >
+            <span className="text-cyan-300 font-bold tracking-wide">
+              — {DRP_QUOTES[activeQuoteIdx].source}
+            </span>
+            <span className="text-slate-400 font-bold">•</span>
+            <span className="text-slate-200 font-semibold">
+              {DRP_QUOTES[activeQuoteIdx].context}
+            </span>
           </div>
 
         </div>
@@ -333,15 +354,18 @@ export default function AuthPage() {
 
       </main>
 
-      {/* Bottom Footer Ribbon */}
-      <footer className="relative z-20 w-full px-6 sm:px-12 pb-4 flex items-center justify-between text-[11px] font-mono text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+      {/* Bottom Footer Ribbon with High Contrast */}
+      <footer 
+        className="relative z-20 w-full px-6 sm:px-12 pb-4 flex items-center justify-between text-xs font-mono text-slate-200 font-semibold"
+        style={{ textShadow: '0 2px 8px #000000, 0 0 12px rgba(0,0,0,1)' }}
+      >
         <div>
           <span>AegisAgent DRP v2.4</span>
-          <span className="mx-2">•</span>
-          <span className="text-blue-400 font-medium">Enterprise Social &amp; App Store Radar</span>
+          <span className="mx-2 text-cyan-400">•</span>
+          <span className="text-cyan-300 font-bold">Enterprise Social &amp; App Store Radar</span>
         </div>
         <div>
-          <span>Kampus.VC Hackathon Edition</span>
+          <span className="text-slate-300">Kampus.VC Hackathon Edition</span>
         </div>
       </footer>
 

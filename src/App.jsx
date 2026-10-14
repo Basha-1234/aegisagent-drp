@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
 import AppHeader from './components/common/AppHeader';
@@ -9,6 +10,7 @@ import ExecutiveDashboard from './pages/ExecutiveDashboard';
 
 function MainRouter() {
   const { user } = useAuth();
+  const { isDark } = useTheme();
 
   // If unauthenticated, show the confirmed 3D Emerald Auth Gateway
   if (!user) {
@@ -31,7 +33,9 @@ function MainRouter() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d0a] text-slate-100 flex flex-col font-sans">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
+      isDark ? 'bg-[#040914] text-slate-100' : 'bg-[#f1f5f9] text-slate-900'
+    }`}>
       <AppHeader />
       <main className="flex-1">
         {renderDashboard()}
@@ -42,8 +46,10 @@ function MainRouter() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MainRouter />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MainRouter />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

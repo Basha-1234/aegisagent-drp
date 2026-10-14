@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, DEMO_PERSONAS } from '../context/AuthContext';
 import { BRANDS } from '../data/mockData';
 import { Sparkles, ChevronDown, Check, AlertCircle, Shield } from 'lucide-react';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const DRP_QUOTES = [
   {
@@ -102,13 +103,16 @@ export default function AuthPage() {
             AegisAgent DRP • Enterprise Digital Risk Protection
           </span>
         </div>
-        <div 
-          className="hidden sm:flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 font-semibold"
-          style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
-        >
-          <span>SOC 2 Type II Certified</span>
-          <span className="text-cyan-400">•</span>
-          <span className="text-cyan-300 font-bold">All Defense Engines Operational</span>
+        <div className="flex items-center gap-3">
+          <div 
+            className="hidden sm:flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 font-semibold"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
+          >
+            <span>SOC 2 Type II Certified</span>
+            <span className="text-cyan-400">•</span>
+            <span className="text-cyan-300 font-bold">All Defense Engines Operational</span>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 

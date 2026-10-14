@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, DEMO_PERSONAS } from '../context/AuthContext';
 import { BRANDS } from '../data/mockData';
-import { Sparkles, ChevronDown, Check, AlertCircle, ShieldCheck, Quote } from 'lucide-react';
+import { Sparkles, ChevronDown, Check, AlertCircle, Shield } from 'lucide-react';
 
 const DRP_QUOTES = [
   {
     text: "Safeguarding enterprise brand integrity across deceptive social handles, homoglyph domains, and rogue mobile app stores.",
     source: "Autonomous Brand Defense Directive",
-    context: "Kampus.VC Problem Statement #3"
+    context: "Problem Statement #3"
   },
   {
     text: "Autonomous cross-platform radar detecting brand abuse and orchestrating statutory legal takedowns in minutes, not weeks.",
     source: "Digital Risk Protection Standard",
-    context: "Real-Time Enforcement Pipeline"
+    context: "Enforcement Desk"
   },
   {
     text: "Continuous forensic logo diffing, Unicode spoof detection, and APK permission auditing before customer trust is breached.",
-    source: "Zero-Trust Threat Radar",
-    context: "Forensic Investigation Workbench"
+    source: "Forensic Investigation Workbench",
+    context: "Threat Radar"
   }
 ];
 
@@ -75,19 +75,27 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#030814]">
       
-      {/* 1. Full-Screen Desktop Background Image (Edge-to-Edge with Zero Outer Margin) */}
+      {/* 1. Full-Screen Edge-to-Edge Desktop Background */}
       <div 
-        className="fixed inset-0 pointer-events-none bg-cover bg-center sm:bg-[center_left_20%] lg:bg-center"
+        className="fixed inset-0 pointer-events-none"
         style={{
-          backgroundImage: 'url(/aegis_drp_login_stage_bg.jpg)',
+          background: 'radial-gradient(ellipse 95% 75% at 50% 50%, #08162d 0%, #040c19 50%, #01040a 100%)',
         }}
       />
 
-      {/* Ambient gradient layer for razor-sharp typography contrast */}
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-r from-transparent via-[#030814]/25 to-[#030814]/65" />
+      {/* High-tech ambient grid lines across full screen */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-25"
+        style={{
+          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px)`,
+          backgroundSize: '48px 48px',
+          maskImage: 'radial-gradient(ellipse at center, black 45%, transparent 85%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 45%, transparent 85%)',
+        }}
+      />
 
-      {/* Top Subtle Corporate Header Bar */}
-      <header className="relative z-20 w-full px-6 sm:px-12 pt-6 flex items-center justify-between">
+      {/* Top Corporate Ribbon */}
+      <header className="relative z-20 w-full px-6 sm:px-12 pt-5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
           <span className="text-xs font-mono font-semibold tracking-wider text-blue-300 uppercase">
@@ -101,24 +109,37 @@ export default function AuthPage() {
         </div>
       </header>
 
-      {/* 2. Main Desktop Stage: Quotations below Logo on Left + Login Card on Right */}
-      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8">
+      {/* 2. Main Desktop Stage: Left Logo & Quotation + Right Sign-In Card */}
+      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between py-6 gap-8 lg:gap-12 my-auto">
         
-        {/* LEFT COLUMN: Quotations & Mission Statements Below the 3D Shield */}
-        <div className="w-full lg:max-w-md lg:mb-4 animate-in fade-in duration-500">
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#061122]/75 backdrop-blur-xl border border-blue-500/30 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+        {/* LEFT COLUMN: 3D Shield (Reduced 10%) + Pure Text Quotation Below (No Background Card) */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center text-center">
+          
+          {/* 3D Tilted Cobalt Shield (Reduced 10% in size) */}
+          <div className="relative w-60 sm:w-72 lg:w-[325px] aspect-square flex items-center justify-center transition-transform duration-500 hover:scale-[1.02]">
+            {/* Ambient blue caustic glow behind shield */}
+            <div className="absolute inset-2 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+            <img 
+              src="/aegis_tilted_shield.png" 
+              alt="AegisAgent DRP 3D Cobalt Shield" 
+              className="w-full h-full object-contain relative z-10 drop-shadow-[0_15px_45px_rgba(0,102,255,0.45)]"
+              style={{
+                maskImage: 'radial-gradient(circle at 50% 50%, black 75%, transparent 98%)',
+                WebkitMaskImage: 'radial-gradient(circle at 50% 50%, black 75%, transparent 98%)',
+              }}
+            />
+          </div>
+
+          {/* Quotations directly below logo with NO background card */}
+          <div className="mt-2 max-w-md mx-auto px-2 animate-in fade-in duration-500">
             
-            {/* Top ambient highlight */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent pointer-events-none" />
-
-            {/* Header & Dot Switcher */}
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-blue-400 flex items-center gap-1.5 uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-                DRP THREAT DIRECTIVE
+            {/* Directive label with interactive switcher dots */}
+            <div className="flex items-center justify-center gap-2 mb-1.5">
+              <span className="text-[10px] font-mono text-blue-400 tracking-wider uppercase flex items-center gap-1 font-semibold">
+                <Shield className="w-3 h-3 text-blue-400" />
+                DRP Threat Directive
               </span>
-
-              {/* Interactive Quotation Dots */}
+              <span className="text-slate-600">•</span>
               <div className="flex items-center gap-1.5">
                 {DRP_QUOTES.map((_, idx) => (
                   <button
@@ -127,23 +148,24 @@ export default function AuthPage() {
                     onClick={() => setActiveQuoteIdx(idx)}
                     className={`h-1.5 rounded-full transition-all cursor-pointer ${
                       activeQuoteIdx === idx 
-                        ? 'w-5 bg-blue-400 shadow-[0_0_6px_rgba(59,130,246,0.8)]' 
-                        : 'w-1.5 bg-slate-600 hover:bg-slate-400'
+                        ? 'w-4 bg-blue-400 shadow-[0_0_6px_rgba(59,130,246,0.8)]' 
+                        : 'w-1.5 bg-slate-700 hover:bg-slate-500'
                     }`}
-                    title={`View quote ${idx + 1}`}
+                    title={`View directive ${idx + 1}`}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Quote Body with smooth transition */}
-            <p className="text-xs sm:text-sm text-slate-200 font-medium italic leading-relaxed min-h-[50px] flex items-center">
+            {/* Pure quote text */}
+            <p className="text-xs sm:text-[13px] text-slate-300 font-medium italic leading-relaxed min-h-[42px] flex items-center justify-center">
               "{DRP_QUOTES[activeQuoteIdx].text}"
             </p>
 
-            {/* Citation & Context Footer */}
-            <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+            {/* Citation */}
+            <div className="mt-1 text-[11px] font-mono text-slate-400 flex items-center justify-center gap-2">
               <span className="text-blue-300 font-medium">— {DRP_QUOTES[activeQuoteIdx].source}</span>
+              <span className="text-slate-600">•</span>
               <span className="text-slate-400 text-[10px]">{DRP_QUOTES[activeQuoteIdx].context}</span>
             </div>
 
@@ -151,7 +173,7 @@ export default function AuthPage() {
         </div>
 
         {/* RIGHT COLUMN: The Frosted Glass Login Card with SSO & Demo Section */}
-        <div className="w-full max-w-[430px]">
+        <div className="w-full lg:w-1/2 max-w-[430px] mx-auto lg:mx-0">
           <div className="relative rounded-3xl p-5 sm:p-7 bg-[#071120]/85 backdrop-blur-2xl border border-blue-500/35 shadow-[0_25px_60px_-10px_rgba(0,0,0,0.9)]">
             
             {/* Top edge glass specular highlight */}

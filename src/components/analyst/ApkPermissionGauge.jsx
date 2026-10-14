@@ -1,7 +1,7 @@
 import React from 'react';
 import { Smartphone, ShieldAlert, AlertTriangle, Key, Download, CheckCircle, XCircle } from 'lucide-react';
 
-export default function ApkPermissionGauge({ threat }) {
+export default function ApkPermissionGauge({ threat, brand }) {
   // Exploit Risk Score (0-100)
   const riskScore = 94; // Critical for banking Trojan APKs
 
@@ -148,7 +148,7 @@ export default function ApkPermissionGauge({ threat }) {
         <div className="flex items-center gap-2">
           <Key className="w-4 h-4 text-amber-400 shrink-0" />
           <div className="text-[11px] text-slate-200">
-            <strong>Developer Keystore Mismatch:</strong> Official APK Signed by <code className="text-cyan-300">CN=QuickPay Technologies Inc.</code>. Suspect APK Signed by Self-Signed Debug Cert: <code className="text-amber-400">CN=Android Debug, O=Android</code>.
+            <strong>Developer Keystore Mismatch:</strong> Official APK Signed by <code className="text-cyan-300">CN={brand?.name || 'Razorpay Technologies'}</code>. Suspect APK Signed by Self-Signed Debug Cert: <code className="text-amber-400">CN=Android Debug, O=Android</code>.
           </div>
         </div>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600 font-bold shrink-0">

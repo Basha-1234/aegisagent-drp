@@ -1,11 +1,48 @@
 import React from 'react';
 import { Globe, ShieldAlert, AlertTriangle, ArrowRight, Check, X, Lock } from 'lucide-react';
 
-export default function HomoglyphInspector({ threat }) {
-  // Suspect domain details
-  const officialDomain = 'quickpay.com';
-  const suspectDomain = threat?.suspectHandle || 'quıckpay-kyc.top';
-  const punycode = 'xn--quckpay-kyc-8rb.top';
+export default function HomoglyphInspector({ threat, brand }) {
+  const brandId = brand?.id || 'razorpay';
+  const officialDomain = brand?.officialDomain || 'razorpay.com';
+
+  // Dynamic configuration per brand
+  const homoglyphConfigs = {
+    razorpay: {
+      official: 'razorpay.com',
+      suspectPrefix: 'raz',
+      charExploit: 'ø',
+      charDescription: 'Unicode U+00F8 (LATIN SMALL LETTER O WITH STROKE)',
+      suspectSuffix: 'rpay-verification.net',
+      punycode: 'xn--razrpay-verification-d1b.net',
+      standardChar: 'o (U+006F)',
+      spoofChar: 'ø (U+00F8)',
+      explanation: 'Attacker substituted Latin "o" with Nordic slashed "ø" (U+00F8) to clone Razorpay\'s merchant settlement portal while hosting an offshore phishing kit.'
+    },
+    phonepe: {
+      official: 'phonepe.com',
+      suspectPrefix: 'ph',
+      charExploit: 'ø',
+      charDescription: 'Unicode U+00F8 (LATIN SMALL LETTER O WITH STROKE)',
+      suspectSuffix: 'nepe-kyc-update.xyz',
+      punycode: 'xn--phnepe-kyc-update-2qb.xyz',
+      standardChar: 'o (U+006F)',
+      spoofChar: 'ø (U+00F8)',
+      explanation: 'Attacker substituted Latin "o" with Nordic slashed "ø" (U+00F8) to clone PhonePe\'s KYC resolution interface, harvesting UPI MPIN and netbanking passwords.'
+    },
+    revolut: {
+      official: 'revolut.com',
+      suspectPrefix: 'revo',
+      charExploit: 'I',
+      charDescription: 'Unicode U+0049 (LATIN CAPITAL LETTER I replacing lowercase l)',
+      suspectSuffix: 'ut-auth.com',
+      punycode: 'revoIut-auth.com',
+      standardChar: 'l (U+006C)',
+      spoofChar: 'I (U+0049)',
+      explanation: 'Attacker substituted lowercase Latin "l" with uppercase Latin "I" (U+0049) to spoof Revolut Web login on mobile displays where fonts render both identically.'
+    }
+  };
+
+  const config = homoglyphConfigs[brandId] || homoglyphConfigs.razorpay;
 
   return (
     <div className="rounded-2xl p-5 bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl relative overflow-hidden">
@@ -38,8 +75,7 @@ export default function HomoglyphInspector({ threat }) {
           <div className="font-mono text-base font-bold text-white bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex items-center gap-1">
             <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="text-slate-400">https://</span>
-            <span className="text-emerald-300">quickpay</span>
-            <span className="text-slate-400">.com</span>
+            <span className="text-emerald-300">{officialDomain}</span>
           </div>
 
           <div className="mt-2 text-[10.5px] font-mono text-slate-400 space-y-0.5">
@@ -57,20 +93,21 @@ export default function HomoglyphInspector({ threat }) {
             </span>
           </div>
 
-          <div className="font-mono text-base font-bold text-white bg-slate-900/80 p-2.5 rounded-lg border border-red-500/50 flex items-center gap-1">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+          <div className="font-mono text-base font-bold text-white bg-slate-900/80 p-2.5 rounded-lg border border-red-500/50 flex items-center gap-0.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0 mr-1" />
             <span className="text-slate-400">https://</span>
-            <span className="text-white">qu</span>
-            {/* Highlighted dotless 'i' glyph */}
-            <span className="bg-red-500/30 text-red-300 border-b-2 border-red-400 px-0.5 rounded" title="Unicode U+0131 (LATIN SMALL LETTER DOTLESS I)">
-              ı
+            <span className="text-white">{config.suspectPrefix}</span>
+            <span 
+              className="bg-red-500/40 text-red-200 border-b-2 border-red-400 px-1 rounded font-black text-lg" 
+              title={config.charDescription}
+            >
+              {config.charExploit}
             </span>
-            <span className="text-white">ckpay-kyc</span>
-            <span className="text-red-400">.top</span>
+            <span className="text-white">{config.suspectSuffix}</span>
           </div>
 
           <div className="mt-2 text-[10.5px] font-mono text-red-300 space-y-0.5">
-            <div>Punycode: <code className="text-amber-300">{punycode}</code></div>
+            <div>Punycode: <code className="text-amber-300">{config.punycode}</code></div>
             <div>Domain Age: <strong>2 Days Old</strong> • Namecheap Anonymous</div>
           </div>
         </div>
@@ -84,7 +121,7 @@ export default function HomoglyphInspector({ threat }) {
             Forensic Glyph Translation:
           </div>
           <p className="text-[11px] text-slate-300">
-            Attacker substituted standard Latin <code className="text-emerald-300">i (U+0069)</code> with Turkish Dotless <code className="text-red-300 font-bold">ı (U+0131)</code> to visually bypass human user inspection on mobile browsers while registering a completely separate DNS host.
+            {config.explanation}
           </p>
         </div>
         <div className="shrink-0 px-2.5 py-1 rounded-lg bg-red-950/70 border border-red-500 text-red-300 text-[10px] font-mono font-bold">

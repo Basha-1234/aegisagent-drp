@@ -26,7 +26,7 @@ export default function AuthPage() {
   const { loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
   
   // Interactive credentials state
-  const [email, setEmail] = useState('alex.chen@quickpay.com');
+  const [email, setEmail] = useState('alex.chen@razorpay.com');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isBrandMenuOpen, setIsBrandMenuOpen] = useState(false);

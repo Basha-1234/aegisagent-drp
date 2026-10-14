@@ -2,9 +2,22 @@ import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { PieChart, Radio, Globe, Smartphone, AtSign } from 'lucide-react';
 
-export default function ThreatVectorPieChart({ activeFilter, onFilterChange }) {
+export default function ThreatVectorPieChart({ activeFilter, onFilterChange, threats }) {
   const { isDark } = useTheme();
   const [hoveredSegment, setHoveredSegment] = useState(null);
+
+  const socialCount = threats 
+    ? threats.filter(t => t.channel === 'Social Profile' || t.channel === 'Messaging Channel').length 
+    : 8;
+  const domainCount = threats 
+    ? threats.filter(t => t.channel === 'Phishing Website' || t.channel === 'Phishing Domain').length 
+    : 6;
+  const apkCount = threats 
+    ? threats.filter(t => t.channel === 'Rogue Mobile App').length 
+    : 4;
+
+  const totalCalculated = socialCount + domainCount + apkCount;
+  const effectiveTotal = totalCalculated > 0 ? totalCalculated : 1;
 
   // High-contrast, saturated colors in light mode; glowing cobalt cyan in dark mode
   const vectors = [
@@ -12,8 +25,8 @@ export default function ThreatVectorPieChart({ activeFilter, onFilterChange }) {
       id: 'social',
       label: 'Deceptive Social Handles',
       sublabel: 'X/Twitter, IG, Telegram',
-      count: 8,
-      percentage: 44.4,
+      count: socialCount,
+      percentage: Number(((socialCount / effectiveTotal) * 100).toFixed(1)),
       color: isDark ? '#38bdf8' : '#0284c7', // Saturated Ocean Blue
       glowColor: isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(2, 132, 199, 0.25)',
       icon: AtSign
@@ -22,8 +35,8 @@ export default function ThreatVectorPieChart({ activeFilter, onFilterChange }) {
       id: 'domain',
       label: 'Homoglyph Phishing Domains',
       sublabel: 'Lookalikes, Punycode, Typos',
-      count: 6,
-      percentage: 33.3,
+      count: domainCount,
+      percentage: Number(((domainCount / effectiveTotal) * 100).toFixed(1)),
       color: isDark ? '#3b82f6' : '#2563eb', // Rich Royal Blue
       glowColor: isDark ? 'rgba(59, 130, 246, 0.4)' : 'rgba(37, 99, 235, 0.25)',
       icon: Globe
@@ -32,8 +45,8 @@ export default function ThreatVectorPieChart({ activeFilter, onFilterChange }) {
       id: 'apk',
       label: 'Rogue Mobile APK Stores',
       sublabel: 'Trojan APKs, Permissions',
-      count: 4,
-      percentage: 22.3,
+      count: apkCount,
+      percentage: Number(((apkCount / effectiveTotal) * 100).toFixed(1)),
       color: isDark ? '#f59e0b' : '#ea580c', // High-Contrast Coral Orange
       glowColor: isDark ? 'rgba(245, 158, 11, 0.4)' : 'rgba(234, 88, 12, 0.25)',
       icon: Smartphone

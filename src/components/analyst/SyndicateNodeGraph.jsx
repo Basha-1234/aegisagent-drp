@@ -1,9 +1,62 @@
 import React, { useState } from 'react';
 import { Network, Server, Globe, Smartphone, AtSign, AlertOctagon, Send, ShieldAlert } from 'lucide-react';
 
-export default function SyndicateNodeGraph({ onSelectThreat }) {
+export default function SyndicateNodeGraph({ onSelectThreat, brand }) {
   const [selectedNodeId, setSelectedNodeId] = useState('hub');
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
+
+  const brandId = brand?.id || 'razorpay';
+
+  // Per-tenant syndicate topology configurations
+  const syndicateConfigs = {
+    razorpay: {
+      hubLabel: 'Syndicate Kraken-09',
+      hubTitle: 'Razorpay Merchant Gateway Ring',
+      hubDetails: 'Organized campaign ring operating 5 cross-platform vectors simultaneously against Razorpay merchant accounts and settlement webhooks.',
+      twitterLabel: '@Razorpay_Support_24x7',
+      twitterDetails: 'Replied to 42 merchant refund tweets within 90 seconds using deceptive lookalike handle. Directs merchants to fake credential verification.',
+      domainLabel: 'razørpay-verification.net',
+      domainDetails: 'Nordic "ø" homoglyph. Punycode: xn--razrpay-verification-d1b.net. Cloned merchant dashboard harvesting API keys.',
+      apkLabel: 'com.razorpay.pos.payment.quick',
+      apkDetails: 'Trojan APK posing as Razorpay POS terminal. Requests READ_SMS and BIND_ACCESSIBILITY_SERVICE.',
+      telegramLabel: '@Razorpay_Gateway_VIP',
+      telegramDetails: 'Automated channel distributing leaked merchant API keys, testing credentials, and selling fake payment gateway scripts.',
+      c2Label: '185.220.101.42 (C2 Server)',
+      c2Details: 'Bulletproof hosting ASN 49581. Common backend receiving exfiltrated credentials from both domain and APK.'
+    },
+    phonepe: {
+      hubLabel: 'Syndicate Garuda-X',
+      hubTitle: 'PhonePe UPI Scratch Fraud Ring',
+      hubDetails: 'Cross-platform syndicate broadcasting viral ₹2,999 cashback scratch cards on Instagram and deceptive UPI dispute desks on X.',
+      twitterLabel: '@PhonePe_HeIp_24x7',
+      twitterDetails: 'Deceptive helpdesk with capital "I" for "l". Targets users with pending UPI recharge transactions to harvest UPI MPIN.',
+      domainLabel: 'phønepe-kyc-update.xyz',
+      domainDetails: 'Homoglyph "ø" spoofing PhonePe KYC verification. Punycode: xn--phnepe-kyc-update-2qb.xyz.',
+      apkLabel: 'com.phonepe.rewards.gold.bonus',
+      apkDetails: 'Malicious Android APK promising free 24K gold rewards. Intercepts incoming SMS OTPs and exfiltrates to C2 server.',
+      telegramLabel: '@PhonePe_UPI_Mod',
+      telegramDetails: 'Telegram syndicate channel sharing modded APKs and automated scripts to exploit UPI reward tokens.',
+      c2Label: '194.26.29.112 (C2 Server)',
+      c2Details: 'Command and control server receiving intercepted SMS tokens and victim contact lists from trojanized APK.'
+    },
+    revolut: {
+      hubLabel: 'Syndicate Cerberus-EU',
+      hubTitle: 'Revolut Account Unlock Ring',
+      hubDetails: 'Coordinated European threat ring targeting suspended or locked Revolut users on social channels with fake identity verification lures.',
+      twitterLabel: '@Revolut_HeIpDesk',
+      twitterDetails: 'Phishing support desk intercepting #revolutblocked tweets. Requests users to submit their 6-digit passcode in DM.',
+      domainLabel: 'revoIut-auth.com',
+      domainDetails: 'Capital "I" homoglyph clone of the Revolut Web App login portal. Captures international IBAN credentials.',
+      apkLabel: 'com.revolut.security.authenticator.pro',
+      apkDetails: 'Trojanized security authenticator APK sideloaded via SMS smishing lures. Bypasses 2FA via window overlays.',
+      telegramLabel: '@Revolut_KYC_BlackMarket',
+      telegramDetails: 'Underground channel trading compromised Revolut personal accounts, bypass scripts, and documents.',
+      c2Label: '91.215.85.19 (C2 Server)',
+      c2Details: 'Encrypted relay node routing phishing submissions from mobile app clones to dark web drop services.'
+    }
+  };
+
+  const currentSyn = syndicateConfigs[brandId] || syndicateConfigs.razorpay;
 
   // Nodes in the coordinated syndicate cluster
   const nodes = [
@@ -11,78 +64,78 @@ export default function SyndicateNodeGraph({ onSelectThreat }) {
       id: 'hub',
       x: 240,
       y: 160,
-      label: 'Syndicate Kraken-09',
+      label: currentSyn.hubLabel,
       category: 'Campaign Operator Hub',
       type: 'hub',
       severity: 'CRITICAL',
       color: '#ef4444',
-      details: 'Organized campaign ring operating 5 cross-platform vectors simultaneously against QuickPay customer base.',
+      details: currentSyn.hubDetails,
       indicators: '18 Shared IOCs • Automated DRP Alert'
     },
     {
       id: 'twitter',
       x: 90,
       y: 70,
-      label: '@QuickPay_HeIp',
-      category: 'Twitter/X Impersonator',
+      label: currentSyn.twitterLabel,
+      category: 'Social Platform Impersonator',
       type: 'social',
       severity: 'HIGH',
       color: '#38bdf8',
       icon: AtSign,
-      details: 'Replied to 42 customer complaints within 90 seconds using capital "I" for "l". Same bio link as C2 host.',
-      indicators: 'Active Handle • 3,890 Followers'
+      details: currentSyn.twitterDetails,
+      indicators: 'Active Handle • Shared Bio Redirect'
     },
     {
       id: 'domain',
       x: 390,
       y: 70,
-      label: 'quıckpay-kyc.top',
+      label: currentSyn.domainLabel,
       category: 'Homoglyph Phishing Domain',
       type: 'domain',
       severity: 'CRITICAL',
       color: '#3b82f6',
       icon: Globe,
-      details: 'Turkish dotless "ı" (U+0131). Punycode: xn--quckpay-kyc-8rb.top. Cloned banking auth portal.',
+      details: currentSyn.domainDetails,
       indicators: 'Nameserver: Cloudflare Spoof • Port 443'
     },
     {
       id: 'apk',
       x: 80,
       y: 250,
-      label: 'com.quickpay.wallet.loans.fast',
+      label: currentSyn.apkLabel,
       category: 'Trojan Android APK',
       type: 'apk',
       severity: 'CRITICAL',
       color: '#f59e0b',
       icon: Smartphone,
-      details: 'Sideloaded from apk-pure-clone.net. Contains READ_SMS & SYSTEM_ALERT_WINDOW to intercept banking OTPs.',
-      indicators: 'Cert Hash: SHA256:4a8f9... (Self-signed)'
+      details: currentSyn.apkDetails,
+      indicators: 'Cert Hash: Self-signed Debug Keystore'
     },
     {
       id: 'telegram',
       x: 400,
       y: 250,
-      label: '@quickpay_support_bot',
-      category: 'Automated Phishing Bot',
+      label: currentSyn.telegramLabel,
+      category: 'Messaging Syndicate Channel',
       type: 'messaging',
       severity: 'HIGH',
       color: '#818cf8',
       icon: Send,
-      details: 'Automated script asking users to paste 6-digit verification codes to "unfreeze account balance".',
-      indicators: 'API Token linked to Russian IP block'
+      details: currentSyn.telegramDetails,
+      indicators: 'Automated Bot Token • Underground Ring'
     },
     {
       id: 'c2',
       x: 240,
       y: 300,
-      label: '185.220.101.42 (C2 Server)',
+      label: currentSyn.c2Label,
       category: 'Bulletproof Infrastructure',
       type: 'infra',
       severity: 'CRITICAL',
       color: '#ec4899',
       icon: Server,
-      details: 'Bulletproof hosting ASN 49581. Common backend receiving exfiltrated credentials from both domain and APK.',
-      indicators: 'IP Geo: Seychelles • Shared Backend'
+      details: currentSyn.c2Details,
+      indicators: 'Shared C2 Controller • Unified Drop'
     }
   ];
 
@@ -118,7 +171,7 @@ export default function SyndicateNodeGraph({ onSelectThreat }) {
 
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/70 border border-red-500/40 text-xs text-red-300 font-mono">
           <AlertOctagon className="w-3.5 h-3.5 text-red-400 animate-pulse" />
-          <span>Syndicate Alpha: 5 Linked Vectors</span>
+          <span>{currentSyn.hubLabel}: 5 Linked Vectors</span>
         </div>
       </div>
 
@@ -181,88 +234,104 @@ export default function SyndicateNodeGraph({ onSelectThreat }) {
             return (
               <g
                 key={node.id}
-                transform={`translate(${node.x}, ${node.y})`}
-                className="cursor-pointer transition-transform duration-200"
-                onClick={() => setSelectedNodeId(node.id)}
+                onClick={() => {
+                  setSelectedNodeId(node.id);
+                  if (onSelectThreat) onSelectThreat(node);
+                }}
                 onMouseEnter={() => setHoveredNodeId(node.id)}
                 onMouseLeave={() => setHoveredNodeId(null)}
+                className="cursor-pointer transition-all duration-200"
               >
-                {/* Outer Pulsating Ring */}
-                {(isHub || isSelected) && (
+                {/* Node Outer Pulse Ring if selected or critical */}
+                {(isSelected || isHub) && (
                   <circle
-                    r={isHub ? "32" : "24"}
+                    cx={node.x}
+                    cy={node.y}
+                    r={isHub ? 32 : 22}
                     fill="none"
                     stroke={node.color}
                     strokeWidth="1.5"
-                    className="animate-ping opacity-40"
+                    strokeOpacity={isSelected ? 0.8 : 0.3}
+                    className="animate-ping"
+                    style={{ animationDuration: isHub ? '2.5s' : '3.5s' }}
                   />
                 )}
 
-                {/* Node Solid Circle */}
+                {/* Node Main Circle */}
                 <circle
-                  r={isHub ? "22" : "16"}
-                  fill="#030816"
-                  stroke={node.color}
-                  strokeWidth={isSelected || isHovered ? "3" : "2"}
-                  style={{
-                    filter: isSelected || isHovered ? `drop-shadow(0 0 10px ${node.color})` : 'none'
-                  }}
+                  cx={node.x}
+                  cy={node.y}
+                  r={isHub ? 24 : 16}
+                  fill="#071120"
+                  stroke={isSelected ? '#38bdf8' : node.color}
+                  strokeWidth={isSelected ? 3 : 2}
+                  style={{ filter: isSelected ? 'url(#glow)' : 'none' }}
                 />
 
-                {/* Node Icon or Center Dot */}
-                {isHub ? (
-                  <circle r="6" fill="#ef4444" className="animate-pulse" />
-                ) : (
-                  <circle r="4" fill={node.color} />
-                )}
+                {/* Inner Icon / Dot */}
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={isHub ? 8 : 5}
+                  fill={node.color}
+                />
 
-                {/* Node Text Label */}
+                {/* Node Label */}
                 <text
-                  y={isHub ? 36 : 28}
+                  x={node.x}
+                  y={node.y + (isHub ? 38 : 26)}
                   textAnchor="middle"
-                  fill={isSelected ? "#ffffff" : "#94a3b8"}
-                  fontSize={isHub ? "11" : "9.5"}
+                  fill={isSelected ? '#38bdf8' : '#94a3b8'}
+                  fontSize={isHub ? '11px' : '9.5px'}
                   fontFamily="monospace"
-                  fontWeight={isSelected ? "bold" : "normal"}
-                  className="pointer-events-none select-none"
+                  fontWeight={isSelected ? 'bold' : 'normal'}
+                  className="select-none pointer-events-none"
                 >
-                  {node.label.length > 18 ? node.label.substring(0, 16) + '...' : node.label}
+                  {node.label}
                 </text>
               </g>
             );
           })}
         </svg>
 
-        {/* Legend Overlay in top-left */}
-        <div className="absolute top-2 left-2 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-[10px] font-mono text-slate-400 pointer-events-none">
-          Click any node to inspect infrastructure ties
+        {/* Legend */}
+        <div className="absolute bottom-2 left-3 flex items-center gap-3 text-[10px] font-mono text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block"/> Hub</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-400 inline-block"/> Social</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"/> Domain</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block"/> APK</span>
         </div>
       </div>
 
-      {/* Selected Node Forensic Inspection Panel */}
-      <div className="mt-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-white font-mono">{selectedNode.label}</span>
-            <span 
-              className="text-[9px] px-2 py-0.5 rounded font-mono font-bold"
-              style={{ backgroundColor: `${selectedNode.color}25`, color: selectedNode.color, border: `1px solid ${selectedNode.color}50` }}
-            >
-              {selectedNode.category}
-            </span>
+      {/* Selected Node Forensic Card */}
+      {selectedNode && (
+        <div className="mt-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white font-mono text-sm">{selectedNode.label}</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">
+                {selectedNode.category}
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 font-bold">
+                {selectedNode.severity}
+              </span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed max-w-2xl">
+              {selectedNode.details}
+            </p>
           </div>
-          <p className="text-[11px] text-slate-300 leading-snug">{selectedNode.details}</p>
-          <div className="text-[10px] font-mono text-cyan-400">{selectedNode.indicators}</div>
-        </div>
 
-        <button
-          type="button"
-          onClick={() => onSelectThreat && onSelectThreat(selectedNode.id)}
-          className="px-3 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/60 text-blue-200 text-xs font-mono font-semibold transition shrink-0 cursor-pointer"
-        >
-          View Full Evidence Pack →
-        </button>
-      </div>
+          <div className="text-right shrink-0">
+            <div className="text-[10px] text-slate-400 font-mono mb-1">{selectedNode.indicators}</div>
+            <button
+              onClick={() => onSelectThreat && onSelectThreat(selectedNode)}
+              className="px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono font-bold transition cursor-pointer"
+            >
+              Isolate In Evidence Canvas
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

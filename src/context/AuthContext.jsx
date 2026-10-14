@@ -6,7 +6,7 @@ export const DEMO_PERSONAS = {
     id: 'usr-analyst-01',
     name: 'Alex Chen',
     title: 'Senior Threat Analyst',
-    email: 'alex.chen@quickpay.com',
+    email: 'alex.chen@razorpay.com',
     role: 'analyst',
     department: 'Security Operations (SOC)',
     avatar: 'AC',
@@ -16,7 +16,7 @@ export const DEMO_PERSONAS = {
     id: 'usr-legal-02',
     name: 'Sarah Vance',
     title: 'Head of Legal & Compliance',
-    email: 'sarah.vance@quickpay.com',
+    email: 'sarah.vance@razorpay.com',
     role: 'legal',
     department: 'Legal & Intellectual Property',
     avatar: 'SV',
@@ -26,7 +26,7 @@ export const DEMO_PERSONAS = {
     id: 'usr-support-03',
     name: 'Marcus Brooks',
     title: 'Customer Trust & Brand Ops',
-    email: 'marcus.brooks@quickpay.com',
+    email: 'marcus.brooks@razorpay.com',
     role: 'support',
     department: 'Frontline Customer Operations',
     avatar: 'MB',
@@ -36,7 +36,7 @@ export const DEMO_PERSONAS = {
     id: 'usr-ciso-04',
     name: 'Elena Rostova',
     title: 'Chief Information Security Officer (CISO)',
-    email: 'elena.rostova@quickpay.com',
+    email: 'elena.rostova@razorpay.com',
     role: 'ciso',
     department: 'Executive Security Leadership',
     avatar: 'ER',
@@ -53,14 +53,14 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [activeBrandId, setActiveBrandId] = useState('quickpay');
+  const [activeBrandId, setActiveBrandId] = useState('razorpay');
 
   // Simulated organization pending access requests
   const [accessRequests, setAccessRequests] = useState([
     {
       id: 'req-101',
       name: 'Rohan Sharma',
-      email: 'rohan.sharma@quickpay.com',
+      email: 'rohan.sharma@razorpay.com',
       department: 'Fraud Investigations',
       requestedRole: 'analyst',
       submittedAt: '10 minutes ago',
@@ -69,7 +69,7 @@ export function AuthProvider({ children }) {
     {
       id: 'req-102',
       name: 'Priya Patel',
-      email: 'priya.patel@quickpay.com',
+      email: 'priya.patel@razorpay.com',
       department: 'Customer Escalations',
       requestedRole: 'support',
       submittedAt: '45 minutes ago',
@@ -97,7 +97,12 @@ export function AuthProvider({ children }) {
     }
 
     // Default corporate tenant login fallback
-    if (normalized.endsWith('@quickpay.com') || normalized.endsWith('@novabank.com')) {
+    if (
+      normalized.endsWith('@razorpay.com') || 
+      normalized.endsWith('@phonepe.com') || 
+      normalized.endsWith('@revolut.com') ||
+      normalized.endsWith('@quickpay.com')
+    ) {
       const newUser = {
         id: `usr-${Date.now()}`,
         name: email.split('@')[0].replace('.', ' '),
@@ -112,7 +117,7 @@ export function AuthProvider({ children }) {
       return { success: true, user: newUser };
     }
 
-    return { success: false, message: 'Please use an approved corporate email (e.g., @quickpay.com)' };
+    return { success: false, message: 'Please use an approved corporate email (e.g., @razorpay.com, @phonepe.com, @revolut.com)' };
   };
 
   // Instant 1-click persona quick-switch for presentations/evaluations

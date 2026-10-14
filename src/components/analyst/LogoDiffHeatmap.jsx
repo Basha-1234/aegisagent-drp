@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, Flame, Sliders, ShieldCheck, AlertTriangle, Eye, Crosshair } from 'lucide-react';
 
-export default function LogoDiffHeatmap({ officialLogo, suspectAvatar, matchPercent = 92, suspectName }) {
+export default function LogoDiffHeatmap({ officialLogo, suspectAvatar, matchPercent = 92, suspectName, brandName }) {
   // Modes: 'side-by-side' | 'heatmap' | 'overlay'
   const [viewMode, setViewMode] = useState('heatmap');
   const [deltaTolerance, setDeltaTolerance] = useState(85);
@@ -118,7 +118,7 @@ export default function LogoDiffHeatmap({ officialLogo, suspectAvatar, matchPerc
               VERIFIED
             </div>
           </div>
-          <div className="text-[11px] font-mono text-emerald-400 mt-2 font-medium">QuickPay Trademark v4</div>
+          <div className="text-[11px] font-mono text-emerald-400 mt-2 font-medium">{brandName ? `${brandName} Trademark` : 'Official Trademark'}</div>
         </div>
 
         {/* Center: Comparison Canvas (Switches based on mode) */}
@@ -235,7 +235,7 @@ export default function LogoDiffHeatmap({ officialLogo, suspectAvatar, matchPerc
             </div>
           </div>
           <div className="text-[11px] font-mono text-amber-300 mt-2 font-medium truncate max-w-[160px]">
-            {suspectName || '@QuickPay_HeIp'}
+            {suspectName || '@Suspect_Lookalike'}
           </div>
         </div>
 

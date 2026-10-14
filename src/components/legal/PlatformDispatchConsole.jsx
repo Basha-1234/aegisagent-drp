@@ -9,13 +9,13 @@ export default function PlatformDispatchConsole({ threat, brand }) {
   const [showPayload, setShowPayload] = useState(false);
 
   const activeTarget = threat || {
-    id: 'THREAT-101',
-    suspectName: 'QuickPay Official Helpdesk',
-    suspectHandle: '@QuickPay_Support_24x7',
-    platform: 'Instagram',
+    id: 'THREAT-RZP-101',
+    suspectName: 'Razorpay Helpdesk & Settlement Assist',
+    suspectHandle: '@Razorpay_Support_24x7',
+    platform: 'X (Twitter)',
     channel: 'Social Profile',
-    suspectUrl: 'https://quickpay-refund-helpdesk.xyz/claim',
-    logoMatchPercent: 92
+    suspectUrl: 'https://razorpay-merchant-refund.xyz/claim',
+    logoMatchPercent: 94
   };
 
   const platforms = [

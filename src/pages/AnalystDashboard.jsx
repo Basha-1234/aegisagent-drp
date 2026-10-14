@@ -665,6 +665,7 @@ export default function AnalystDashboard() {
                   suspectAvatar={activeThreat.avatarUrl}
                   matchPercent={activeThreat.logoMatchPercent || 92}
                   suspectName={activeThreat.suspectName}
+                  brandName={currentBrand.name}
                 />
               </div>
             )}
@@ -673,8 +674,8 @@ export default function AnalystDashboard() {
             {activeModule === 'forensics' && (
               <div className="space-y-5">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                  <ApkPermissionGauge threat={activeThreat} />
-                  <HomoglyphInspector threat={activeThreat} />
+                  <ApkPermissionGauge threat={activeThreat} brand={currentBrand} />
+                  <HomoglyphInspector threat={activeThreat} brand={currentBrand} />
                 </div>
               </div>
             )}
@@ -683,11 +684,15 @@ export default function AnalystDashboard() {
             {activeModule === 'syndicate' && (
               <div className="space-y-4">
                 <SyndicateNodeGraph 
+                  brand={currentBrand}
                   onSelectThreat={(node) => {
-                    if (node.id === 'twitter') setSelectedThreatId('THREAT-102');
-                    if (node.id === 'domain') setSelectedThreatId('THREAT-106');
-                    if (node.id === 'apk') setSelectedThreatId('THREAT-103');
-                    if (node.id === 'telegram') setSelectedThreatId('THREAT-105');
+                    const match = brandThreats.find(t => 
+                      (node.id === 'twitter' && t.channel === 'Social Profile') ||
+                      (node.id === 'domain' && (t.channel === 'Phishing Website' || t.channel === 'Phishing Domain')) ||
+                      (node.id === 'apk' && t.channel === 'Rogue Mobile App') ||
+                      (node.id === 'telegram' && t.channel === 'Messaging Channel')
+                    );
+                    if (match) setSelectedThreatId(match.id);
                   }} 
                 />
               </div>
@@ -699,6 +704,7 @@ export default function AnalystDashboard() {
                 <ThreatVectorPieChart 
                   activeFilter={vectorFilter} 
                   onFilterChange={(v) => setVectorFilter(v)} 
+                  threats={brandThreats}
                 />
               </div>
             )}

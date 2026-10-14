@@ -7,10 +7,10 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
   const [downloadSuccess, setDownloadSuccess] = useState(null);
 
   const activeTarget = threat || {
-    id: 'THREAT-101',
-    suspectName: 'QuickPay Official Helpdesk',
-    suspectHandle: '@QuickPay_Support_24x7',
-    platform: 'Instagram',
+    id: 'THREAT-RZP-101',
+    suspectName: 'Razorpay Helpdesk & Settlement Assist',
+    suspectHandle: '@Razorpay_Support_24x7',
+    platform: 'X (Twitter)',
     channel: 'Social Profile'
   };
 
@@ -27,7 +27,7 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
           doc.setFontSize(10);
           doc.setFont('helvetica', 'normal');
           doc.text(`Generated: ${new Date().toUTCString()}`, 15, 28);
-          doc.text(`Complainant Tenant: ${brand?.name || 'QuickPay Technologies'}`, 15, 36);
+          doc.text(`Complainant Tenant: ${brand?.name || 'Razorpay Technologies'}`, 15, 36);
           doc.text(`Suspect Entity: ${activeTarget.suspectHandle} (${activeTarget.platform})`, 15, 44);
           doc.text(`Statutory Mandate: Rule 3(2)(b) Indian IT Rules 2021 & DMCA §512`, 15, 52);
           doc.text(`Cryptographic Evidence Hash: sha256:8f4c2b9a71e3d085942f1a6c5e7b8921df047ca8`, 15, 60);
@@ -46,7 +46,7 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
         } else if (format === 'JSON') {
           const payload = {
             docketId: `AEGIS-${activeTarget.id}-LEGAL`,
-            complainant: brand?.name || 'QuickPay Technologies',
+            complainant: brand?.name || 'Razorpay Technologies',
             suspect: activeTarget,
             statutoryNotice: 'Rule 3(2)(b) Indian IT Rules 2021 / DMCA Section 512',
             timestamp: new Date().toISOString(),

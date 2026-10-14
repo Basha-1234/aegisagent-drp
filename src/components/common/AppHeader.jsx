@@ -4,7 +4,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { BRANDS } from '../../data/mockData';
 import AegisShieldLogo from './AegisShieldLogo';
 import ThemeToggle from './ThemeToggle';
-import JudgingCriteriaModal from './JudgingCriteriaModal';
 import { 
   ShieldAlert, 
   Scale, 
@@ -13,8 +12,7 @@ import {
   LogOut, 
   ChevronDown, 
   Building2, 
-  Sparkles,
-  Trophy
+  Sparkles
 } from 'lucide-react';
 
 export default function AppHeader() {
@@ -22,7 +20,6 @@ export default function AppHeader() {
   const { isDark } = useTheme();
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const [isBrandDropdownOpen, setIsBrandDropdownOpen] = useState(false);
-  const [isJudgingModalOpen, setIsJudgingModalOpen] = useState(false);
 
   const activeBrand = BRANDS.find(b => b.id === activeBrandId) || BRANDS[0];
 
@@ -219,22 +216,6 @@ export default function AppHeader() {
             )}
           </div>
 
-          {/* HacXLerate Hackathon Criteria & Pitch Showcase Button */}
-          <button
-            type="button"
-            onClick={() => setIsJudgingModalOpen(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition shadow-xs cursor-pointer ${
-              isDark
-                ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25 hover:border-amber-400'
-                : 'bg-amber-100 border-amber-300 text-amber-950 hover:bg-amber-200'
-            }`}
-            title="View HacXLerate judging criteria alignment & pitch deck walkthrough"
-          >
-            <Trophy className="w-3.5 h-3.5 text-amber-500" />
-            <span className="hidden md:inline">HacXLerate</span>
-            <span>Criteria</span>
-          </button>
-
           {/* Theme Toggle Button (Light/Dark Mode) */}
           <ThemeToggle />
 
@@ -271,12 +252,6 @@ export default function AppHeader() {
         </div>
 
       </div>
-
-      {/* HacXLerate Judging Criteria & Pitch Deck Modal */}
-      <JudgingCriteriaModal 
-        isOpen={isJudgingModalOpen} 
-        onClose={() => setIsJudgingModalOpen(false)} 
-      />
     </header>
   );
 }

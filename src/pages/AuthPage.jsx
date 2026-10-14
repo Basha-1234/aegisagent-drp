@@ -73,7 +73,12 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#030814]">
+    <div 
+      className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#030814]"
+      style={{
+        zoom: '90%',
+      }}
+    >
       
       {/* 1. Full-Screen Edge-to-Edge Desktop Background of the Shield */}
       <div 
@@ -168,14 +173,14 @@ export default function AuthPage() {
 
         </div>
 
-        {/* RIGHT COLUMN: The Enlarged Frosted Glass Login Card with SSO & Demo Section */}
+        {/* RIGHT COLUMN: The Frosted Glass Login Card with SSO & Demo Section */}
         <div className="w-full max-w-[500px] lg:max-w-[530px]">
           <div className="relative rounded-3xl p-6 sm:p-8 lg:p-9 bg-[#071120]/88 backdrop-blur-2xl border border-blue-500/35 shadow-[0_30px_70px_-10px_rgba(0,0,0,0.95)]">
             
             {/* Top edge glass specular highlight */}
             <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent pointer-events-none" />
 
-            {/* Card Header Typography - Increased Sizes */}
+            {/* Card Header Typography */}
             <div>
               <div className="text-xs sm:text-sm font-bold text-slate-300 tracking-wider uppercase font-mono mb-1">
                 AegisAgent DRP
@@ -187,7 +192,7 @@ export default function AuthPage() {
                 Autonomous Digital Risk Protection: <br />Social &amp; App Monitoring
               </p>
 
-              {/* Active Tenant Capsule with Dropdown - Enlarged */}
+              {/* Active Tenant Capsule with Dropdown */}
               <div className="relative inline-block mt-3.5">
                 <button
                   type="button"
@@ -223,7 +228,7 @@ export default function AuthPage() {
                         }`}
                       >
                         <span className="truncate">{brand.name}</span>
-                        {brand.id === activeBrandId && <Check className="w-4 h-4 text-blue-400 shrink-0" />}
+                        {brand.id === activeBrandId && <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -231,7 +236,7 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Interactive SSO Login Form - Enlarged Controls */}
+            {/* Interactive SSO Login Form */}
             <form onSubmit={handleSignIn} className="mt-5 space-y-3.5">
               {authError && (
                 <div className="p-2.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs sm:text-sm flex items-center gap-2">
@@ -269,7 +274,7 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {/* DEMO SECTION BELOW (1-Click Evaluation Personas) - Enlarged */}
+            {/* DEMO SECTION BELOW (1-Click Evaluation Personas) */}
             <div className="mt-5 pt-4 border-t border-slate-800/80">
               
               {/* Header */}
@@ -291,7 +296,7 @@ export default function AuthPage() {
                 </span>
               </div>
 
-              {/* 4 Role Buttons in 2x2 Grid - Enlarged & High Contrast */}
+              {/* 4 Role Buttons in 2x2 Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
                 
                 {/* 1. Security Analyst */}

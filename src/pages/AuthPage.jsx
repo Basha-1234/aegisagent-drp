@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth, DEMO_PERSONAS } from '../context/AuthContext';
 import { BRANDS } from '../data/mockData';
-import { Sparkles, Shield, ChevronDown, Check, ArrowRight, Lock, AlertCircle } from 'lucide-react';
+import { Sparkles, ChevronDown, Check, AlertCircle } from 'lucide-react';
 
 export default function AuthPage() {
-  const { login, loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
+  const { loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
   
   // Interactive state
   const [email, setEmail] = useState('alex.chen@quickpay.com');
@@ -45,38 +45,58 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#070b14] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden select-none font-sans">
+    <div className="min-h-screen w-full bg-[#040812] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden select-none font-sans">
       
-      {/* Ambient Cobalt Radial Glows */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/12 rounded-full blur-[160px]" />
-        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-sky-400/10 rounded-full blur-[120px]" />
-      </div>
+      {/* 1. Clear, Uniform Ambient Background (Radial Vignette centered behind the console) */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 90% 70% at 50% 50%, #0a1832 0%, #050d1c 45%, #02050c 100%)',
+        }}
+      />
 
-      {/* Main 2-Column Responsive Layout: Left 3D Shield + Right Frosted Glass Card */}
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center relative z-10 my-auto">
+      {/* Subtle fine technical grid overlay for depth */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+        }}
+      />
+
+      {/* 2. Main 2-Column Responsive Layout: Perfectly Aligned Shield + Card */}
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 my-auto">
         
-        {/* LEFT COLUMN: 3D Cobalt Crystal Shield with Radiant Flare */}
+        {/* LEFT COLUMN: Fully Centered, Uncropped 3D Cobalt & Sapphire Shield */}
         <div className="lg:col-span-5 flex items-center justify-center relative">
-          <div className="relative w-full max-w-[380px] sm:max-w-[420px] lg:max-w-none transition-transform duration-500 hover:scale-[1.02]">
-            {/* Ambient blue flare behind shield */}
-            <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="relative w-72 sm:w-88 lg:w-[420px] aspect-square flex items-center justify-center">
+            
+            {/* Soft radiant ambient glow directly centered behind the shield */}
+            <div className="absolute inset-6 bg-blue-500/25 rounded-full blur-3xl pointer-events-none" />
+            
+            {/* The 3D Cobalt Emblem with feathered edge mask so it dissolves 100% into background */}
             <img 
-              src="/aegis_shield_isolated.jpg" 
+              src="/aegis_shield_3d_emblem.jpg" 
               alt="AegisAgent DRP 3D Cobalt Shield" 
-              className="w-full h-auto object-contain relative z-10 drop-shadow-[0_20px_45px_rgba(0,102,255,0.35)]" 
+              className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,102,255,0.45)] transition-transform duration-500 hover:scale-[1.03]"
+              style={{
+                maskImage: 'radial-gradient(circle at 50% 50%, black 72%, transparent 98%)',
+                WebkitMaskImage: 'radial-gradient(circle at 50% 50%, black 72%, transparent 98%)',
+              }}
             />
           </div>
         </div>
 
-        {/* RIGHT COLUMN: The Frosted Glass Card with Form & Demo Section */}
+        {/* RIGHT COLUMN: The Clean Frosted Glass Card with Form & Demo Personas */}
         <div className="lg:col-span-7 w-full max-w-lg mx-auto lg:max-w-none">
-          <div className="relative rounded-3xl p-6 sm:p-8 bg-[#091322]/85 backdrop-blur-2xl border border-blue-500/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]">
+          <div className="relative rounded-3xl p-6 sm:p-8 bg-[#091322]/90 backdrop-blur-2xl border border-blue-500/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]">
             
             {/* Subtle inner top-left glass highlight */}
             <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent pointer-events-none" />
 
-            {/* Card Header matching reference image typography */}
+            {/* Card Header Typography */}
             <div>
               <div className="text-xs font-semibold text-slate-300 tracking-wide font-sans mb-1">
                 AegisAgent DRP
@@ -170,7 +190,7 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {/* DEMO SECTION BELOW (As previously provided) */}
+            {/* DEMO SECTION BELOW (1-Click Evaluation Personas) */}
             <div className="mt-6 pt-5 border-t border-slate-800/80">
               
               {/* Demo Section Header */}

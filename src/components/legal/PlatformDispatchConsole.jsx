@@ -67,18 +67,13 @@ export default function PlatformDispatchConsole({ threat, brand }) {
     setDispatchStatus('sending');
     setTimeout(() => {
       setDispatchStatus('success');
-      setTicketId(`${currentPlatform.id.toUpperCase()}-CASE-${Math.floor(100000 + Math.random() * 900000)}`);
-      try {
-        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-      } catch (e) {
-        // Fallback
-      }
-    }, 1000);
+      setTicketId(`DRAFT-NOTICE-${currentPlatform.id.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`);
+    }, 700);
   };
 
   return (
     <div className="rounded-2xl p-5 bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl space-y-5">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
         <div>
@@ -127,7 +122,7 @@ export default function PlatformDispatchConsole({ threat, brand }) {
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div 
+                  <div
                     className="p-1.5 rounded-lg text-slate-950"
                     style={{ backgroundColor: p.color }}
                   >
@@ -191,7 +186,7 @@ export default function PlatformDispatchConsole({ threat, brand }) {
             </span>
           </div>
           <p className="text-xs text-slate-400">
-            Selected Platform: <strong className="text-slate-200">{currentPlatform.name}</strong> • Guaranteed SLA: <strong className="text-amber-400">{currentPlatform.sla}</strong>
+            Selected Platform: <strong className="text-slate-200">{currentPlatform.name}</strong> • Statutory SLA Target: <strong className="text-amber-400">{currentPlatform.sla}</strong>
           </p>
         </div>
 
@@ -204,24 +199,24 @@ export default function PlatformDispatchConsole({ threat, brand }) {
               className="py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition cursor-pointer transform active:scale-95"
             >
               <Send className="w-4 h-4" />
-              <span>Dispatch Statutory Notice Now</span>
+              <span>Compile Statutory Takedown Package (Draft Pre-flight)</span>
             </button>
           )}
 
           {dispatchStatus === 'sending' && (
             <div className="py-3 px-6 rounded-xl bg-cyan-950 border border-cyan-500/50 text-cyan-300 font-mono text-xs flex items-center gap-2 animate-pulse">
               <Zap className="w-4 h-4 text-cyan-400 animate-spin" />
-              <span>Transmitting Authenticated Payload to {currentPlatform.name}...</span>
+              <span>Validating Evidentiary Hashes for {currentPlatform.name}...</span>
             </div>
           )}
 
           {dispatchStatus === 'success' && (
-            <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-mono text-xs flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/60 text-emerald-300 font-mono text-xs flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               <div>
-                <div className="font-bold text-white">Dispatched Successfully to Platform Desk</div>
-                <div className="text-[11px] text-emerald-300">
-                  Tracking ID: <strong>{ticketId}</strong> (SLA Timer Active: 23h 59m)
+                <div className="font-bold text-white">Draft Notice Compiled &amp; Cryptographically Sealed</div>
+                <div className="text-[11px] text-slate-300">
+                  Pre-flight Tracking: <strong>{ticketId}</strong> (Draft ready for manual transmission or production API dispatch)
                 </div>
               </div>
             </div>

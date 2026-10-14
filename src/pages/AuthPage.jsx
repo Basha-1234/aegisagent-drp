@@ -24,7 +24,7 @@ const DRP_QUOTES = [
 
 export default function AuthPage() {
   const { loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
-  
+
   // Interactive credentials state
   const [email, setEmail] = useState('alex.chen@razorpay.com');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -74,15 +74,15 @@ export default function AuthPage() {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#030814]"
       style={{
         zoom: '90%',
       }}
     >
-      
+
       {/* 1. Full-Screen Edge-to-Edge Desktop Background of the Shield */}
-      <div 
+      <div
         className="fixed inset-0 pointer-events-none bg-cover bg-center sm:bg-[center_left_20%] lg:bg-center"
         style={{
           backgroundImage: 'url(/aegis_drp_login_stage_bg.jpg)',
@@ -96,7 +96,7 @@ export default function AuthPage() {
       <header className="relative z-20 w-full px-6 sm:px-12 pt-5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
-          <span 
+          <span
             className="text-xs sm:text-sm font-mono font-bold tracking-wider text-cyan-200 uppercase"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)' }}
           >
@@ -104,7 +104,7 @@ export default function AuthPage() {
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="hidden sm:flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 font-semibold"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
           >
@@ -118,13 +118,13 @@ export default function AuthPage() {
 
       {/* 2. Main Desktop Stage: Quotations below Logo on Left + Enlarged Login Card on Right */}
       <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8 lg:gap-12">
-        
+
         {/* LEFT COLUMN: Highly Visible Pure Text Quotation Below Shield (No Background Card) */}
         <div className="w-full lg:max-w-lg lg:mb-4 select-none animate-in fade-in duration-500">
-          
+
           {/* Directive Header & Dot Switcher with High-Contrast Colors */}
           <div className="flex items-center gap-2.5 mb-2.5">
-            <span 
+            <span
               className="text-xs sm:text-sm font-mono text-cyan-300 tracking-widest uppercase flex items-center gap-1.5 font-bold"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 14px rgba(0,0,0,0.9)' }}
             >
@@ -132,7 +132,7 @@ export default function AuthPage() {
               DRP Threat Directive
             </span>
             <span className="text-slate-400 font-bold">•</span>
-            
+
             {/* Interactive dot switcher */}
             <div className="flex items-center gap-2">
               {DRP_QUOTES.map((_, idx) => (
@@ -141,8 +141,8 @@ export default function AuthPage() {
                   type="button"
                   onClick={() => setActiveQuoteIdx(idx)}
                   className={`h-2 rounded-full transition-all cursor-pointer ${
-                    activeQuoteIdx === idx 
-                      ? 'w-6 bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,1)]' 
+                    activeQuoteIdx === idx
+                      ? 'w-6 bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,1)]'
                       : 'w-2 bg-slate-300/80 hover:bg-white shadow-[0_1px_4px_rgba(0,0,0,0.8)]'
                   }`}
                   title={`View directive ${idx + 1}`}
@@ -152,17 +152,17 @@ export default function AuthPage() {
           </div>
 
           {/* High-Visibility Larger Quotation Text */}
-          <p 
+          <p
             className="text-sm sm:text-base lg:text-[18px] text-white font-bold italic leading-relaxed min-h-[56px] flex items-center tracking-wide"
-            style={{ 
-              textShadow: '0 2px 8px #000000, 0 0 16px rgba(0,0,0,1), 0 0 24px rgba(2,6,23,1), 0 1px 3px #000000' 
+            style={{
+              textShadow: '0 2px 8px #000000, 0 0 16px rgba(0,0,0,1), 0 0 24px rgba(2,6,23,1), 0 1px 3px #000000'
             }}
           >
             "{DRP_QUOTES[activeQuoteIdx].text}"
           </p>
 
           {/* Citation & Context in Bright Cyan / Crisp Slate */}
-          <div 
+          <div
             className="mt-2.5 text-xs sm:text-[13.5px] font-mono flex items-center gap-2.5 flex-wrap"
             style={{ textShadow: '0 2px 6px #000000, 0 0 12px rgba(0,0,0,1)' }}
           >
@@ -180,7 +180,7 @@ export default function AuthPage() {
         {/* RIGHT COLUMN: The Frosted Glass Login Card with SSO & Demo Section */}
         <div className="w-full max-w-[500px] lg:max-w-[530px]">
           <div className="relative rounded-3xl p-6 sm:p-8 lg:p-9 bg-[#071120]/88 backdrop-blur-2xl border border-blue-500/35 shadow-[0_30px_70px_-10px_rgba(0,0,0,0.95)]">
-            
+
             {/* Top edge glass specular highlight */}
             <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent pointer-events-none" />
 
@@ -280,29 +280,29 @@ export default function AuthPage() {
 
             {/* DEMO SECTION BELOW (1-Click Evaluation Personas) */}
             <div className="mt-5 pt-4 border-t border-slate-800/80">
-              
+
               {/* Header */}
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-xs font-mono text-slate-300 font-semibold flex items-center gap-1.5 uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                  1-CLICK EVALUATION PERSONAS
+                  DEMO EVALUATION PERSONAS
                 </span>
-                <span className="text-[10px] text-blue-400 font-mono px-2.5 py-0.5 rounded-full bg-blue-950/70 border border-blue-800/50 font-semibold">
-                  Demo Mode
+                <span className="text-[10px] text-amber-300 font-mono px-2.5 py-0.5 rounded-full bg-amber-950/70 border border-amber-800/50 font-semibold">
+                  Simulated Auth
                 </span>
               </div>
 
               {/* Explanatory Popup Banner */}
-              <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-500/25 text-xs text-blue-200/90 flex items-start gap-2 mb-3 leading-relaxed">
-                <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs text-slate-300 flex items-start gap-2 mb-3 leading-relaxed">
+                <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-white font-bold">Evaluation Quick-Access:</strong> Click any role below to instantly log in and test their dedicated dashboard without typing credentials.
+                  <strong className="text-white font-bold">Demo Authentication:</strong> Preconfigured personas for hackathon judges to evaluate role workspaces. (Production enterprise deployment requires backend IdP / OAuth).
                 </span>
               </div>
 
               {/* 4 Role Buttons in 2x2 Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                
+
                 {/* 1. Security Analyst */}
                 <button
                   type="button"
@@ -364,7 +364,7 @@ export default function AuthPage() {
       </main>
 
       {/* Bottom Footer Ribbon with High Contrast */}
-      <footer 
+      <footer
         className="relative z-20 w-full px-6 sm:px-12 pb-4 flex items-center justify-between text-xs font-mono text-slate-200 font-semibold"
         style={{ textShadow: '0 2px 8px #000000, 0 0 12px rgba(0,0,0,1)' }}
       >

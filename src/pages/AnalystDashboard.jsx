@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { BRANDS, INITIAL_THREATS } from '../data/mockData';
 import LogoDiffHeatmap from '../components/analyst/LogoDiffHeatmap';
 import ThreatVectorPieChart from '../components/analyst/ThreatVectorPieChart';
@@ -37,6 +38,7 @@ import {
 
 export default function AnalystDashboard() {
   const { user, activeBrandId, loginAsRole } = useAuth();
+  const { isDark } = useTheme();
 
   // Active brand profile
   const currentBrand = BRANDS.find(b => b.id === activeBrandId) || BRANDS[0];
@@ -97,7 +99,7 @@ export default function AnalystDashboard() {
     return <AtSign className={className} />;
   };
 
-  // Dashboard Toggle Navigation Items
+  // Dashboard Toggle Navigation Items - High Contrast Solid Badges
   const dashboardModules = [
     {
       id: 'radar',
@@ -105,7 +107,9 @@ export default function AnalystDashboard() {
       sublabel: 'Live Multi-Signal Stream',
       icon: Radio,
       badge: `${brandThreats.length} Alerts`,
-      badgeColor: 'border-cyan-500/40 bg-cyan-950/60 text-cyan-300'
+      badgeColor: isDark 
+        ? 'border-cyan-500/40 bg-cyan-950/60 text-cyan-300' 
+        : 'border-sky-300 bg-sky-100 text-sky-900 font-bold shadow-xs'
     },
     {
       id: 'heatmap',
@@ -113,7 +117,9 @@ export default function AnalystDashboard() {
       sublabel: '12x12 Pixel Delta Matrix',
       icon: Flame,
       badge: '144 Cells',
-      badgeColor: 'border-amber-500/40 bg-amber-950/60 text-amber-300'
+      badgeColor: isDark 
+        ? 'border-amber-500/40 bg-amber-950/60 text-amber-300' 
+        : 'border-amber-300 bg-amber-100 text-amber-900 font-bold shadow-xs'
     },
     {
       id: 'forensics',
@@ -121,7 +127,9 @@ export default function AnalystDashboard() {
       sublabel: 'APK Audit & Homoglyph Spec',
       icon: ShieldAlert,
       badge: 'L4 Critical',
-      badgeColor: 'border-red-500/40 bg-red-950/60 text-red-300'
+      badgeColor: isDark 
+        ? 'border-red-500/40 bg-red-950/60 text-red-300' 
+        : 'border-red-300 bg-red-100 text-red-900 font-bold shadow-xs'
     },
     {
       id: 'syndicate',
@@ -129,7 +137,9 @@ export default function AnalystDashboard() {
       sublabel: 'Kraken-09 Attack Ring',
       icon: Network,
       badge: '5 Nodes',
-      badgeColor: 'border-blue-500/40 bg-blue-950/60 text-blue-300'
+      badgeColor: isDark 
+        ? 'border-blue-500/40 bg-blue-950/60 text-blue-300' 
+        : 'border-blue-300 bg-blue-100 text-blue-900 font-bold shadow-xs'
     },
     {
       id: 'pie',
@@ -137,7 +147,9 @@ export default function AnalystDashboard() {
       sublabel: 'SVG Pie & Donut Diagram',
       icon: PieChartIcon,
       badge: '44% / 33% / 22%',
-      badgeColor: 'border-cyan-500/40 bg-cyan-950/60 text-cyan-300'
+      badgeColor: isDark 
+        ? 'border-cyan-500/40 bg-cyan-950/60 text-cyan-300' 
+        : 'border-sky-300 bg-sky-100 text-sky-900 font-bold shadow-xs'
     },
     {
       id: 'temporal',
@@ -145,7 +157,9 @@ export default function AnalystDashboard() {
       sublabel: '7-Day Cycles & 24h Area Graph',
       icon: Calendar,
       badge: 'Peak 9/hr',
-      badgeColor: 'border-purple-500/40 bg-purple-950/60 text-purple-300'
+      badgeColor: isDark 
+        ? 'border-purple-500/40 bg-purple-950/60 text-purple-300' 
+        : 'border-purple-300 bg-purple-100 text-purple-900 font-bold shadow-xs'
     },
     {
       id: 'legal',
@@ -153,7 +167,9 @@ export default function AnalystDashboard() {
       sublabel: 'Affidavit Builder & Takedown',
       icon: Scale,
       badge: 'Ready',
-      badgeColor: 'border-emerald-500/40 bg-emerald-950/60 text-emerald-300'
+      badgeColor: isDark 
+        ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-300' 
+        : 'border-emerald-300 bg-emerald-100 text-emerald-900 font-bold shadow-xs'
     },
     {
       id: 'all',
@@ -161,7 +177,9 @@ export default function AnalystDashboard() {
       sublabel: 'All Visual Components',
       icon: LayoutGrid,
       badge: 'Full Canvas',
-      badgeColor: 'border-slate-600 bg-slate-900 text-slate-300'
+      badgeColor: isDark 
+        ? 'border-slate-600 bg-slate-900 text-slate-300' 
+        : 'border-slate-300 bg-slate-100 text-slate-800 font-bold shadow-xs'
     }
   ];
 
@@ -171,50 +189,82 @@ export default function AnalystDashboard() {
       {/* ============================================================ */}
       {/* TOP COMMAND HEADER & TELEMETRY STRIP                          */}
       {/* ============================================================ */}
-      <div className="p-5 rounded-2xl bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className={`p-5 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all duration-300 ${
+        isDark 
+          ? 'bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl' 
+          : 'bg-white border border-slate-300 shadow-sm'
+      }`}>
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold mb-2 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
-            <ShieldAlert className="w-3.5 h-3.5 text-cyan-400" />
+          <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold mb-2 transition ${
+            isDark 
+              ? 'bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]'
+              : 'bg-sky-100 border border-sky-300 text-sky-950 shadow-xs'
+          }`}>
+            <ShieldAlert className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-sky-700'}`} />
             <span>ROLE 1: SECURITY ANALYST FORENSIC WORKSPACE (/analyst)</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+          <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3 ${
+            isDark ? 'text-white' : 'text-slate-900'
+          }`}>
             <span>Threat Triage &amp; Visual Evidence Engine</span>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-900/40 border border-blue-500/40 text-blue-300 font-mono font-semibold">
+            <span className={`text-xs px-2.5 py-1 rounded-full font-mono font-semibold transition ${
+              isDark 
+                ? 'bg-blue-900/40 border border-blue-500/40 text-blue-300'
+                : 'bg-blue-100 border border-blue-300 text-blue-950 shadow-xs font-bold'
+            }`}>
               Tenant: {currentBrand.name}
             </span>
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
+          <p className={`text-sm sm:text-base mt-1.5 max-w-3xl leading-relaxed ${
+            isDark ? 'text-slate-300' : 'text-slate-600'
+          }`}>
             Select any module from the <strong>Dashboard Toggle</strong> on the left to display its dedicated workspace on the right.
           </p>
         </div>
 
         {/* Real-time Telemetry Indicators */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
-            <div className="text-xl font-bold text-cyan-400 font-mono">14 Alerts</div>
-            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
-              <Zap className="w-3 h-3 text-cyan-400" /> Active Queue
+          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
+            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+          }`}>
+            <div className={`text-xl font-bold font-mono ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>14 Alerts</div>
+            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              <Zap className={`w-3 h-3 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} /> Active Queue
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
-            <div className="text-xl font-bold text-emerald-400 font-mono">&lt; 2.4 min</div>
-            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
-              <Clock className="w-3 h-3 text-emerald-400" /> MTTD Speed
+          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
+            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+          }`}>
+            <div className={`text-xl font-bold font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>&lt; 2.4 min</div>
+            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              <Clock className={`w-3 h-3 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} /> MTTD Speed
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
-            <div className="text-xl font-bold text-amber-400 font-mono">2 Rings</div>
-            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
-              <Network className="w-3 h-3 text-amber-400" /> Syndicates
+          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
+            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+          }`}>
+            <div className={`text-xl font-bold font-mono ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>2 Rings</div>
+            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              <Network className={`w-3 h-3 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Syndicates
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
-            <div className="text-xl font-bold text-purple-400 font-mono">96.8%</div>
-            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
-              <Sparkles className="w-3 h-3 text-purple-400" /> Diff Accuracy
+          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
+            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+          }`}>
+            <div className={`text-xl font-bold font-mono ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>96.8%</div>
+            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              <Sparkles className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} /> Diff Accuracy
             </div>
           </div>
         </div>
@@ -226,19 +276,31 @@ export default function AnalystDashboard() {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         
         {/* ========================================================== */}
-        {/* LEFT: DASHBOARD MODULE TOGGLE DRAWER (~320px)              */}
+        {/* LEFT: DASHBOARD MODULE TOGGLE DRAWER (~390px - NO TRUNCATION) */}
         {/* ========================================================== */}
-        <div className="w-full lg:w-[330px] shrink-0 space-y-4">
+        <div className="w-full lg:w-[390px] shrink-0 space-y-4">
           
-          <div className="p-4 rounded-2xl bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-3">
+          <div className={`p-4 rounded-2xl transition-all duration-300 ${
+            isDark 
+              ? 'bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl' 
+              : 'bg-white border border-slate-300 shadow-sm'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b mb-3 ${
+              isDark ? 'border-slate-800/80' : 'border-slate-200'
+            }`}>
               <div className="flex items-center gap-2">
-                <LayoutGrid className="w-4 h-4 text-cyan-400" />
-                <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
+                <LayoutGrid className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
+                <h2 className={`text-xs font-mono font-bold uppercase tracking-wider ${
+                  isDark ? 'text-cyan-300' : 'text-slate-900'
+                }`}>
                   Dashboard Modules
                 </h2>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border ${
+                isDark 
+                  ? 'bg-slate-900 border-slate-800 text-slate-400' 
+                  : 'bg-slate-100 border-slate-300 text-slate-700'
+              }`}>
                 8 Views
               </span>
             </div>
@@ -256,23 +318,37 @@ export default function AnalystDashboard() {
                     onClick={() => setActiveModule(mod.id)}
                     className={`w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer group ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-900/60 to-cyan-950/40 border-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.25)] text-white'
-                        : 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 hover:border-slate-700'
+                        ? isDark
+                          ? 'bg-gradient-to-r from-blue-900/60 to-cyan-950/40 border-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.25)] text-white'
+                          : 'bg-blue-50 border-blue-600 text-blue-950 shadow-xs ring-1 ring-blue-500/50'
+                        : isDark
+                        ? 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 hover:border-slate-700'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`p-2 rounded-lg border shrink-0 transition-colors ${
                         isActive
-                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 group-hover:text-cyan-400'
+                          ? isDark
+                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                            : 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                          : isDark
+                          ? 'bg-slate-900 border-slate-800 text-slate-400 group-hover:text-cyan-400'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 group-hover:text-blue-600'
                       }`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className={`text-xs font-bold truncate ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                        <div className={`text-xs font-bold ${
+                          isActive 
+                            ? isDark ? 'text-white' : 'text-blue-950' 
+                            : isDark ? 'text-slate-300' : 'text-slate-800'
+                        }`}>
                           {mod.name}
                         </div>
-                        <div className="text-[10px] text-slate-500 truncate">
+                        <div className={`text-[10px] ${
+                          isDark ? 'text-slate-500' : 'text-slate-500 font-medium'
+                        }`}>
                           {mod.sublabel}
                         </div>
                       </div>
@@ -283,7 +359,9 @@ export default function AnalystDashboard() {
                         {mod.badge}
                       </span>
                       <ChevronRight className={`w-3.5 h-3.5 transition-transform ${
-                        isActive ? 'text-cyan-400 translate-x-0.5' : 'text-slate-600'
+                        isActive 
+                          ? isDark ? 'text-cyan-400 translate-x-0.5' : 'text-blue-600 translate-x-0.5' 
+                          : 'text-slate-400'
                       }`} />
                     </div>
                   </button>
@@ -293,12 +371,22 @@ export default function AnalystDashboard() {
           </div>
 
           {/* ACTIVE TARGET SELECTOR QUICK CARD */}
-          <div className="p-4 rounded-2xl bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl space-y-2.5">
+          <div className={`p-4 rounded-2xl transition-all duration-300 space-y-2.5 ${
+            isDark 
+              ? 'bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl' 
+              : 'bg-white border border-slate-300 shadow-sm'
+          }`}>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-cyan-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-amber-400" /> Active Threat Target
+              <span className={`text-[11px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                isDark ? 'text-cyan-300' : 'text-slate-900'
+              }`}>
+                <Flame className={`w-3.5 h-3.5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Active Threat Target
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/80 border border-red-500/40 text-red-300 font-bold">
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
+                isDark 
+                  ? 'bg-red-950/80 border-red-500/40 text-red-300' 
+                  : 'bg-rose-100 border-rose-300 text-rose-950 shadow-xs'
+              }`}>
                 {activeThreat.id}
               </span>
             </div>
@@ -306,7 +394,11 @@ export default function AnalystDashboard() {
             <select
               value={selectedThreatId}
               onChange={(e) => setSelectedThreatId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
+              className={`w-full rounded-xl px-3 py-2 text-xs focus:outline-none cursor-pointer font-mono border transition ${
+                isDark 
+                  ? 'bg-slate-950 border-slate-800 text-white focus:border-cyan-500' 
+                  : 'bg-white border-slate-300 text-slate-900 focus:border-blue-600 shadow-xs font-semibold'
+              }`}
             >
               {brandThreats.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -315,11 +407,13 @@ export default function AnalystDashboard() {
               ))}
             </select>
 
-            <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] font-mono space-y-1">
-              <div className="text-white font-bold truncate">{activeThreat.suspectName}</div>
-              <div className="text-slate-400 flex items-center justify-between text-[10px]">
+            <div className={`p-2.5 rounded-xl border text-[11px] font-mono space-y-1 ${
+              isDark ? 'bg-slate-950/70 border-slate-800 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'
+            }`}>
+              <div className={`font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{activeThreat.suspectName}</div>
+              <div className={`flex items-center justify-between text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <span>Platform: {activeThreat.platform}</span>
-                <span className="text-cyan-400 font-bold">Match: {activeThreat.logoMatchPercent}%</span>
+                <span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>Match: {activeThreat.logoMatchPercent}%</span>
               </div>
             </div>
           </div>
@@ -332,27 +426,37 @@ export default function AnalystDashboard() {
         <div className="flex-1 w-full min-w-0 space-y-4">
           
           {/* Breadcrumb / Context Ribbon */}
-          <div className="p-3.5 rounded-xl bg-[#071120]/90 backdrop-blur-xl border border-blue-500/20 shadow-md flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-            <div className="flex items-center gap-2 text-slate-300">
-              <span className="text-slate-500">Analyst Workspace</span>
-              <span>/</span>
-              <span className="text-cyan-400 font-bold">
+          <div className={`p-3.5 rounded-xl border shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs font-mono transition ${
+            isDark 
+              ? 'bg-[#071120]/90 backdrop-blur-xl border-blue-500/20' 
+              : 'bg-white border-slate-300'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className={isDark ? 'text-slate-500' : 'text-slate-400'}>Analyst Workspace</span>
+              <span className={isDark ? 'text-slate-600' : 'text-slate-300'}>/</span>
+              <span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>
                 {dashboardModules.find(m => m.id === activeModule)?.name}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-slate-400">
+              <div className={`flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <span>Inspecting:</span>
-                <span className="text-white font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                <span className={`font-bold px-2 py-0.5 rounded border font-mono ${
+                  isDark ? 'text-white bg-slate-900 border-slate-800' : 'text-slate-900 bg-slate-100 border-slate-300'
+                }`}>
                   {activeThreat.suspectHandle}
                 </span>
               </div>
-              <div className="h-4 w-px bg-slate-800" />
+              <div className={`h-4 w-px ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`} />
               <button
                 type="button"
                 onClick={() => loginAsRole('legal')}
-                className="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1 cursor-pointer font-bold"
+                className={`px-2.5 py-1 rounded-lg border transition flex items-center gap-1 cursor-pointer font-bold ${
+                  isDark 
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30' 
+                    : 'bg-amber-100 text-amber-950 border-amber-300 hover:bg-amber-200 shadow-xs'
+                }`}
               >
                 <Scale className="w-3.5 h-3.5" />
                 <span>Jump to Legal Desk</span>
@@ -366,74 +470,104 @@ export default function AnalystDashboard() {
             
             {/* 1. THREAT RADAR & INGESTION FEED */}
             {activeModule === 'radar' && (
-              <div className="p-5 rounded-2xl bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+              <div className={`p-5 rounded-2xl space-y-5 transition-all duration-300 ${
+                isDark 
+                  ? 'bg-[#071120]/90 backdrop-blur-xl border border-blue-500/30 shadow-2xl' 
+                  : 'bg-white border border-slate-300 shadow-sm'
+              }`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b ${
+                  isDark ? 'border-slate-800/80' : 'border-slate-200'
+                }`}>
                   <div>
                     <div className="flex items-center gap-2">
-                      <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                      <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-cyan-300">
+                      <Radio className={`w-4 h-4 animate-pulse ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
+                      <h2 className={`text-sm font-mono font-bold uppercase tracking-wider ${
+                        isDark ? 'text-cyan-300' : 'text-slate-900'
+                      }`}>
                         Multi-Signal Threat Radar &amp; Ingestion Stream
                       </h2>
                     </div>
-                    <p className="text-xs text-slate-300 mt-0.5">
+                    <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                       Real-time cross-platform radar ingesting suspicious profiles, domains, and app packages.
                     </p>
                   </div>
 
                   {/* Search Bar */}
                   <div className="relative w-full sm:w-72">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Search className={`w-4 h-4 absolute left-3 top-2.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search handles, domains, APKs..."
-                      className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                      className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none border transition ${
+                        isDark 
+                          ? 'bg-slate-950/90 border-slate-800 text-white placeholder-slate-500 focus:border-cyan-500' 
+                          : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 shadow-xs'
+                      }`}
                     />
                   </div>
                 </div>
 
                 {/* Vector Filter Bar */}
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="text-slate-400 text-xs font-mono mr-1 flex items-center gap-1">
+                  <span className={`text-xs font-mono mr-1 flex items-center gap-1 ${
+                    isDark ? 'text-slate-400' : 'text-slate-600'
+                  }`}>
                     <Filter className="w-3.5 h-3.5" /> Filter:
                   </span>
                   <button
                     onClick={() => setVectorFilter('all')}
-                    className={`px-3 py-1.5 rounded-lg border font-mono transition ${
+                    className={`px-3 py-1.5 rounded-lg border font-mono transition font-bold ${
                       vectorFilter === 'all'
-                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? isDark 
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm' 
+                          : 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : isDark 
+                        ? 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white' 
+                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     All Vectors ({brandThreats.length})
                   </button>
                   <button
                     onClick={() => setVectorFilter('social')}
-                    className={`px-3 py-1.5 rounded-lg border font-mono transition ${
+                    className={`px-3 py-1.5 rounded-lg border font-mono transition font-bold ${
                       vectorFilter === 'social'
-                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? isDark 
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm' 
+                          : 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : isDark 
+                        ? 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white' 
+                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Social Handles ({brandThreats.filter(t => t.channel === 'Social Profile').length})
                   </button>
                   <button
                     onClick={() => setVectorFilter('domain')}
-                    className={`px-3 py-1.5 rounded-lg border font-mono transition ${
+                    className={`px-3 py-1.5 rounded-lg border font-mono transition font-bold ${
                       vectorFilter === 'domain'
-                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/50 shadow-sm'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? isDark 
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/50 shadow-sm' 
+                          : 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : isDark 
+                        ? 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white' 
+                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Phishing Domains ({brandThreats.filter(t => t.channel === 'Phishing Website' || t.channel === 'Phishing Domain').length})
                   </button>
                   <button
                     onClick={() => setVectorFilter('apk')}
-                    className={`px-3 py-1.5 rounded-lg border font-mono transition ${
+                    className={`px-3 py-1.5 rounded-lg border font-mono transition font-bold ${
                       vectorFilter === 'apk'
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? isDark 
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm' 
+                          : 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : isDark 
+                        ? 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white' 
+                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Rogue APKs ({brandThreats.filter(t => t.channel === 'Rogue Mobile App').length})
@@ -452,47 +586,67 @@ export default function AnalystDashboard() {
                         onClick={() => setSelectedThreatId(threat.id)}
                         className={`p-4 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
                           isSelected
-                            ? 'bg-gradient-to-r from-blue-950/80 to-slate-900 border-cyan-500 shadow-[0_0_16px_rgba(6,182,212,0.25)] ring-1 ring-cyan-500/40'
-                            : 'bg-slate-950/70 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700'
+                            ? isDark
+                              ? 'bg-gradient-to-r from-blue-950/80 to-slate-900 border-cyan-500 shadow-[0_0_16px_rgba(6,182,212,0.25)] ring-1 ring-cyan-500/40'
+                              : 'bg-blue-50 border-blue-600 shadow-md ring-1 ring-blue-500'
+                            : isDark
+                            ? 'bg-slate-950/70 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700'
+                            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-xs'
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between gap-2 mb-2">
                             <div className="flex items-center gap-2">
                               <div className={`p-1.5 rounded-lg border ${
-                                isSelected ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300' : 'bg-slate-900 border-slate-800 text-slate-400'
+                                isSelected 
+                                  ? isDark ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300' : 'bg-blue-600 border-blue-600 text-white'
+                                  : isDark ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
                               }`}>
                                 {renderPlatformIcon(threat.platform, "w-4 h-4")}
                               </div>
-                              <span className="text-xs font-mono font-bold text-white">
+                              <span className={`text-xs font-mono font-bold ${
+                                isDark ? 'text-white' : 'text-slate-900'
+                              }`}>
                                 {threat.suspectHandle}
                               </span>
                             </div>
 
-                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase border ${
                               isCritical
-                                ? 'bg-red-950/80 text-red-300 border border-red-500/50'
-                                : 'bg-amber-950/80 text-amber-300 border border-amber-500/50'
+                                ? isDark 
+                                  ? 'bg-red-950/80 text-red-300 border-red-500/50' 
+                                  : 'bg-rose-100 text-rose-950 border-rose-300 shadow-xs'
+                                : isDark 
+                                ? 'bg-amber-950/80 text-amber-300 border-amber-500/50' 
+                                : 'bg-amber-100 text-amber-950 border-amber-300 shadow-xs'
                             }`}>
                               {isCritical ? 'L4 CRITICAL' : 'L3 HIGH'}
                             </span>
                           </div>
 
-                          <div className="text-xs font-semibold text-slate-200 mb-1">
+                          <div className={`text-xs font-semibold mb-1 ${
+                            isDark ? 'text-slate-200' : 'text-slate-800'
+                          }`}>
                             {threat.suspectName}
                           </div>
 
-                          <p className="text-[11px] text-slate-400 line-clamp-2 italic mb-3">
+                          <p className={`text-[11px] line-clamp-2 italic mb-3 ${
+                            isDark ? 'text-slate-400' : 'text-slate-600'
+                          }`}>
                             "{threat.suspectBio}"
                           </p>
                         </div>
 
-                        <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                          <span className="text-cyan-400 flex items-center gap-1 font-bold">
-                            <Flame className="w-3.5 h-3.5 text-cyan-400" />
+                        <div className={`pt-2 border-t flex items-center justify-between text-[11px] font-mono ${
+                          isDark ? 'border-slate-900 text-slate-400' : 'border-slate-100 text-slate-500'
+                        }`}>
+                          <span className={`flex items-center gap-1 font-bold ${
+                            isDark ? 'text-cyan-400' : 'text-blue-700'
+                          }`}>
+                            <Flame className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
                             Logo Diff: {threat.logoMatchPercent}%
                           </span>
-                          <span className="text-slate-500">
+                          <span className={isDark ? 'text-slate-500' : 'text-slate-500'}>
                             Channel: {threat.channel}
                           </span>
                         </div>
@@ -559,58 +713,80 @@ export default function AnalystDashboard() {
 
             {/* 7. STATUTORY LEGAL ESCALATION DOCK */}
             {activeModule === 'legal' && (
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-[#0c1829] to-[#071120] border border-blue-500/40 shadow-2xl space-y-5">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className={`p-6 rounded-2xl border shadow-2xl space-y-5 transition-all duration-300 ${
+                isDark 
+                  ? 'bg-gradient-to-br from-[#0c1829] to-[#071120] border-blue-500/40' 
+                  : 'bg-white border-slate-300 shadow-sm'
+              }`}>
+                <div className={`flex items-center justify-between pb-4 border-b ${
+                  isDark ? 'border-slate-800' : 'border-slate-200'
+                }`}>
                   <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300">
+                    <div className={`p-2 rounded-xl border ${
+                      isDark 
+                        ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' 
+                        : 'bg-amber-100 border-amber-300 text-amber-950 shadow-xs'
+                    }`}>
                       <Scale className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-white">
+                      <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         Statutory Evidence Compilation &amp; Legal Handoff
                       </h3>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         Transfers multi-vector forensic indicators into the Legal Counsel &amp; Takedown Desk.
                       </p>
                     </div>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold">
+                  <span className={`px-3 py-1 rounded-full font-mono text-xs font-bold border ${
+                    isDark 
+                      ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300' 
+                      : 'bg-emerald-100 border-emerald-300 text-emerald-950 shadow-xs'
+                  }`}>
                     EVIDENCE SEALED
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                    <div className="text-[10px] font-mono text-cyan-400 uppercase">Artifact 1</div>
-                    <div className="text-sm font-bold text-white">Visual Logo Heatmap</div>
-                    <div className="text-xs text-slate-400">144-cell matrix showing 92% trademark delta overlap.</div>
+                  <div className={`p-4 rounded-xl border space-y-1 ${
+                    isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className={`text-[10px] font-mono uppercase font-bold ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>Artifact 1</div>
+                    <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Visual Logo Heatmap</div>
+                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>144-cell matrix showing 92% trademark delta overlap.</div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                    <div className="text-[10px] font-mono text-amber-400 uppercase">Artifact 2</div>
-                    <div className="text-sm font-bold text-white">Manifest Permissions</div>
-                    <div className="text-xs text-slate-400">Unverified keystore certificate + READ_SMS exploitation.</div>
+                  <div className={`p-4 rounded-xl border space-y-1 ${
+                    isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className={`text-[10px] font-mono uppercase font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>Artifact 2</div>
+                    <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Manifest Permissions</div>
+                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Unverified keystore certificate + READ_SMS exploitation.</div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                    <div className="text-[10px] font-mono text-blue-400 uppercase">Artifact 3</div>
-                    <div className="text-sm font-bold text-white">Syndicate Topology</div>
-                    <div className="text-xs text-slate-400">5-node Kraken-09 cross-platform campaign correlation.</div>
+                  <div className={`p-4 rounded-xl border space-y-1 ${
+                    isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className={`text-[10px] font-mono uppercase font-bold ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>Artifact 3</div>
+                    <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Syndicate Topology</div>
+                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>5-node Kraken-09 cross-platform campaign correlation.</div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  isDark ? 'bg-blue-950/30 border-blue-500/30' : 'bg-blue-50 border-blue-200'
+                }`}>
                   <div>
-                    <div className="text-xs font-bold text-white">Target Ready for Immediate Legal Dispatch</div>
-                    <div className="text-xs text-slate-300 mt-0.5">
-                      Suspect: <span className="font-mono text-cyan-300 font-bold">{activeThreat.suspectHandle}</span> on {activeThreat.platform}
+                    <div className={`text-xs font-bold ${isDark ? 'text-white' : 'text-blue-950'}`}>Target Ready for Immediate Legal Dispatch</div>
+                    <div className={`text-xs mt-0.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                      Suspect: <span className={`font-mono font-bold ${isDark ? 'text-cyan-300' : 'text-blue-700'}`}>{activeThreat.suspectHandle}</span> on {activeThreat.platform}
                     </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => loginAsRole('legal')}
-                    className="py-3 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition cursor-pointer shrink-0"
+                    className="py-3 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-md transition cursor-pointer shrink-0"
                   >
                     <Scale className="w-4 h-4" />
                     <span>Open Legal Takedown Desk (/legal)</span>

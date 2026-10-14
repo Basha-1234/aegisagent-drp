@@ -27,25 +27,33 @@ export default function AppHeader() {
     analyst: {
       label: 'Security Analyst',
       route: '/analyst',
-      badgeColor: 'border-cyan-500/40 bg-cyan-950/40 text-cyan-400',
+      badgeColor: isDark 
+        ? 'border-cyan-500/40 bg-cyan-950/40 text-cyan-400'
+        : 'border-sky-300 bg-sky-100 text-sky-950 shadow-xs font-bold',
       icon: ShieldAlert
     },
     legal: {
       label: 'Legal Counsel',
       route: '/legal',
-      badgeColor: 'border-amber-500/40 bg-amber-950/40 text-amber-400',
+      badgeColor: isDark
+        ? 'border-amber-500/40 bg-amber-950/40 text-amber-400'
+        : 'border-amber-300 bg-amber-100 text-amber-950 shadow-xs font-bold',
       icon: Scale
     },
     support: {
       label: 'Customer Support',
       route: '/support',
-      badgeColor: 'border-blue-500/40 bg-blue-950/40 text-blue-400',
+      badgeColor: isDark
+        ? 'border-blue-500/40 bg-blue-950/40 text-blue-400'
+        : 'border-blue-300 bg-blue-100 text-blue-950 shadow-xs font-bold',
       icon: Search
     },
     ciso: {
       label: 'CISO / Executive',
       route: '/executive',
-      badgeColor: 'border-emerald-500/40 bg-emerald-950/40 text-emerald-400',
+      badgeColor: isDark
+        ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-400'
+        : 'border-emerald-300 bg-emerald-100 text-emerald-950 shadow-xs font-bold',
       icon: BarChart3
     }
   };
@@ -87,7 +95,7 @@ export default function AppHeader() {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs transition ${
                 isDark 
                   ? 'bg-slate-950/80 border-blue-500/20 hover:border-blue-500/45 text-slate-200' 
-                  : 'bg-slate-50 border-slate-300 hover:border-blue-500 text-slate-800 shadow-sm'
+                  : 'bg-white border-slate-300 hover:border-blue-500 text-slate-900 font-semibold shadow-xs'
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-blue-500" />
@@ -149,7 +157,7 @@ export default function AppHeader() {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold shadow-sm transition ${
                 isDark 
                   ? 'bg-blue-950/40 border-blue-500/35 hover:border-blue-500/60 text-blue-300' 
-                  : 'bg-blue-50 border-blue-200 hover:border-blue-400 text-blue-700'
+                  : 'bg-blue-50 border-blue-300 hover:border-blue-500 text-blue-950 font-bold shadow-xs'
               }`}
               title="Quickly switch operational roles for evaluation"
             >

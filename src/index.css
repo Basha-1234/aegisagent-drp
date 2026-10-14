@@ -14,14 +14,14 @@
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     color-scheme: dark;
-    font-size: 16px; /* Elevated root scaling for crisp readability across both modes */
+    font-size: 16px;
   }
 
   body {
     background-color: var(--bg-deep);
     color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.98rem; /* ~15.7px standard body text */
+    font-size: 0.98rem;
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
@@ -117,77 +117,77 @@
     radial-gradient(circle at 85% 65%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
     linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+  background-size: 100% 100%, 48px 48px, 48px 48px;
 }
 
 /* ============================================================ */
-/* LIGHT MODE: HIGH CONTRAST & DISCIPLINED MONOCHROME TEXT      */
+/* LIGHT MODE: CRISP, HIGH-OPACITY, ZERO-MUDDINESS PALETTE     */
 /* ============================================================ */
 html.light, [data-theme="light"] {
-  --bg-deep: #e8edf3;
+  --bg-deep: #f1f5f9;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
-  --border-subtle: #94a3b8;
-  --border-strong: #475569;
+  --border-subtle: #cbd5e1;
+  --border-strong: #94a3b8;
   --accent-blue: #1d4ed8;
   --accent-sky: #0284c7;
   --accent-glow: rgba(29, 78, 216, 0.15);
   --text-primary: #0f172a;
-  --text-secondary: #1e293b;
-  --text-muted: #475569;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   color-scheme: light;
 }
 
 html.light body {
-  background-color: #e8edf3;
-  color: #0f172a;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
 }
 
-/* Light Mode: High Contrast Outer Panels & Cards */
+/* Light Mode: High Contrast Outer Panels & Cards (100% Solid White, Crisp Slate-300 Borders) */
 html.light .glass-panel {
   background: #ffffff !important;
-  border: 1.5px solid #94a3b8 !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.12), 0 4px 6px -2px rgba(15, 23, 42, 0.06) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04) !important;
 }
 
 html.light .glass-card {
   background: #ffffff !important;
-  border: 1.5px solid #94a3b8 !important;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
 }
 
 html.light .glass-card:hover {
-  border-color: #475569 !important;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.09) !important;
 }
 
-/* Outer Main Card Containers in Light Mode */
+/* Outer Main Card Containers in Light Mode (100% Solid White, Crisp Hairline) */
 html.light [class*="bg-[#071120]"],
 html.light [class*="bg-[#0c1829]"],
 html.light [class*="bg-[#050a14]"] {
   background-color: #ffffff !important;
-  border: 1.5px solid #94a3b8 !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04) !important;
 }
 
 /* Formal Legal Document Canvas in Light Mode */
 html.light [class*="bg-[#030812]"] {
   background-color: #f8fafc !important;
-  border: 1.5px solid #64748b !important;
+  border: 1.5px solid #cbd5e1 !important;
   color: #0f172a !important;
 }
 
-/* Inner Sub-Cards / Feed Tiles / Grid Boxes: High Contrast Crisp Cool Grey */
+/* Inner Sub-Cards / Feed Tiles / Grid Boxes: Crisp Slate-50 with Slate-200 Borders */
 html.light [class*="bg-slate-950"],
 html.light [class*="bg-slate-900"] {
-  background-color: #f1f5f9 !important;
-  border: 1.5px solid #cbd5e1 !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
 html.light [class*="border-slate-800"],
 html.light [class*="border-slate-900"] {
-  border-color: #cbd5e1 !important;
+  border-color: #e2e8f0 !important;
 }
 
 /* Form Inputs, Selects & Textareas in Light Mode */
@@ -195,70 +195,153 @@ html.light input,
 html.light select,
 html.light textarea {
   background-color: #ffffff !important;
-  border: 1.5px solid #64748b !important;
+  border: 1.5px solid #cbd5e1 !important;
   color: #0f172a !important;
-  font-weight: 500;
+  font-weight: 600 !important;
 }
 
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus {
   border-color: #1d4ed8 !important;
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18) !important;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15) !important;
 }
 
-/* Disciplined, Clean Text Colors in Light Mode (No Rainbow Text Clutter) */
-html.light .text-white,
-html.light .text-slate-100 {
-  color: #0f172a !important; /* Bold Obsidian Black */
+/* Eliminate murky dark pills in light mode: 100% Solid Vibrant Pastels with Dark Text */
+html.light [class*="bg-cyan-950"],
+html.light [class*="bg-sky-950"] {
+  background-color: #e0f2fe !important; /* Sky-100 */
+  border: 1.5px solid #38bdf8 !important; /* Sky-400 */
+  color: #0c4a6e !important; /* Sky-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
 }
 
-html.light .text-slate-200,
+html.light [class*="bg-blue-950"],
+html.light [class*="bg-blue-900"] {
+  background-color: #dbeafe !important; /* Blue-100 */
+  border: 1.5px solid #60a5fa !important; /* Blue-400 */
+  color: #1e3a8a !important; /* Blue-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html.light [class*="bg-amber-950"],
+html.light [class*="bg-amber-900"] {
+  background-color: #fef3c7 !important; /* Amber-100 */
+  border: 1.5px solid #f59e0b !important; /* Amber-400 */
+  color: #78350f !important; /* Amber-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html.light [class*="bg-red-950"],
+html.light [class*="bg-red-900"] {
+  background-color: #fee2e2 !important; /* Red-100 */
+  border: 1.5px solid #f87171 !important; /* Red-400 */
+  color: #7f1d1d !important; /* Red-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html.light [class*="bg-emerald-950"],
+html.light [class*="bg-emerald-900"] {
+  background-color: #dcfce7 !important; /* Emerald-100 */
+  border: 1.5px solid #4ade80 !important; /* Emerald-400 */
+  color: #064e3b !important; /* Emerald-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html.light [class*="bg-purple-950"],
+html.light [class*="bg-purple-900"] {
+  background-color: #f3e8ff !important; /* Purple-100 */
+  border: 1.5px solid #c084fc !important; /* Purple-400 */
+  color: #581c87 !important; /* Purple-900/950 */
+  opacity: 1 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+/* Disciplined, High-Contrast Text Colors in Light Mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light strong,
+html.light .font-black {
+  color: #0f172a !important; /* Crisp Obsidian Black */
+}
+
+html.light .text-slate-100,
+html.light .text-slate-200 {
+  color: #0f172a !important;
+}
+
 html.light .text-slate-300 {
-  color: #1e293b !important; /* Deep Charcoal Slate */
+  color: #1e293b !important; /* Deep Slate 800 */
 }
 
 html.light .text-slate-400 {
-  color: #475569 !important; /* Readable Neutral Slate */
+  color: #334155 !important; /* Solid Slate 700 */
 }
 
 html.light .text-slate-500 {
-  color: #64748b !important; /* Crisp Muted Slate */
+  color: #64748b !important; /* Crisp Slate 500 */
 }
 
-/* Standardize Colored Text to Professional High-Contrast Tones */
-html.light .text-cyan-200,
-html.light .text-cyan-300,
-html.light .text-cyan-400 {
-  color: #0369a1 !important; /* Deep Oceanic Blue for readability */
+/* Telemetry & KPI Numbers: High Saturation, High Contrast */
+html.light .text-cyan-400,
+html.light .text-cyan-300 {
+  color: #0284c7 !important; /* Ocean Blue 600 */
 }
 
-html.light .text-amber-200,
-html.light .text-amber-300,
-html.light .text-amber-400 {
-  color: #92400e !important; /* Deep Amber Bronze */
+html.light .text-amber-400,
+html.light .text-amber-300 {
+  color: #b45309 !important; /* Rich Amber 700 */
 }
 
-html.light .text-emerald-200,
-html.light .text-emerald-300,
-html.light .text-emerald-400 {
-  color: #065f46 !important; /* Deep Forest Emerald */
+html.light .text-emerald-400,
+html.light .text-emerald-300 {
+  color: #15803d !important; /* Forest Emerald 700 */
 }
 
-/* Active Highlight Pill in Light Mode */
-html.light .bg-gradient-to-r.from-blue-900\/60,
-html.light .bg-gradient-to-r.from-amber-950\/60 {
-  background: #eff6ff !important;
-  border-color: #2563eb !important;
-  color: #1e40af !important;
+html.light .text-purple-400,
+html.light .text-purple-300 {
+  color: #7e22ce !important; /* Royal Purple 700 */
+}
+
+html.light .text-blue-400,
+html.light .text-blue-300 {
+  color: #1d4ed8 !important; /* Royal Blue 700 */
+}
+
+/* Action Buttons with Solid Backgrounds: ALWAYS Pure White Text */
+html.light .cobalt-button,
+html.light .cobalt-button *,
+html.light [class*="bg-blue-600"] span,
+html.light [class*="bg-blue-600"],
+html.light [class*="bg-gradient-to-r from-amber"] span,
+html.light [class*="bg-gradient-to-r from-amber"] {
+  color: #ffffff !important;
+}
+
+/* SVG Chart Elements in Light Mode */
+html.light svg circle[stroke="#0f172a"] {
+  stroke: #e2e8f0 !important;
 }
 
 /* Enterprise Grid in Light Mode */
 html.light .bg-enterprise-grid {
-  background-color: #e8edf3;
+  background-color: #f1f5f9;
   background-image: 
     radial-gradient(circle at 35% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 55%),
-    linear-gradient(to right, rgba(148, 163, 184, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.18) 1px, transparent 1px);
+    linear-gradient(to right, rgba(148, 163, 184, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.2) 1px, transparent 1px);
   background-size: 100% 100%, 48px 48px, 48px 48px;
 }

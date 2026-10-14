@@ -77,41 +77,48 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-enterprise-grid flex flex-col items-center justify-center p-4 sm:p-6 relative selection:bg-emerald-500 selection:text-black">
+    <div className="min-h-screen bg-enterprise-grid flex flex-col items-center justify-center p-4 sm:p-6 relative selection:bg-blue-500 selection:text-white">
       
-      {/* Subtle Top Ambient Banner */}
-      <div className="absolute top-6 flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-medium backdrop-blur-md">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+      {/* Top Ambient Corporate Badge */}
+      <div className="absolute top-6 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-950/40 border border-blue-500/25 text-blue-400 text-xs font-mono font-medium backdrop-blur-md shadow-sm">
+        <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
         <span>ENTERPRISE DIGITAL RISK PROTECTION GATEWAY</span>
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center">
         
-        {/* 3D Shield Emblem Overhanging */}
-        <div className="mb-[-28px] z-20 transition-transform duration-300 hover:scale-105 cursor-pointer">
-          <AegisShieldLogo size={76} />
+        {/* 3D Cobalt Faceted Shield Emblem Overhanging */}
+        <div className="mb-[-38px] z-20 transition-transform duration-300 hover:scale-105 cursor-pointer filter drop-shadow-[0_15px_30px_rgba(37,99,235,0.35)]">
+          <AegisShieldLogo size={104} />
         </div>
 
         {/* Main Frosted Glass Card Container */}
-        <div className="w-full glass-panel rounded-2xl p-6 sm:p-8 pt-11 relative shadow-2xl border border-emerald-500/25">
+        <div className="w-full glass-panel rounded-2xl p-6 sm:p-8 pt-12 relative shadow-2xl border border-blue-500/30">
           
-          {/* Header Typography */}
-          <div className="text-center mb-6">
+          {/* Header Typography Matching Reference Image */}
+          <div className="text-center mb-5">
             <h1 className="text-2xl font-black text-white tracking-tight flex items-center justify-center gap-2">
-              AegisAgent <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">DRP</span>
+              AegisAgent <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/40 font-mono font-bold">DRP</span>
             </h1>
-            <p className="text-xs text-slate-400 mt-1 font-medium">
+            <h2 className="text-lg font-bold text-slate-100 mt-1">Enterprise Threat Command</h2>
+            <p className="text-xs text-slate-400 mt-0.5 font-medium">
               Autonomous Digital Risk Protection: Social & App Monitoring
             </p>
+            
+            {/* Active Tenant Capsule Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.8 rounded-full bg-slate-950/80 border border-blue-500/20 text-[11px] text-slate-300 mt-3 font-mono">
+              <span className="text-slate-500">Tenant:</span>
+              <span className="text-blue-400 font-semibold">QuickPay Technologies</span>
+            </div>
           </div>
 
           {/* Dual-Mode Segmented Tabs */}
-          <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-950/70 border border-emerald-500/20 mb-6 text-xs font-semibold">
+          <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-950/80 border border-blue-500/20 mb-5 text-xs font-semibold">
             <button
               onClick={() => { setActiveTab('signin'); setAuthError(''); }}
               className={`py-2 px-3 rounded-lg transition-all text-center flex items-center justify-center gap-1.5 ${
                 activeTab === 'signin'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                  ? 'bg-blue-600/30 text-blue-300 border border-blue-500/50 shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -122,7 +129,7 @@ export default function AuthPage() {
               onClick={() => { setActiveTab('request'); setAuthError(''); setReqSubmitted(false); }}
               className={`py-2 px-3 rounded-lg transition-all text-center flex items-center justify-center gap-1.5 ${
                 activeTab === 'request'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                  ? 'bg-blue-600/30 text-blue-300 border border-blue-500/50 shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -134,10 +141,6 @@ export default function AuthPage() {
           {/* TAB 1: DIRECT CORPORATE SIGN-IN */}
           {activeTab === 'signin' && (
             <div className="space-y-4">
-              <div className="text-xs font-semibold text-slate-300 pb-1 flex items-center justify-between">
-                <span>Defense Operations Access Portal</span>
-                <span className="text-[11px] text-emerald-400 font-mono">SSO Enabled</span>
-              </div>
 
               {authError && (
                 <div className="p-2.5 rounded-lg bg-red-950/50 border border-red-500/30 text-red-300 text-xs flex items-center gap-2 animate-in fade-in">
@@ -155,15 +158,15 @@ export default function AuthPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Modern corporate email (user@company.com)"
+                      placeholder="Corporate email (user@quickpay.com)"
                       required
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 transition"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/90 border border-blue-500/35 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/50 transition shadow-inner"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 rounded-xl emerald-button text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                    className="w-full py-2.5 px-4 rounded-xl cobalt-button text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                   >
                     <span>Continue with Work Email</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -172,12 +175,12 @@ export default function AuthPage() {
               ) : (
                 /* Step 2: Password / SSO */
                 <form onSubmit={handleFinalSignIn} className="space-y-3.5 animate-in slide-in-from-right-3 duration-200">
-                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-950/60 border border-slate-800 text-xs">
+                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-950/80 border border-slate-800 text-xs">
                     <span className="text-slate-300 font-medium truncate">{email}</span>
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="text-emerald-400 hover:underline text-[11px] font-semibold ml-2 shrink-0"
+                      className="text-blue-400 hover:underline text-[11px] font-semibold ml-2 shrink-0"
                     >
                       Change
                     </button>
@@ -192,18 +195,18 @@ export default function AuthPage() {
                       placeholder="Enter corporate password"
                       required
                       autoFocus
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 transition"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/90 border border-blue-500/35 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/50 transition shadow-inner"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isAuthenticating}
-                    className="w-full py-2.5 px-4 rounded-xl emerald-button text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                    className="w-full py-2.5 px-4 rounded-xl cobalt-button text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                   >
                     {isAuthenticating ? (
                       <span className="flex items-center gap-2">
-                        <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Authenticating Credentials...
                       </span>
                     ) : (
@@ -216,23 +219,24 @@ export default function AuthPage() {
                 </form>
               )}
 
-              {/* 1-Click Demo Persona Quick-Fill */}
+              {/* 1-Click Evaluation Personas Bar */}
               <div className="pt-4 border-t border-slate-800/80">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-emerald-400" />
+                    <Sparkles className="w-3 h-3 text-blue-400" />
                     1-CLICK EVALUATION PERSONAS
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-mono">Demo Mode</span>
+                  <span className="text-[10px] text-blue-400 font-mono">Demo Mode</span>
                 </div>
 
-                {/* Evaluator Explanatory Guidance Box */}
-                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/25 text-[11px] text-emerald-200/90 flex items-start gap-2 mb-3">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                {/* Explanatory Guidance Callout */}
+                <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-500/25 text-[11px] text-blue-200/90 flex items-start gap-2 mb-3">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
                   <span className="leading-snug">
                     <strong className="text-white font-semibold">Evaluation Quick-Access:</strong> Click any role below to instantly log in as that employee and test their dedicated dashboard without typing credentials.
                   </span>
                 </div>
+
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <button
                     type="button"
@@ -291,24 +295,24 @@ export default function AuthPage() {
             <div className="space-y-4">
               <div className="text-xs font-semibold text-slate-300 pb-1 flex items-center justify-between">
                 <span>Employee Onboarding Request</span>
-                <span className="text-[11px] text-amber-400 font-mono">Requires CISO Sign-off</span>
+                <span className="text-[11px] text-blue-400 font-mono">Requires CISO Sign-off</span>
               </div>
 
               {reqSubmitted ? (
-                <div className="p-5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-center space-y-3 animate-in fade-in">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+                <div className="p-5 rounded-xl bg-blue-950/40 border border-blue-500/30 text-center space-y-3 animate-in fade-in">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-400 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-white">Access Request Dispatched!</h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Your request has been routed to the organization CISO (<strong className="text-emerald-400">Elena Rostova</strong>). Once approved, you will receive your role activation credentials.
+                      Your request has been routed to the organization CISO (<strong className="text-blue-400">Elena Rostova</strong>). Once approved, you will receive your role activation credentials.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => { setActiveTab('signin'); setReqSubmitted(false); }}
-                    className="text-xs text-emerald-400 hover:underline font-semibold"
+                    className="text-xs text-blue-400 hover:underline font-semibold"
                   >
                     ← Return to Direct Sign-In
                   </button>
@@ -323,7 +327,7 @@ export default function AuthPage() {
                       onChange={(e) => setReqName(e.target.value)}
                       placeholder="e.g., Rohan Sharma"
                       required
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-blue-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                     />
                   </div>
 
@@ -335,7 +339,7 @@ export default function AuthPage() {
                       onChange={(e) => setReqEmail(e.target.value)}
                       placeholder="rohan.sharma@quickpay.com"
                       required
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-blue-500/30 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                     />
                   </div>
 
@@ -345,7 +349,7 @@ export default function AuthPage() {
                       <select
                         value={reqDept}
                         onChange={(e) => setReqDept(e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white focus:outline-none focus:border-emerald-400"
+                        className="w-full px-2.5 py-2 rounded-xl bg-slate-950/80 border border-blue-500/30 text-xs text-white focus:outline-none focus:border-blue-400"
                       >
                         <option value="Security Operations">Security Ops (SOC)</option>
                         <option value="Legal & IP Compliance">Legal & Compliance</option>
@@ -359,7 +363,7 @@ export default function AuthPage() {
                       <select
                         value={reqRole}
                         onChange={(e) => setReqRole(e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-xs text-white focus:outline-none focus:border-emerald-400"
+                        className="w-full px-2.5 py-2 rounded-xl bg-slate-950/80 border border-blue-500/30 text-xs text-white focus:outline-none focus:border-blue-400"
                       >
                         <option value="analyst">Security Analyst (/analyst)</option>
                         <option value="legal">Legal Counsel (/legal)</option>
@@ -370,7 +374,7 @@ export default function AuthPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 rounded-xl emerald-button text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+                    className="w-full py-2.5 px-4 rounded-xl cobalt-button text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
                   >
                     <span>Submit Request to CISO</span>
                     <Building className="w-3.5 h-3.5" />
@@ -383,9 +387,9 @@ export default function AuthPage() {
         </div>
 
         {/* Bottom Operational Status Pill */}
-        <div className="mt-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/80 border border-emerald-500/20 text-[11px] text-slate-400 shadow-sm backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>System: <strong className="text-emerald-400 font-semibold">All Defense Engines Operational</strong></span>
+        <div className="mt-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/90 border border-blue-500/25 text-[11px] text-slate-400 shadow-sm backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+          <span>System: <strong className="text-blue-400 font-semibold">All Defense Engines Operational</strong></span>
           <span className="text-slate-600">•</span>
           <span className="font-mono text-[10px] text-slate-400">SOC 2 Type II</span>
         </div>

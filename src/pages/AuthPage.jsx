@@ -73,29 +73,23 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#040c1a]">
+    <div 
+      className="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white font-sans bg-[#030814]"
+      style={{
+        zoom: '90%',
+      }}
+    >
       
       {/* 1. Full-Screen Edge-to-Edge Desktop Background of the Shield */}
       <div 
-        className="fixed inset-0 w-full h-full pointer-events-none bg-cover bg-center sm:bg-[center_left_20%] lg:bg-center"
+        className="fixed inset-0 pointer-events-none bg-cover bg-center sm:bg-[center_left_20%] lg:bg-center"
         style={{
           backgroundImage: 'url(/aegis_drp_login_stage_bg.jpg)',
         }}
       />
 
-      {/* 2. FILL THE RIGHT SIDE: Luminous Cobalt & Cyan Ambient Glows to eliminate black void */}
-      <div className="fixed top-1/2 right-[2%] -translate-y-1/2 w-[750px] h-[750px] bg-blue-600/25 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed top-1/4 right-[5%] w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-8 right-[10%] w-[450px] h-[450px] bg-blue-500/20 rounded-full blur-[110px] pointer-events-none" />
-
-      {/* 3. High-Tech Cyber Grid extending across the entire screen and fully illuminating the right side */}
-      <div 
-        className="fixed inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.15) 1px, transparent 1px)`,
-          backgroundSize: '48px 48px',
-        }}
-      />
+      {/* Ambient gradient layer to maintain razor-sharp text contrast */}
+      <div className="fixed inset-0 pointer-events-none bg-gradient-to-r from-transparent via-[#030814]/15 to-[#030814]/55" />
 
       {/* Top Corporate Ribbon */}
       <header className="relative z-20 w-full px-6 sm:px-12 pt-5 flex items-center justify-between">
@@ -119,7 +113,7 @@ export default function AuthPage() {
       </header>
 
       {/* 2. Main Desktop Stage: Quotations below Logo on Left + Enlarged Login Card on Right */}
-      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-8 gap-8 lg:gap-12">
+      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8 lg:gap-12">
         
         {/* LEFT COLUMN: Highly Visible Pure Text Quotation Below Shield (No Background Card) */}
         <div className="w-full lg:max-w-lg lg:mb-4 select-none animate-in fade-in duration-500">

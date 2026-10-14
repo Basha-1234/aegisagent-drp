@@ -153,28 +153,27 @@ export default function ThreatVectorPieChart({ activeFilter, onFilterChange }) {
                     : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-3">
                   <div 
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-950"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-950 shrink-0"
                     style={{ backgroundColor: v.color }}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-200">{v.label}</div>
-                    <div className="text-[10px] text-slate-400">{v.sublabel}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-bold text-slate-200 truncate">{v.label}</div>
+                    <div className="text-[10px] text-slate-400 truncate">{v.sublabel}</div>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <div className="font-mono text-xs font-bold text-white">{v.count} signals</div>
+                <div className="text-right shrink-0">
+                  <div className="font-mono text-xs font-bold text-white whitespace-nowrap">{v.count} signals</div>
                   <div className="font-mono text-[10px] text-slate-400">{v.percentage}%</div>
                 </div>
               </button>
             );
           })}
         </div>
-
       </div>
 
     </div>

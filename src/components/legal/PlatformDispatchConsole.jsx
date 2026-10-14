@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import confetti from 'canvas-confetti';
 import { Send, CheckCircle2, Clock, Globe, Smartphone, AtSign, Zap, ExternalLink, Terminal, ShieldAlert } from 'lucide-react';
 
 export default function PlatformDispatchConsole({ threat, brand }) {
@@ -67,7 +68,12 @@ export default function PlatformDispatchConsole({ threat, brand }) {
     setTimeout(() => {
       setDispatchStatus('success');
       setTicketId(`${currentPlatform.id.toUpperCase()}-CASE-${Math.floor(100000 + Math.random() * 900000)}`);
-    }, 1200);
+      try {
+        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      } catch (e) {
+        // Fallback
+      }
+    }, 1000);
   };
 
   return (

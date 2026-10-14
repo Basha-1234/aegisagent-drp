@@ -45,75 +45,54 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#040812] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden select-none font-sans">
+    <div className="min-h-screen w-full bg-[#030813] flex items-center justify-center p-2 sm:p-6 lg:p-8 relative overflow-hidden select-none font-sans">
       
-      {/* 1. Clear, Uniform Ambient Background (Radial Vignette centered behind the console) */}
+      {/* Outer ambient deep oceanic vignette */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 90% 70% at 50% 50%, #0a1832 0%, #050d1c 45%, #02050c 100%)',
+          background: 'radial-gradient(circle at 50% 50%, #061122 0%, #030814 65%, #01040a 100%)',
         }}
       />
 
-      {/* Subtle fine technical grid overlay for depth */}
+      {/* Main 16:9 High-Tech Command Canvas with Authentic 3D Shield & Clear Background */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-20"
+        className="w-full max-w-[1240px] aspect-[16/9] min-h-[580px] h-auto relative rounded-3xl overflow-hidden shadow-[0_30px_90px_-20px_rgba(0,0,0,0.95)] border border-blue-500/25 flex items-center justify-end p-4 sm:p-8 lg:pr-14"
         style={{
-          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
-          backgroundSize: '40px 40px',
-          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+          backgroundImage: 'url(/aegis_drp_login_stage_bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
-      />
-
-      {/* 2. Main 2-Column Responsive Layout: Perfectly Aligned Shield + Card */}
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 my-auto">
+      >
         
-        {/* LEFT COLUMN: Fully Centered, Uncropped 3D Cobalt & Sapphire Shield */}
-        <div className="lg:col-span-5 flex items-center justify-center relative">
-          <div className="relative w-72 sm:w-88 lg:w-[420px] aspect-square flex items-center justify-center">
-            
-            {/* Soft radiant ambient glow directly centered behind the shield */}
-            <div className="absolute inset-6 bg-blue-500/25 rounded-full blur-3xl pointer-events-none" />
-            
-            {/* The 3D Cobalt Emblem with feathered edge mask so it dissolves 100% into background */}
-            <img 
-              src="/aegis_shield_3d_emblem.jpg" 
-              alt="AegisAgent DRP 3D Cobalt Shield" 
-              className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,102,255,0.45)] transition-transform duration-500 hover:scale-[1.03]"
-              style={{
-                maskImage: 'radial-gradient(circle at 50% 50%, black 72%, transparent 98%)',
-                WebkitMaskImage: 'radial-gradient(circle at 50% 50%, black 72%, transparent 98%)',
-              }}
-            />
-          </div>
-        </div>
+        {/* Subtle vignette layer inside the canvas to keep contrast razor-sharp */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#030814]/30 to-[#030814]/65 pointer-events-none" />
 
-        {/* RIGHT COLUMN: The Clean Frosted Glass Card with Form & Demo Personas */}
-        <div className="lg:col-span-7 w-full max-w-lg mx-auto lg:max-w-none">
-          <div className="relative rounded-3xl p-6 sm:p-8 bg-[#091322]/90 backdrop-blur-2xl border border-blue-500/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]">
+        {/* RIGHT COLUMN: The Frosted Glass Card with Sign-In & Demo Personas */}
+        <div className="w-full max-w-[430px] relative z-20">
+          <div className="relative rounded-3xl p-5 sm:p-7 bg-[#071120]/85 backdrop-blur-2xl border border-blue-500/35 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.9)]">
             
-            {/* Subtle inner top-left glass highlight */}
-            <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent pointer-events-none" />
+            {/* Subtle top edge glass specular highlight */}
+            <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent pointer-events-none" />
 
             {/* Card Header Typography */}
             <div>
-              <div className="text-xs font-semibold text-slate-300 tracking-wide font-sans mb-1">
+              <div className="text-[11px] font-semibold text-slate-300 tracking-wider uppercase font-mono mb-0.5">
                 AegisAgent DRP
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+              <h1 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight leading-snug">
                 Enterprise Threat Command
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">
-                Autonomous Digital Risk Protection: <br className="hidden sm:inline" />Social &amp; App Monitoring
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed font-normal">
+                Autonomous Digital Risk Protection: <br />Social &amp; App Monitoring
               </p>
 
               {/* Active Tenant Capsule with Dropdown */}
-              <div className="relative inline-block mt-3.5">
+              <div className="relative inline-block mt-3">
                 <button
                   type="button"
                   onClick={() => setIsBrandMenuOpen(!isBrandMenuOpen)}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0a1426]/90 border border-blue-500/35 hover:border-blue-400 text-xs transition cursor-pointer group shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a1528]/95 border border-blue-500/40 hover:border-blue-400 text-xs transition cursor-pointer group shadow-sm"
                   title="Switch protected organization tenant"
                 >
                   <span className="text-slate-400">Tenant:</span>
@@ -125,7 +104,7 @@ export default function AuthPage() {
 
                 {/* Tenant Switcher Dropdown */}
                 {isBrandMenuOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-56 rounded-2xl bg-[#091120] border border-blue-500/40 shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 backdrop-blur-xl">
+                  <div className="absolute left-0 top-full mt-2 w-56 rounded-2xl bg-[#081224] border border-blue-500/40 shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 backdrop-blur-xl">
                     <div className="px-2 py-1 text-[10px] font-mono text-blue-400 uppercase tracking-wider">
                       Select Monitored Organization
                     </div>
@@ -153,10 +132,10 @@ export default function AuthPage() {
             </div>
 
             {/* Interactive SSO Login Form */}
-            <form onSubmit={handleSignIn} className="mt-5 space-y-3">
+            <form onSubmit={handleSignIn} className="mt-4 space-y-2.5">
               {authError && (
-                <div className="p-2.5 rounded-xl bg-red-950/50 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                <div className="p-2 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-400" />
                   <span>{authError}</span>
                 </div>
               )}
@@ -169,7 +148,7 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Corporate email"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-[#091428]/95 border border-blue-500/60 focus:border-blue-400 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_15px_rgba(37,99,235,0.25)] transition font-sans"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0a1528]/95 border border-blue-500/60 focus:border-blue-400 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_12px_rgba(37,99,235,0.2)] transition font-sans"
                 />
               </div>
 
@@ -177,11 +156,11 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isAuthenticating}
-                className="w-full py-3 px-4 rounded-xl bg-[#0066ff] hover:bg-[#1a75ff] active:scale-[0.99] text-white font-semibold text-sm transition shadow-[0_0_25px_rgba(0,102,255,0.45)] hover:shadow-[0_0_35px_rgba(0,102,255,0.7)] flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#0066ff] hover:bg-[#1a75ff] active:scale-[0.99] text-white font-semibold text-xs sm:text-sm transition shadow-[0_0_20px_rgba(0,102,255,0.45)] hover:shadow-[0_0_30px_rgba(0,102,255,0.7)] flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isAuthenticating ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Verifying SSO...</span>
                   </span>
                 ) : (
@@ -191,39 +170,39 @@ export default function AuthPage() {
             </form>
 
             {/* DEMO SECTION BELOW (1-Click Evaluation Personas) */}
-            <div className="mt-6 pt-5 border-t border-slate-800/80">
+            <div className="mt-4 pt-3.5 border-t border-slate-800/80">
               
-              {/* Demo Section Header */}
-              <div className="flex items-center justify-between mb-2.5">
-                <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              {/* Header */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
+                  <Sparkles className="w-3 h-3 text-blue-400" />
                   1-CLICK EVALUATION PERSONAS
                 </span>
-                <span className="text-[10px] text-blue-400 font-mono px-2 py-0.5 rounded-full bg-blue-950/60 border border-blue-800/50">
+                <span className="text-[9px] text-blue-400 font-mono px-2 py-0.5 rounded-full bg-blue-950/70 border border-blue-800/50">
                   Demo Mode
                 </span>
               </div>
 
               {/* Explanatory Popup Banner */}
-              <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-500/25 text-[11px] text-blue-200/90 flex items-start gap-2 mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+              <div className="p-2 rounded-xl bg-blue-950/40 border border-blue-500/25 text-[10.5px] text-blue-200/90 flex items-start gap-1.5 mb-2.5">
+                <Sparkles className="w-3 h-3 text-blue-400 shrink-0 mt-0.5" />
                 <span className="leading-snug">
-                  <strong className="text-white font-semibold">Evaluation Quick-Access:</strong> Click any role below to instantly log in as that employee and test their dedicated dashboard without typing credentials.
+                  <strong className="text-white font-semibold">Evaluation Quick-Access:</strong> Click any role below to instantly log in and test their dedicated dashboard without typing credentials.
                 </span>
               </div>
 
               {/* 4 Role Buttons in 2x2 Grid */}
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
                 
                 {/* 1. Security Analyst */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('analyst')}
-                  className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-cyan-500/60 hover:bg-slate-900 text-left transition group cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-cyan-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
                   <div className="font-bold text-slate-200 group-hover:text-cyan-400 flex items-center justify-between">
                     <span>1. Analyst</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">SOC</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">SOC</span>
                   </div>
                   <div className="text-[10px] text-slate-400 truncate mt-0.5">Alex Chen</div>
                 </button>
@@ -232,11 +211,11 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickRole('legal')}
-                  className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-amber-500/60 hover:bg-slate-900 text-left transition group cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-amber-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
                   <div className="font-bold text-slate-200 group-hover:text-amber-400 flex items-center justify-between">
                     <span>2. Legal</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono">DMCA</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono">DMCA</span>
                   </div>
                   <div className="text-[10px] text-slate-400 truncate mt-0.5">Sarah Vance</div>
                 </button>
@@ -245,11 +224,11 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickRole('support')}
-                  className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-blue-500/60 hover:bg-slate-900 text-left transition group cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-blue-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
                   <div className="font-bold text-slate-200 group-hover:text-blue-400 flex items-center justify-between">
                     <span>3. Support</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">Radar</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">Radar</span>
                   </div>
                   <div className="text-[10px] text-slate-400 truncate mt-0.5">Marcus Brooks</div>
                 </button>
@@ -258,11 +237,11 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickRole('ciso')}
-                  className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/60 hover:bg-slate-900 text-left transition group cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-emerald-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
                   <div className="font-bold text-slate-200 group-hover:text-emerald-400 flex items-center justify-between">
                     <span>4. CISO</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">Admin</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">Admin</span>
                   </div>
                   <div className="text-[10px] text-slate-400 truncate mt-0.5">Elena Rostova</div>
                 </button>

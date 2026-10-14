@@ -91,14 +91,14 @@ export default function AuthPage() {
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
           <span 
-            className="text-xs font-mono font-bold tracking-wider text-cyan-200 uppercase"
+            className="text-xs sm:text-sm font-mono font-bold tracking-wider text-cyan-200 uppercase"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)' }}
           >
             AegisAgent DRP • Enterprise Digital Risk Protection
           </span>
         </div>
         <div 
-          className="hidden sm:flex items-center gap-3 text-xs font-mono text-slate-200 font-semibold"
+          className="hidden sm:flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 font-semibold"
           style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
         >
           <span>SOC 2 Type II Certified</span>
@@ -107,16 +107,16 @@ export default function AuthPage() {
         </div>
       </header>
 
-      {/* 2. Main Desktop Stage: Quotations below Logo on Left + Login Card on Right */}
-      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8">
+      {/* 2. Main Desktop Stage: Quotations below Logo on Left + Enlarged Login Card on Right */}
+      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8 lg:gap-12">
         
         {/* LEFT COLUMN: Highly Visible Pure Text Quotation Below Shield (No Background Card) */}
-        <div className="w-full lg:max-w-lg lg:mb-2 select-none animate-in fade-in duration-500">
+        <div className="w-full lg:max-w-lg lg:mb-4 select-none animate-in fade-in duration-500">
           
           {/* Directive Header & Dot Switcher with High-Contrast Colors */}
-          <div className="flex items-center gap-2.5 mb-2">
+          <div className="flex items-center gap-2.5 mb-2.5">
             <span 
-              className="text-xs font-mono text-cyan-300 tracking-widest uppercase flex items-center gap-1.5 font-bold"
+              className="text-xs sm:text-sm font-mono text-cyan-300 tracking-widest uppercase flex items-center gap-1.5 font-bold"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 14px rgba(0,0,0,0.9)' }}
             >
               <Shield className="w-4 h-4 text-cyan-300" />
@@ -144,7 +144,7 @@ export default function AuthPage() {
 
           {/* High-Visibility Larger Quotation Text */}
           <p 
-            className="text-sm sm:text-base lg:text-[17px] text-white font-bold italic leading-relaxed min-h-[52px] flex items-center tracking-wide"
+            className="text-sm sm:text-base lg:text-[18px] text-white font-bold italic leading-relaxed min-h-[56px] flex items-center tracking-wide"
             style={{ 
               textShadow: '0 2px 8px #000000, 0 0 16px rgba(0,0,0,1), 0 0 24px rgba(2,6,23,1), 0 1px 3px #000000' 
             }}
@@ -154,7 +154,7 @@ export default function AuthPage() {
 
           {/* Citation & Context in Bright Cyan / Crisp Slate */}
           <div 
-            className="mt-2 text-xs sm:text-[13px] font-mono flex items-center gap-2.5 flex-wrap"
+            className="mt-2.5 text-xs sm:text-[13.5px] font-mono flex items-center gap-2.5 flex-wrap"
             style={{ textShadow: '0 2px 6px #000000, 0 0 12px rgba(0,0,0,1)' }}
           >
             <span className="text-cyan-300 font-bold tracking-wide">
@@ -168,44 +168,44 @@ export default function AuthPage() {
 
         </div>
 
-        {/* RIGHT COLUMN: The Frosted Glass Login Card with SSO & Demo Section */}
-        <div className="w-full max-w-[430px]">
-          <div className="relative rounded-3xl p-5 sm:p-7 bg-[#071120]/85 backdrop-blur-2xl border border-blue-500/35 shadow-[0_25px_60px_-10px_rgba(0,0,0,0.9)]">
+        {/* RIGHT COLUMN: The Enlarged Frosted Glass Login Card with SSO & Demo Section */}
+        <div className="w-full max-w-[500px] lg:max-w-[530px]">
+          <div className="relative rounded-3xl p-6 sm:p-8 lg:p-9 bg-[#071120]/88 backdrop-blur-2xl border border-blue-500/35 shadow-[0_30px_70px_-10px_rgba(0,0,0,0.95)]">
             
             {/* Top edge glass specular highlight */}
-            <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent pointer-events-none" />
+            <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent pointer-events-none" />
 
-            {/* Card Header Typography */}
+            {/* Card Header Typography - Increased Sizes */}
             <div>
-              <div className="text-[11px] font-semibold text-slate-300 tracking-wider uppercase font-mono mb-0.5">
+              <div className="text-xs sm:text-sm font-bold text-slate-300 tracking-wider uppercase font-mono mb-1">
                 AegisAgent DRP
               </div>
-              <h1 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight leading-snug">
+              <h1 className="text-3xl sm:text-[32px] lg:text-[34px] font-black text-white tracking-tight leading-tight">
                 Enterprise Threat Command
               </h1>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed font-normal">
+              <p className="text-sm sm:text-[15px] text-slate-300 mt-1.5 leading-relaxed font-normal">
                 Autonomous Digital Risk Protection: <br />Social &amp; App Monitoring
               </p>
 
-              {/* Active Tenant Capsule with Dropdown */}
-              <div className="relative inline-block mt-3">
+              {/* Active Tenant Capsule with Dropdown - Enlarged */}
+              <div className="relative inline-block mt-3.5">
                 <button
                   type="button"
                   onClick={() => setIsBrandMenuOpen(!isBrandMenuOpen)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a1528]/95 border border-blue-500/40 hover:border-blue-400 text-xs transition cursor-pointer group shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a1528]/95 border border-blue-500/40 hover:border-blue-400 text-xs sm:text-sm transition cursor-pointer group shadow-sm"
                   title="Switch protected organization tenant"
                 >
                   <span className="text-slate-400">Tenant:</span>
-                  <strong className="text-white font-medium group-hover:text-blue-300 transition">
+                  <strong className="text-white font-semibold group-hover:text-blue-300 transition">
                     {activeBrand.name}
                   </strong>
-                  <ChevronDown className={`w-3.5 h-3.5 text-blue-400 transition-transform ${isBrandMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-blue-400 transition-transform ${isBrandMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Tenant Switcher Dropdown */}
                 {isBrandMenuOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-56 rounded-2xl bg-[#081224] border border-blue-500/40 shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 backdrop-blur-xl">
-                    <div className="px-2 py-1 text-[10px] font-mono text-blue-400 uppercase tracking-wider">
+                  <div className="absolute left-0 top-full mt-2 w-64 rounded-2xl bg-[#081224] border border-blue-500/40 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 backdrop-blur-xl">
+                    <div className="px-2.5 py-1 text-[11px] font-mono text-blue-400 uppercase tracking-wider font-semibold">
                       Select Monitored Organization
                     </div>
                     {BRANDS.map((brand) => (
@@ -216,14 +216,14 @@ export default function AuthPage() {
                           setActiveBrandId(brand.id);
                           setIsBrandMenuOpen(false);
                         }}
-                        className={`w-full px-2.5 py-1.5 rounded-lg text-left text-xs flex items-center justify-between transition ${
+                        className={`w-full px-3 py-2 rounded-xl text-left text-xs sm:text-sm flex items-center justify-between transition ${
                           brand.id === activeBrandId
                             ? 'bg-blue-600/30 text-blue-200 font-semibold'
                             : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
                         }`}
                       >
                         <span className="truncate">{brand.name}</span>
-                        {brand.id === activeBrandId && <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
+                        {brand.id === activeBrandId && <Check className="w-4 h-4 text-blue-400 shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -231,11 +231,11 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Interactive SSO Login Form */}
-            <form onSubmit={handleSignIn} className="mt-4 space-y-2.5">
+            {/* Interactive SSO Login Form - Enlarged Controls */}
+            <form onSubmit={handleSignIn} className="mt-5 space-y-3.5">
               {authError && (
-                <div className="p-2 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-400" />
+                <div className="p-2.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs sm:text-sm flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
                   <span>{authError}</span>
                 </div>
               )}
@@ -248,7 +248,7 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Corporate email"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0a1528]/95 border border-blue-500/60 focus:border-blue-400 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_12px_rgba(37,99,235,0.2)] transition font-sans"
+                  className="w-full px-4 py-3.5 rounded-2xl bg-[#0a1528]/95 border border-blue-500/60 focus:border-blue-400 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_15px_rgba(37,99,235,0.25)] transition font-sans"
                 />
               </div>
 
@@ -256,12 +256,12 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isAuthenticating}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#0066ff] hover:bg-[#1a75ff] active:scale-[0.99] text-white font-semibold text-xs sm:text-sm transition shadow-[0_0_20px_rgba(0,102,255,0.45)] hover:shadow-[0_0_30px_rgba(0,102,255,0.7)] flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-5 rounded-2xl bg-[#0066ff] hover:bg-[#1a75ff] active:scale-[0.99] text-white font-bold text-sm sm:text-base transition shadow-[0_0_25px_rgba(0,102,255,0.5)] hover:shadow-[0_0_35px_rgba(0,102,255,0.75)] flex items-center justify-center gap-2.5 cursor-pointer"
               >
                 {isAuthenticating ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Verifying SSO...</span>
+                  <span className="flex items-center gap-2.5">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Verifying SSO Credentials...</span>
                   </span>
                 ) : (
                   <span>Sign in with Corporate SSO</span>
@@ -269,81 +269,81 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {/* DEMO SECTION BELOW (1-Click Evaluation Personas) */}
-            <div className="mt-4 pt-3.5 border-t border-slate-800/80">
+            {/* DEMO SECTION BELOW (1-Click Evaluation Personas) - Enlarged */}
+            <div className="mt-5 pt-4 border-t border-slate-800/80">
               
               {/* Header */}
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Sparkles className="w-3 h-3 text-blue-400" />
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-xs font-mono text-slate-300 font-semibold flex items-center gap-1.5 uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                   1-CLICK EVALUATION PERSONAS
                 </span>
-                <span className="text-[9px] text-blue-400 font-mono px-2 py-0.5 rounded-full bg-blue-950/70 border border-blue-800/50">
+                <span className="text-[10px] text-blue-400 font-mono px-2.5 py-0.5 rounded-full bg-blue-950/70 border border-blue-800/50 font-semibold">
                   Demo Mode
                 </span>
               </div>
 
               {/* Explanatory Popup Banner */}
-              <div className="p-2 rounded-xl bg-blue-950/40 border border-blue-500/25 text-[10.5px] text-blue-200/90 flex items-start gap-1.5 mb-2.5">
-                <Sparkles className="w-3 h-3 text-blue-400 shrink-0 mt-0.5" />
-                <span className="leading-snug">
-                  <strong className="text-white font-semibold">Evaluation Quick-Access:</strong> Click any role below to instantly log in and test their dedicated dashboard without typing credentials.
+              <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-500/25 text-xs text-blue-200/90 flex items-start gap-2 mb-3 leading-relaxed">
+                <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong className="text-white font-bold">Evaluation Quick-Access:</strong> Click any role below to instantly log in and test their dedicated dashboard without typing credentials.
                 </span>
               </div>
 
-              {/* 4 Role Buttons in 2x2 Grid */}
-              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+              {/* 4 Role Buttons in 2x2 Grid - Enlarged & High Contrast */}
+              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
                 
                 {/* 1. Security Analyst */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('analyst')}
-                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-cyan-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-cyan-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-200 group-hover:text-cyan-400 flex items-center justify-between">
+                  <div className="font-bold text-slate-100 group-hover:text-cyan-400 flex items-center justify-between text-sm sm:text-[15px]">
                     <span>1. Analyst</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">SOC</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono font-bold">SOC</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate mt-0.5">Alex Chen</div>
+                  <div className="text-xs text-slate-400 truncate mt-1">Alex Chen</div>
                 </button>
 
                 {/* 2. Legal Counsel */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('legal')}
-                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-amber-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-amber-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-200 group-hover:text-amber-400 flex items-center justify-between">
+                  <div className="font-bold text-slate-100 group-hover:text-amber-400 flex items-center justify-between text-sm sm:text-[15px]">
                     <span>2. Legal</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono">DMCA</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono font-bold">DMCA</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate mt-0.5">Sarah Vance</div>
+                  <div className="text-xs text-slate-400 truncate mt-1">Sarah Vance</div>
                 </button>
 
                 {/* 3. Customer Support */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('support')}
-                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-blue-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-blue-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-200 group-hover:text-blue-400 flex items-center justify-between">
+                  <div className="font-bold text-slate-100 group-hover:text-blue-400 flex items-center justify-between text-sm sm:text-[15px]">
                     <span>3. Support</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">Radar</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono font-bold">Radar</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate mt-0.5">Marcus Brooks</div>
+                  <div className="text-xs text-slate-400 truncate mt-1">Marcus Brooks</div>
                 </button>
 
                 {/* 4. CISO / Executive */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('ciso')}
-                  className="p-2 rounded-xl bg-slate-950/75 border border-slate-800/90 hover:border-emerald-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-emerald-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-200 group-hover:text-emerald-400 flex items-center justify-between">
+                  <div className="font-bold text-slate-100 group-hover:text-emerald-400 flex items-center justify-between text-sm sm:text-[15px]">
                     <span>4. CISO</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">Admin</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold">Admin</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate mt-0.5">Elena Rostova</div>
+                  <div className="text-xs text-slate-400 truncate mt-1">Elena Rostova</div>
                 </button>
 
               </div>

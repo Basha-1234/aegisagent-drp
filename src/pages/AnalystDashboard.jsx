@@ -183,38 +183,38 @@ export default function AnalystDashboard() {
               Tenant: {currentBrand.name}
             </span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
             Select any module from the <strong>Dashboard Toggle</strong> on the left to display its dedicated workspace on the right.
           </p>
         </div>
 
         {/* Real-time Telemetry Indicators */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-cyan-400 font-mono">14 Alerts</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Zap className="w-2.5 h-2.5 text-cyan-400" /> Active Queue
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-cyan-400 font-mono">14 Alerts</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Zap className="w-3 h-3 text-cyan-400" /> Active Queue
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-emerald-400 font-mono">&lt; 2.4 min</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Clock className="w-2.5 h-2.5 text-emerald-400" /> MTTD Speed
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-emerald-400 font-mono">&lt; 2.4 min</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Clock className="w-3 h-3 text-emerald-400" /> MTTD Speed
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-amber-400 font-mono">2 Rings</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Network className="w-2.5 h-2.5 text-amber-400" /> Syndicates
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-amber-400 font-mono">2 Rings</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Network className="w-3 h-3 text-amber-400" /> Syndicates
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-purple-400 font-mono">96.8%</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-purple-400" /> Diff Accuracy
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-purple-400 font-mono">96.8%</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Sparkles className="w-3 h-3 text-purple-400" /> Diff Accuracy
             </div>
           </div>
         </div>

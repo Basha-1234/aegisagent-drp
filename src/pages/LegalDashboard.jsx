@@ -130,38 +130,38 @@ export default function LegalDashboard() {
               Tenant: {currentBrand.name}
             </span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
             Logged in as <strong>{user?.name || 'Sarah Vance'}</strong> (Head of Legal). Review pre-compiled statutory affidavits citing Rule 3(2)(b) of the Indian IT Rules (2021) and DMCA §512 for 1-click platform API dispatch.
           </p>
         </div>
 
         {/* Legal Telemetry Indicators */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-amber-400 font-mono">12 Cases</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <FileText className="w-2.5 h-2.5 text-amber-400" /> Active Docket
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-amber-400 font-mono">12 Cases</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <FileText className="w-3 h-3 text-amber-400" /> Active Docket
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-emerald-400 font-mono">3.8 Hours</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Clock className="w-2.5 h-2.5 text-emerald-400" /> MTTR Velocity
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-emerald-400 font-mono">3.8 Hours</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Clock className="w-3 h-3 text-emerald-400" /> MTTR Velocity
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-cyan-400 font-mono">91.4%</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <CheckCircle2 className="w-2.5 h-2.5 text-cyan-400" /> Delist Rate
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-cyan-400 font-mono">91.4%</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <CheckCircle2 className="w-3 h-3 text-cyan-400" /> Delist Rate
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[105px]">
-            <div className="text-lg font-black text-purple-400 font-mono">&lt; 60 sec</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold flex items-center justify-center gap-1">
-              <Zap className="w-2.5 h-2.5 text-purple-400" /> API Dispatch
+          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center min-w-[110px]">
+            <div className="text-xl font-bold text-purple-400 font-mono">&lt; 60 sec</div>
+            <div className="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5">
+              <Zap className="w-3 h-3 text-purple-400" /> API Dispatch
             </div>
           </div>
         </div>

@@ -13,7 +13,8 @@
 [![Backend Health](https://img.shields.io/badge/Backend%20Health-Passing%20200%20OK-brightgreen?style=for-the-badge&logo=fastapi&logoColor=white)](https://aegisagent-drp.onrender.com/api/health)
 [![API Documentation](https://img.shields.io/badge/API%20Docs-FastAPI%20Swagger-009688?style=for-the-badge&logo=swagger&logoColor=white)](https://aegisagent-drp.onrender.com/docs)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Basha--1234%2Faegisagent--drp-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Basha-1234/aegisagent-drp)
-[![Automated Tests](https://img.shields.io/badge/Automated%20Tests-48%20Passed%20(100%25)-success?style=for-the-badge)](https://github.com/Basha-1234/aegisagent-drp)
+[![Automated Tests](https://img.shields.io/badge/Automated%20Tests-120%20Passed%20(100%25)-success?style=for-the-badge)](https://github.com/Basha-1234/aegisagent-drp)
+[![Version](https://img.shields.io/badge/Version-2.0.0%20(Round%202%20Delivered)-9333EA?style=for-the-badge)](https://github.com/Basha-1234/aegisagent-drp)
 
 </div>
 
@@ -30,6 +31,46 @@
 | **Source Code Repository** | **GitHub** (Monorepo) | [https://github.com/Basha-1234/aegisagent-drp](https://github.com/Basha-1234/aegisagent-drp) | Public (`main` branch) |
 
 ---
+---
+
+## 🚀 Version 2.0 (Round 2): Prioritized, Evidence-Backed Investigation Queue
+
+AegisAgent DRP **Version 2.0** upgrades the platform directly to fulfill the **Hackathon Round 2 Problem Statement: *"From a List of Suspects to a Prioritized, Evidence-Backed Investigation Queue"*.**
+
+Instead of presenting an unsorted, noisy list of raw detections, Version 2 establishes an intelligent investigation and risk scoring layer where every detection carries an explainable risk score, structured evidence, and an immutable audit trail.
+
+### 🎯 Key Round 2 Capabilities Implemented:
+
+#### 1. Full-Story Detection Data Model (§3.1)
+Every detection record in V2 contains the **5 required core fields**:
+- **Source:** Originating platform (`Instagram`, `X`, `Telegram`, `Android APK`), channel, and suspect URL/identifier.
+- **Suspected Asset:** Account handle, app package namespace (`com.quickpay...`), and registered publisher display identity.
+- **Evidence:** 144-cell visual logo similarity matrix, heuristic behavioral flags (credential theft, 2FA lures), and Android permission risks (`READ_SMS`, `SYSTEM_ALERT_WINDOW`).
+- **Similarity / Risk Score:** Deterministic composite score (`0` to `100`) mapped to severity (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`).
+- **Status:** Full investigation lifecycle states (`NEW`, `INVESTIGATING`, `CONFIRMED_THREAT`, `BENIGN_DISMISSED`, `TAKEDOWN_REQUESTED`).
+
+#### 2. Explainable Multi-Factor Risk Scoring Engine & The 4 Cardinal Rules (§3.2)
+Scoring combines look-alike name similarity (30%), visual resemblance (25%), behavioral indicators (25%), and app store publisher/permission signals (20%) while enforcing the **four mandatory evaluation rules**:
+- **Rule 1 (Official Assets NEVER Flagged):** Official brand assets registered in the Brand Vault are strictly whitelisted and assigned a score of `0` (`OFFICIAL_WHITELISTED`).
+- **Rule 2 (Anti-False-Positive Capping):** Name similarity alone **cannot** classify an asset as malicious; absent corroborating visual or behavioral signals, score is strictly capped at <= 40/100 (`MEDIUM`).
+- **Rule 3 (Missing Evidence Neutrality):** Unobserved evidence attributes are treated as neutral/unknown (`weight = 0`), preserving integrity without artificial inflation or deflation.
+- **Rule 4 (Explainable Attribution):** Scores are fully decomposed into attribution vectors with matched substrings, permission risk matrices, and human-readable rationales in the **Inspect Attribution** modal.
+
+#### 3. Prioritized Investigation Queue & Lifecycle (§3.3)
+- **Risk-Ranked Sorting:** Defaults to descending composite risk score so critical customer impersonations are triaged first.
+- **Active vs. Closed Filtering:** Setting a threat status to `BENIGN_DISMISSED` or `TAKEDOWN_REQUESTED` automatically removes it from the active priority queue.
+- **Immutable Database Audit Trail:** Every status change inserts an immutable log record capturing reviewer identity, timestamp, action, and rationale, accessible via the **Audit Trail** modal.
+
+#### 4. Bonus 1: One-Click Takedown Report Draft Generator (§5.1)
+- Built-in generator creates pre-filled, RFC-compliant abuse reports containing technical IOCs, infringed brand records, and platform abuse contacts ready for one-click copy and dispatch.
+
+#### 5. Bonus 2: Real-Time High-Risk Threat Alerts Banner (§5.2)
+- Prominent persistent dashboard banner alerting analysts to unreviewed high-risk threats (>= 75 score) with direct jump-to-item navigation.
+
+#### 6. V2 Architectural Security: Safe URL Fetching & Offline URL Comparison Engine
+- **SSRF-Hardened Safe Fetch:** Pinned socket IP transport, bounded deadline timeouts across DNS and streaming, and loopback/private network rejection.
+- **Zero-Network URL Comparison:** Punycode (`xn--`), Unicode homoglyph substitution, misleading subdomains, and registrable domain extraction using an offline Public Suffix List snapshot.
+
 
 ## 📑 Table of Contents
 1. [About the Problem Statement & Researched Threat Scenarios](#1-about-the-problem-statement--researched-threat-scenarios)
@@ -375,7 +416,7 @@ AegisAgent DRP was designed specifically to avoid the scalability bottlenecks th
 - **Decoupled Architecture:** The separation of the React frontend on global edge CDN from the Python FastAPI backend ensures independent horizontal scalability.
 
 ### 6.2 System Reliability & Validation
-- **100% Automated Test Pass Rate:** The entire full-stack codebase is verified by **48 automated unit and integration tests** (27 Vitest frontend tests executing in 268ms + 21 Pytest backend tests executing in 390ms), achieving a 100% pass rate.
+- **100% Automated Test Pass Rate:** The entire full-stack codebase is verified by **120 automated unit and integration tests (85 Pytest backend + 35 Vitest frontend)** (35 Vitest frontend tests executing in 243ms + 85 Pytest backend tests executing in 33s), achieving a 100% pass rate.
 - **Deterministic False-Positive Prevention:** The exclusion gate provides a mathematical guarantee that verified corporate assets are never falsely reported to legal or abuse teams.
 - **Zero-Downtime Static Fallback:** If the backend experiences a free-tier cold start on Render, the frontend gracefully alerts the user while maintaining local responsive UI state.
 
@@ -403,7 +444,7 @@ While the current prototype fully demonstrates the end-to-end detection, triage,
 | **Interactive API Documentation** | [https://aegisagent-drp.onrender.com/docs](https://aegisagent-drp.onrender.com/docs) |
 | **Health Check Endpoint** | [https://aegisagent-drp.onrender.com/api/health](https://aegisagent-drp.onrender.com/api/health) |
 | **GitHub Repository** | [https://github.com/Basha-1234/aegisagent-drp](https://github.com/Basha-1234/aegisagent-drp) |
-| **Automated Test Coverage** | **48 / 48 Passed (100% Pass Rate)** — 27 Vitest + 21 Pytest |
+| **Automated Test Coverage** | **120 / 120 Passed (100% Pass Rate)** — 85 Pytest + 35 Vitest |
 | **Core Innovations** | Deterministic Exclusion Gate, 144-Cell Cosine Logo Matrix, 4 Role Workstations, Rule 3(2)(b) & DMCA Statutory Affidavits, SHA-256 Evidence Dockets |
 
 ---

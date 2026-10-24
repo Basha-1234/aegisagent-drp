@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
-import { Filter, CheckCircle2, Clock, AlertTriangle, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
+import { Filter, CheckCircle2, Clock, AlertTriangle, ShieldCheck, ArrowRight, Zap, RefreshCw } from 'lucide-react';
 
-export default function TakedownEnforcementFunnel({ onSelectStage }) {
-  const [selectedStage, setSelectedStage] = useState('all');
+export default function TakedownEnforcementFunnel({ onSelectStage, selectedStage = 'all', cases = [] }) {
+  // Compute dynamic stage counts if live cases are provided
+  const liveCount = (stageId) => {
+    if (!cases || cases.length === 0) return null;
+    switch (stageId) {
+      case 'triaged':
+        return cases.filter(c => c.status === 'NEW' || c.status === 'INVESTIGATING').length;
+      case 'drafted':
+        return cases.filter(c => c.status === 'CONFIRMED_THREAT').length;
+      case 'dispatched':
+        return cases.filter(c => c.status === 'TAKEDOWN_REQUESTED' || c.status === 'TAKEDOWN_SENT').length;
+      case 'review':
+        return cases.filter(c => c.status === 'TAKEDOWN_REQUESTED').length;
+      case 'delisted':
+        return cases.filter(c => c.status === 'RESOLVED').length;
+      default:
+        return cases.length;
+    }
+  };
 
   const stages = [
     {
       id: 'triaged',
       label: '1. Forensic Ingestion',
-      count: 14,
-      sublabel: 'Verified by SOC Analyst',
+      count: liveCount('triaged') ?? 14,
+      sublabel: 'New & Investigating',
       color: '#38bdf8', // Cyan
       conversion: '100%',
       avgTime: '0.4h'
@@ -17,8 +34,8 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
     {
       id: 'drafted',
       label: '2. Statutory Drafted',
-      count: 11,
-      sublabel: 'DMCA / IT Rules Citing',
+      count: liveCount('drafted') ?? 11,
+      sublabel: 'Confirmed True Positives',
       color: '#60a5fa', // Blue
       conversion: '78.5%',
       avgTime: '1.2h'
@@ -26,8 +43,8 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
     {
       id: 'dispatched',
       label: '3. API Dispatched',
-      count: 8,
-      sublabel: 'Meta / Play / Registrar',
+      count: liveCount('dispatched') ?? 8,
+      sublabel: 'Takedowns Sent/Requested',
       color: '#f59e0b', // Amber
       conversion: '57.1%',
       avgTime: '2.1h'
@@ -35,7 +52,7 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
     {
       id: 'review',
       label: '4. Platform Review',
-      count: 5,
+      count: liveCount('review') ?? 5,
       sublabel: 'Host SLA Awaiting',
       color: '#a855f7', // Purple
       conversion: '35.7%',
@@ -44,8 +61,8 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
     {
       id: 'delisted',
       label: '5. Delisted & Suspended',
-      count: 12,
-      sublabel: 'Confirmed Takedown',
+      count: liveCount('delisted') ?? 12,
+      sublabel: 'Resolved & Terminated',
       color: '#10b981', // Emerald
       conversion: '85.7%',
       avgTime: '4.2h'
@@ -63,14 +80,28 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
               Statutory Takedown Enforcement Funnel
             </h3>
+            {selectedStage !== 'all' && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 border border-amber-500/40 text-amber-300 font-bold">
+                Filtered: {selectedStage.toUpperCase()}
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-300 mt-0.5">
-            Stage-gate legal lifecycle tracking takedowns from analyst handover to confirmed entity delisting.
+            Stage-gate legal lifecycle tracking takedowns from analyst handover to confirmed entity delisting. Click any stage to filter docket.
           </p>
         </div>
 
         {/* Aggregate Telemetry */}
         <div className="flex items-center gap-2">
+          {selectedStage !== 'all' && onSelectStage && (
+            <button
+              type="button"
+              onClick={() => onSelectStage('all')}
+              className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-mono font-bold cursor-pointer"
+            >
+              Reset Filter
+            </button>
+          )}
           <div className="px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
             <div className="text-xs font-mono text-emerald-400 font-bold">91.4%</div>
             <div className="text-[9px] font-mono text-slate-400 uppercase">Success Rate</div>
@@ -90,8 +121,8 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
             <div
               key={stage.id}
               onClick={() => {
-                setSelectedStage(stage.id);
-                onSelectStage && onSelectStage(stage.id);
+                const next = isSelected ? 'all' : stage.id;
+                onSelectStage && onSelectStage(next);
               }}
               className={`p-3.5 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between ${
                 isSelected
@@ -145,7 +176,7 @@ export default function TakedownEnforcementFunnel({ onSelectStage }) {
           <span className="flex items-center gap-1.5 text-cyan-400 font-bold">
             <Zap className="w-3.5 h-3.5" /> Enforcement Pipeline Throughput
           </span>
-          <span className="text-slate-400">50 Total Threat Entities Processed This Month</span>
+          <span className="text-slate-400">{cases.length > 0 ? `${cases.length} Live Cases Monitored` : '50 Total Threat Entities Processed This Month'}</span>
         </div>
 
         <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden flex p-0.5 border border-slate-800">

@@ -4,12 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.config import APP_NAME, APP_VERSION, CORS_ORIGINS
 from backend.app.database import init_db
-from backend.app.routers import health, brands, monitoring, findings, reports
+from backend.app.routers import health, auth, brands, monitoring, findings, reports
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure SQLite database tables and seed brands exist
+    # Startup: ensure SQLite database tables, safe migrations, and bootstrap admin exist
     init_db()
     yield
     # Shutdown logic (if any)
@@ -33,6 +33,7 @@ app.add_middleware(
 
 # Register API Routers
 app.include_router(health.router)
+app.include_router(auth.router)
 app.include_router(brands.router)
 app.include_router(monitoring.router)
 app.include_router(findings.router)

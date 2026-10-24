@@ -12,6 +12,7 @@ from backend.app.services.fixtures import DEMO_SOCIAL_CANDIDATES, DEMO_APP_CANDI
 def _parse_brand_row(row: sqlite3.Row) -> Dict[str, Any]:
     return {
         "id": row["id"],
+        "organization_id": row["organization_id"] if "organization_id" in row.keys() else None,
         "name": row["name"],
         "industry": row["industry"],
         "official_handle": row["official_handle"],
@@ -29,7 +30,8 @@ def execute_monitoring_pipeline(
     brand_id: str,
     channel: str,  # 'social' or 'apps'
     use_demo_fixtures: bool = True,
-    db_conn: Optional[sqlite3.Connection] = None
+    db_conn: Optional[sqlite3.Connection] = None,
+    organization_id: Optional[str] = None
 ) -> Dict[str, Any]:
     conn = db_conn or get_db_connection()
     should_close = db_conn is None
@@ -37,13 +39,17 @@ def execute_monitoring_pipeline(
     try:
         cur = conn.cursor()
 
-        # 1. Fetch brand
-        cur.execute("SELECT * FROM brands WHERE id = ?", (brand_id,))
+        # 1. Fetch brand (tenant-scoped if organization_id provided)
+        if organization_id:
+            cur.execute("SELECT * FROM brands WHERE id = ? AND organization_id = ?", (brand_id, organization_id))
+        else:
+            cur.execute("SELECT * FROM brands WHERE id = ?", (brand_id,))
         brand_row = cur.fetchone()
         if not brand_row:
             raise ValueError(f"Brand with ID '{brand_id}' not found")
 
         brand = _parse_brand_row(brand_row)
+        resolved_org_id = brand.get("organization_id") or organization_id or "org-default-legacy"
 
         # 2. Select candidates
         if channel == "social":
@@ -58,12 +64,13 @@ def execute_monitoring_pipeline(
         cur.execute(
             """
             INSERT INTO monitoring_runs (
-                id, brand_id, channel, status, provenance, is_live,
+                id, organization_id, brand_id, channel, status, provenance, is_live,
                 candidates_scanned, threats_detected, summary_notes, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 run_id,
+                resolved_org_id,
                 brand_id,
                 channel,
                 "PROCESSING",
@@ -109,6 +116,7 @@ def execute_monitoring_pipeline(
 
             finding_data = {
                 "id": finding_id,
+                "organization_id": resolved_org_id,
                 "brand_id": brand_id,
                 "run_id": run_id,
                 "platform": cand["platform"],
@@ -136,16 +144,17 @@ def execute_monitoring_pipeline(
             cur.execute(
                 """
                 INSERT INTO findings (
-                    id, brand_id, run_id, platform, channel, suspect_name,
+                    id, organization_id, brand_id, run_id, platform, channel, suspect_name,
                     suspect_handle, suspect_publisher, suspect_url, suspect_bio,
                     post_captions, followers_count, account_age_days,
                     logo_match_percent, composite_score, severity,
                     review_status, is_official_excluded, reasons,
                     breakdown, provenance, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     finding_data["id"],
+                    finding_data["organization_id"],
                     finding_data["brand_id"],
                     finding_data["run_id"],
                     finding_data["platform"],
@@ -185,6 +194,7 @@ def execute_monitoring_pipeline(
 
         return {
             "id": run_id,
+            "organization_id": resolved_org_id,
             "brand_id": brand_id,
             "channel": channel,
             "status": "COMPLETED",

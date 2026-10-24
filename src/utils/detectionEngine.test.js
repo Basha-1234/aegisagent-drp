@@ -158,3 +158,100 @@ describe('6. Composite Explainable Risk Engine', () => {
     expect(risk.reasons.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('7. Explainable Risk Attribution & Mathematical Decomposition', () => {
+  it('returns structured explanation with exact point attribution', () => {
+    const risk = calculateExplainableRisk({
+      suspectHandle: '@QuickPay_Helpdesk',
+      officialHandle: '@QuickPay',
+      suspectBio: 'Official customer support for refunds and urgent KYC.',
+      postCaptions: ['Click to resolve payment'],
+      suspectUrl: 'https://quickpay-help.top/login',
+      officialDomain: 'quickpay.com',
+      logoMatchPercent: 88,
+      channel: 'Social Profile',
+      brand: mockBrand
+    });
+
+    const exp = risk.explanation;
+    expect(exp).toBeDefined();
+    expect(exp.finalScore).toBeGreaterThanOrEqual(50);
+    expect(exp.severity).toMatch(/^(HIGH|CRITICAL)$/);
+    expect(exp.signals.length).toBeGreaterThanOrEqual(3);
+
+    // Total weight must equal 100%
+    const totalWeight = exp.signals.reduce((acc, s) => acc + s.weightPercent, 0);
+    expect(totalWeight).toBe(100);
+
+    // Each signal has valid points and evidence
+    exp.signals.forEach(s => {
+      expect(s.pointsContributed ?? s.weightedPoints).toBeDefined();
+      expect(s.rawScore).toBeGreaterThanOrEqual(0);
+      expect(s.rawScore).toBeLessThanOrEqual(100);
+      expect(s.evidence.length).toBeGreaterThan(0);
+      expect(s.explanation.length).toBeGreaterThan(0);
+    });
+
+    expect(exp.recommendedAction.length).toBeGreaterThan(15);
+    expect(exp.summary.length).toBeGreaterThan(15);
+  });
+
+  it('strictly caps uncorroborated name similarity at 28/100 (Anti-False-Positive Policy)', () => {
+    const risk = calculateExplainableRisk({
+      suspectHandle: '@QuickPayApp',
+      officialHandle: '@QuickPay',
+      suspectBio: 'General fan community page.',
+      postCaptions: ['Fintech news updates'],
+      suspectUrl: 'https://normalblog.com',
+      officialDomain: 'quickpay.com',
+      logoMatchPercent: 40, // < 70% threshold
+      channel: 'Social Profile',
+      brand: mockBrand
+    });
+
+    expect(risk.compositeScore).toBe(28);
+    expect(risk.severity).toBe('LOW');
+    expect(risk.explanation.isCapped).toBe(true);
+    expect(risk.explanation.capReason).toContain('Anti-False-Positive Policy');
+    expect(risk.explanation.capReason).toContain('Name similarity alone');
+  });
+
+  it('flags dangerous Android permissions in rogue mobile app audits', () => {
+    const result = analyzeAppStoreThreat({
+      suspectAppName: 'QuickPay Quick Cash',
+      suspectPublisher: 'Shady Underground Corp',
+      suspectAppId: 'com.quickpay.cash.fake',
+      officialApps: mockBrand.officialApps,
+      officialBrandName: mockBrand.name,
+      permissions: ['android.permission.READ_SMS', 'android.permission.SYSTEM_ALERT_WINDOW']
+    });
+
+    expect(result.isSuspiciousApp).toBe(true);
+    expect(result.score).toBeGreaterThanOrEqual(80);
+    expect(result.flags.some(f => f.includes('READ_SMS'))).toBe(true);
+    expect(result.flags.some(f => f.includes('SYSTEM_ALERT_WINDOW'))).toBe(true);
+  });
+
+  it('produces 100% deterministic identical outputs for repeated inputs', () => {
+    const input = {
+      suspectHandle: '@QuickPay_Direct_Support',
+      officialHandle: '@QuickPay',
+      suspectBio: 'Direct refund dispatch.',
+      postCaptions: ['DM for immediate reversal'],
+      suspectUrl: 'https://quickpay-refund.xyz',
+      officialDomain: 'quickpay.com',
+      logoMatchPercent: 91,
+      channel: 'Social Profile',
+      brand: mockBrand
+    };
+
+    const res1 = calculateExplainableRisk(input);
+    const res2 = calculateExplainableRisk(input);
+
+    expect(res1.compositeScore).toBe(res2.compositeScore);
+    expect(res1.severity).toBe(res2.severity);
+    expect(res1.explanation.signals).toEqual(res2.explanation.signals);
+    expect(res1.explanation.recommendedAction).toBe(res2.explanation.recommendedAction);
+    expect(res1.explanation.summary).toBe(res2.explanation.summary);
+  });
+});

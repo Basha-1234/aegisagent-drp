@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { BRANDS, INITIAL_THREATS } from '../data/mockData';
 import { api } from '../utils/apiClient';
+import { normalizeFinding } from '../utils/normalizeFinding';
 import {
   isOfficialAsset,
   calculateExplainableRisk
@@ -49,10 +50,34 @@ export default function SupportDashboard() {
   // Options: 'verifier' | 'registry' | 'scripts' | 'radar' | 'all'
   const [activeModule, setActiveModule] = useState('verifier');
 
-  // Brand threats for frontline lookup
-  const brandThreats = useMemo(() => {
-    return INITIAL_THREATS.filter(t => t.brandId === currentBrand.id);
+  // Backend findings state for dynamic cross-dashboard sync
+  const [backendFindings, setBackendFindings] = useState(null);
+  const [isLoadingFindings, setIsLoadingFindings] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      setIsLoadingFindings(true);
+      try {
+        const findings = await api.getFindings({ brandId: currentBrand.id });
+        if (isMounted) setBackendFindings(findings);
+      } catch (err) {
+        if (isMounted) setBackendFindings(null);
+      } finally {
+        if (isMounted) setIsLoadingFindings(false);
+      }
+    }
+    load();
+    return () => { isMounted = false; };
   }, [currentBrand.id]);
+
+  // Brand threats for frontline lookup (dynamic from backend or fallback)
+  const brandThreats = useMemo(() => {
+    if (backendFindings && backendFindings.length > 0) {
+      return backendFindings.map(f => normalizeFinding(f, currentBrand));
+    }
+    return INITIAL_THREATS.filter(t => t.brandId === currentBrand.id).map(t => normalizeFinding(t, currentBrand));
+  }, [backendFindings, currentBrand]);
 
   // Active target selection in quick card
   const [selectedThreatId, setSelectedThreatId] = useState(brandThreats[0]?.id || 'THREAT-RZP-101');

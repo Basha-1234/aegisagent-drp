@@ -192,11 +192,15 @@ def analyze_app_store_threat(
     suspect_publisher: Optional[str],
     suspect_app_id: Optional[str],
     official_apps: List[Dict[str, Any]],
-    official_brand_name: str
+    official_brand_name: str,
+    suspect_bio: Optional[str] = "",
+    post_captions: Optional[List[str]] = None,
+    permissions: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     flags = []
     risk_score = 0
     missing_evidence = []
+    detected_permissions = []
 
     # Check 1: Publisher Discrepancy
     if not suspect_publisher:
@@ -227,10 +231,53 @@ def analyze_app_store_threat(
     else:
         missing_evidence.append("App package identifier unavailable")
 
+    # Check 4: High-Risk Android Permission Audit
+    HIGH_RISK_PERMISSIONS = {
+        "READ_SMS": {
+            "weight": 30,
+            "severity": "CRITICAL",
+            "desc": "Intercepts incoming 2FA SMS tokens and banking OTPs"
+        },
+        "SYSTEM_ALERT_WINDOW": {
+            "weight": 25,
+            "severity": "CRITICAL",
+            "desc": "Draws deceptive overlay injection screens over authentic banking apps"
+        },
+        "BIND_ACCESSIBILITY_SERVICE": {
+            "weight": 30,
+            "severity": "CRITICAL",
+            "desc": "Abuses accessibility service to hijack user screen and keystrokes"
+        },
+        "REQUEST_INSTALL_PACKAGES": {
+            "weight": 20,
+            "severity": "HIGH",
+            "desc": "Silently downloads and installs secondary rogue APK droppers"
+        },
+        "RECEIVE_BOOT_COMPLETED": {
+            "weight": 15,
+            "severity": "HIGH",
+            "desc": "Auto-starts persistent background trojan listener upon device reboot"
+        }
+    }
+
+    text_to_search = f"{suspect_bio or ''} {' '.join(post_captions or [])}".upper()
+    all_perms = [p.upper() for p in (permissions or [])]
+    for perm_key, perm_meta in HIGH_RISK_PERMISSIONS.items():
+        if any(perm_key in p for p in all_perms) or perm_key in text_to_search:
+            detected_permissions.append({
+                "permission": perm_key,
+                "severity": perm_meta["severity"],
+                "description": perm_meta["desc"],
+                "weight": perm_meta["weight"]
+            })
+            flags.append(f"Dangerous Android permission declared: {perm_key} ({perm_meta['desc']})")
+            risk_score += perm_meta["weight"]
+
     return {
         "score": min(100, risk_score),
         "flags": flags,
         "missing_evidence": missing_evidence,
+        "detected_permissions": detected_permissions,
         "is_suspicious_app": risk_score >= 45
     }
 
@@ -319,7 +366,64 @@ def analyze_domain_risk(url: Optional[str] = "", official_domain: str = "") -> D
 
 
 # =========================================================================
-# 7. COMPOSITE EXPLAINABLE RISK ENGINE
+# 7. EXPLANATION SYNTHESIS & RECOMMENDED ACTIONS
+# =========================================================================
+def derive_recommended_action(severity: str, channel: str, signals: List[Dict[str, Any]]) -> str:
+    if severity == "OFFICIAL_WHITELISTED":
+        return "No action required: Authenticated enterprise brand touchpoint whitelisted by zero-trust policy."
+
+    if channel == "Rogue Mobile App":
+        if severity in ["CRITICAL", "HIGH"]:
+            return "Immediate Store Escalation: Dispatch Google Play / APK mirror abuse notice citing unauthorized developer identity and high-risk permission declarations. Blocklist package identifier in enterprise EDR."
+        elif severity == "MEDIUM":
+            return "App Store Monitoring: Request full APK package sample for automated dynamic sandbox analysis; verify developer signing certificate."
+        else:
+            return "Routine Registry Logging: Log package in observation ledger; flag for re-audit if store download counts surge."
+
+    if channel in ["Phishing Website", "Phishing Domain"]:
+        if severity in ["CRITICAL", "HIGH"]:
+            return "Emergency Registrar Takedown: Issue statutory DMCA § 512 / Rule 3(2)(b) notice to hosting provider and domain registrar. Submit URL to Google Safe Browsing and Microsoft SmartScreen."
+        else:
+            return "DNS Surveillance: Monitor DNS A-records and SSL certificate transparency logs for active credential harvester deployment."
+
+    # Social Profile
+    if severity == "CRITICAL":
+        return "Platform Abuse Dispatch: File expedited statutory impersonation complaint to platform abuse desk. Issue immediate customer safety alert regarding active credential/OTP interception."
+    elif severity == "HIGH":
+        return "Legal Enforcement Notice: Dispatch trademark infringement complaint citing brand imitation and deceptive profile bio. Monitor direct messaging activity."
+    elif severity == "MEDIUM":
+        return "Secondary SOC Review: Assign to frontline analyst for 24h activity surveillance. Check for fraudulent giveaway links or customer interaction."
+    else:
+        return "Passive Logging: Entity displays minimal threat indicators. Retain in low-priority observation pool without takedown escalation."
+
+
+def synthesize_explanation_summary(
+    suspect_handle: str,
+    channel: str,
+    composite: int,
+    severity: str,
+    is_capped: bool,
+    signals: List[Dict[str, Any]]
+) -> str:
+    if severity == "OFFICIAL_WHITELISTED":
+        return f"{suspect_handle} is an authenticated official touchpoint. Zero threat risk attributed."
+
+    active_signals = [
+        s for s in signals
+        if s.get("weighted_points", 0) > 0 and s.get("severity") in ["CRITICAL", "HIGH", "MEDIUM"]
+    ]
+    if not active_signals:
+        if is_capped:
+            return f"{suspect_handle} exhibits surface name similarity but zero corroborating threat signals. Risk is strictly capped at {composite}/100 ({severity})."
+        return f"Routine scan for {suspect_handle}: No actionable malicious threat indicators detected."
+
+    top_signals_desc = ", ".join(s["name"] for s in active_signals[:2])
+    cap_text = " (capped by anti-false-positive safety policy)" if is_capped else ""
+    return f"Flagged as {severity} risk ({composite}/100){cap_text} driven primarily by {top_signals_desc}."
+
+
+# =========================================================================
+# 8. COMPOSITE EXPLAINABLE RISK ENGINE
 # =========================================================================
 def calculate_explainable_risk(
     suspect_handle: str,
@@ -335,19 +439,66 @@ def calculate_explainable_risk(
     brand: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
-    Evaluates risk with strict safety constraints:
+    Evaluates risk with strict explainability & safety constraints:
     1. Mandatory check: official brand assets are immediately excluded (0 score).
-    2. Name similarity alone NEVER marks a candidate as malicious.
-    3. Missing evidence is noted as unavailable rather than penalized.
+    2. Exact mathematical attribution: each contributing signal provides actual weighted points.
+    3. Name similarity alone NEVER marks a candidate as malicious (Anti-False-Positive Policy).
+    4. Missing evidence is noted as unavailable rather than penalized.
+    5. Actionable recommended next step tailored to highest contributing signal.
     """
     # 1. Mandatory Official Asset Exclusion
     if brand and is_official_asset(suspect_handle, brand):
+        brand_name = brand.get("name", "the brand")
+        rec_action = derive_recommended_action("OFFICIAL_WHITELISTED", channel, [])
+        summary = synthesize_explanation_summary(suspect_handle, channel, 0, "OFFICIAL_WHITELISTED", False, [])
+
+        empty_signals = [
+            {
+                "id": "asset_exclusion",
+                "name": "Official Brand Whitelist",
+                "weight_percent": 100,
+                "raw_score": 0,
+                "weighted_points": 0.0,
+            "points_contributed": 0.0,
+                "evidence": f"Matches verified enterprise assets registered for {brand_name}",
+                "severity": "SAFE",
+                "direction": "neutral",
+                "explanation": "Verified official brand asset; protected by exclusion policy."
+            }
+        ]
+
+        explanation_payload = {
+            "final_score": 0,
+            "severity": "OFFICIAL_WHITELISTED",
+            "is_official_excluded": True,
+            "is_capped": False,
+            "cap_reason": None,
+            "signals": empty_signals,
+            "recommended_action": rec_action,
+            "summary": summary
+        }
+
         return {
             "composite_score": 0,
             "severity": "OFFICIAL_WHITELISTED",
             "is_official_excluded": True,
-            "breakdown": {"handle_score": 0, "logo_score": 0, "scam_score": 0, "domain_score": 0, "app_score": 0},
-            "reasons": ["Verified Official Brand Asset (Whitelisted by policy)"],
+            "is_capped": False,
+            "cap_reason": None,
+            "breakdown": {
+                "handle_score": 0,
+                "logo_score": 0,
+                "scam_score": 0,
+                "domain_score": 0,
+                "app_score": 0,
+                "signals": empty_signals,
+                "is_capped": False,
+                "cap_reason": None,
+                "recommended_action": rec_action,
+                "summary": summary,
+                "explanation": explanation_payload
+            },
+            "explanation": explanation_payload,
+            "reasons": [f"Verified Official Brand Asset for {brand_name} (Whitelisted by policy)"],
             "lookalike": None
         }
 
@@ -363,34 +514,175 @@ def calculate_explainable_risk(
 
     app_score = 0
     app_flags = []
+    app_audit: Dict[str, Any] = {}
     if channel == "Rogue Mobile App":
         app_audit = analyze_app_store_threat(
             suspect_app_name=suspect_handle,
             suspect_publisher=suspect_publisher,
             suspect_app_id=suspect_url,
             official_apps=official_apps or [],
-            official_brand_name=brand.get("name", "Brand") if brand else "Brand"
+            official_brand_name=brand.get("name", "Brand") if brand else "Brand",
+            suspect_bio=suspect_bio,
+            post_captions=post_captions
         )
         app_score = app_audit["score"]
         app_flags = app_audit["flags"]
 
     effective_handle_score = min(100, handle_sim + (20 if lookalike["is_lookalike"] else 0))
 
-    # Composite Calculation
+    # Signal Attribution Breakdown
+    signals = []
     if channel == "Rogue Mobile App":
-        composite = round(
-            app_score * 0.35 +
-            logo_match_percent * 0.30 +
-            effective_handle_score * 0.20 +
-            scam_score * 0.15
+        # 1. App Store Publisher & Permissions (35%)
+        app_pts = round(app_score * 0.35, 1)
+        app_evidence = "; ".join(app_flags) if app_flags else (
+            "; ".join(app_audit.get("missing_evidence", [])) if app_audit.get("missing_evidence") else "Publisher and package namespace match registered developer"
         )
+        app_sev = "CRITICAL" if app_score >= 70 else ("HIGH" if app_score >= 45 else ("MEDIUM" if app_score >= 20 else "SAFE"))
+        signals.append({
+            "id": "app_store",
+            "name": "App Store Publisher & Permissions",
+            "weight_percent": 35,
+            "raw_score": app_score,
+            "weighted_points": app_pts,
+            "points_contributed": app_pts,
+            "evidence": app_evidence,
+            "severity": app_sev,
+            "direction": "increases_risk" if app_score > 0 else "neutral",
+            "explanation": "Evaluates developer certificate authenticity, namespace squatting, and dangerous permissions (READ_SMS, SYSTEM_ALERT_WINDOW)."
+        })
+
+        # 2. App Icon & Visual Trademark (30%)
+        logo_pts = round(logo_match_percent * 0.30, 1)
+        logo_sev = "CRITICAL" if logo_match_percent >= 85 else ("HIGH" if logo_match_percent >= 70 else ("MEDIUM" if logo_match_percent >= 50 else "LOW"))
+        signals.append({
+            "id": "visual_logo",
+            "name": "App Icon & Visual Trademark",
+            "weight_percent": 30,
+            "raw_score": logo_match_percent,
+            "weighted_points": logo_pts,
+            "points_contributed": logo_pts,
+            "evidence": f"{logo_match_percent}% visual app icon similarity against official trademark",
+            "severity": logo_sev,
+            "direction": "increases_risk" if logo_match_percent >= 50 else "neutral",
+            "explanation": "Unauthorized trademark icon reproduction intended to deceive mobile app store users."
+        })
+
+        # 3. Package & App Name Similarity (20%)
+        handle_pts = round(effective_handle_score * 0.20, 1)
+        handle_evidence = "; ".join(lookalike["explanation"]) if lookalike["explanation"] else f"{handle_sim}% title string similarity to official application name"
+        handle_sev = "HIGH" if effective_handle_score >= 70 else ("MEDIUM" if effective_handle_score >= 40 else "LOW")
+        signals.append({
+            "id": "app_naming",
+            "name": "Package & App Name Similarity",
+            "weight_percent": 20,
+            "raw_score": effective_handle_score,
+            "weighted_points": handle_pts,
+            "points_contributed": handle_pts,
+            "evidence": handle_evidence,
+            "severity": handle_sev,
+            "direction": "increases_risk" if effective_handle_score >= 40 else "neutral",
+            "explanation": "Character squatting and typosquatting targeting official mobile app search queries."
+        })
+
+        # 4. Manifest Intent & Store Description (15%)
+        scam_pts = round(scam_score * 0.15, 1)
+        matched_app_phrases = [p["phrase"] for p in scam_result.get("matched_patterns", [])]
+        scam_evidence = (
+            f"Matched predatory phrases: {', '.join(p['phrase'] for p in scam_result.get('matched_patterns', []))}"
+            if matched_app_phrases
+            else "No predatory scam keywords matched in listing description"
+        )
+        scam_sev = "CRITICAL" if scam_score >= 60 else ("HIGH" if scam_score >= 30 else "SAFE")
+        signals.append({
+            "id": "permissions_scam",
+            "name": "Manifest Intent & Store Description",
+            "weight_percent": 15,
+            "raw_score": scam_score,
+            "weighted_points": scam_pts,
+            "points_contributed": scam_pts,
+            "evidence": scam_evidence,
+            "severity": scam_sev,
+            "direction": "increases_risk" if scam_score > 0 else "neutral",
+            "explanation": "Social engineering and fraudulent promotion copy detected in public app store listing."
+        })
+
+        raw_composite = round(app_score * 0.35 + logo_match_percent * 0.30 + effective_handle_score * 0.20 + scam_score * 0.15)
     else:
-        composite = round(
-            effective_handle_score * 0.30 +
-            logo_match_percent * 0.30 +
-            scam_score * 0.25 +
-            domain_score * 0.15
+        # 1. Handle & Homoglyph Lookalike (30%)
+        handle_pts = round(effective_handle_score * 0.30, 1)
+        handle_evidence = "; ".join(lookalike["explanation"]) if lookalike["explanation"] else f"{handle_sim}% username similarity to official handle {official_handle}"
+        handle_sev = "CRITICAL" if effective_handle_score >= 80 else ("HIGH" if effective_handle_score >= 60 else ("MEDIUM" if effective_handle_score >= 40 else "LOW"))
+        signals.append({
+            "id": "handle_lookalike",
+            "name": "Handle & Homoglyph Lookalike",
+            "weight_percent": 30,
+            "raw_score": effective_handle_score,
+            "weighted_points": handle_pts,
+            "points_contributed": handle_pts,
+            "evidence": handle_evidence,
+            "severity": handle_sev,
+            "direction": "increases_risk" if effective_handle_score >= 40 else "neutral",
+            "explanation": "Evaluates deceptive character swaps, squatting keywords, and edit distance."
+        })
+
+        # 2. Visual Trademark & Logo Diff (30%)
+        logo_pts = round(logo_match_percent * 0.30, 1)
+        logo_sev = "CRITICAL" if logo_match_percent >= 85 else ("HIGH" if logo_match_percent >= 70 else ("MEDIUM" if logo_match_percent >= 50 else "LOW"))
+        signals.append({
+            "id": "visual_logo",
+            "name": "Visual Trademark & Logo Diff",
+            "weight_percent": 30,
+            "raw_score": logo_match_percent,
+            "weighted_points": logo_pts,
+            "points_contributed": logo_pts,
+            "evidence": f"{logo_match_percent}% visual logo similarity against authentic brand trademark",
+            "severity": logo_sev,
+            "direction": "increases_risk" if logo_match_percent >= 50 else "neutral",
+            "explanation": "Unauthorized reproduction of registered visual brand assets across unauthorized profiles."
+        })
+
+        # 3. Scam Intent & Phishing Keywords (25%)
+        scam_pts = round(scam_score * 0.25, 1)
+        scam_evidence = (
+            f"Matched predatory phrases: {', '.join(p['phrase'] for p in scam_result.get('matched_patterns', []))}"
+            if scam_result["matched_patterns"]
+            else "No predatory fraud keywords matched in public profile text"
         )
+        scam_sev = "CRITICAL" if scam_score >= 60 else ("HIGH" if scam_score >= 40 else ("MEDIUM" if scam_score >= 20 else "SAFE"))
+        signals.append({
+            "id": "scam_intent",
+            "name": "Scam Intent & Phishing Keywords",
+            "weight_percent": 25,
+            "raw_score": scam_score,
+            "weighted_points": scam_pts,
+            "points_contributed": scam_pts,
+            "evidence": scam_evidence,
+            "severity": scam_sev,
+            "direction": "increases_risk" if scam_score > 0 else "neutral",
+            "explanation": "NLP detection of social engineering phrases (instant refund, send OTP, urgent KYC)."
+        })
+
+        # 4. Domain Infrastructure & Link Structure (15%)
+        domain_pts = round(domain_score * 0.15, 1)
+        domain_evidence = "; ".join(domain_result["flags"]) if domain_result["flags"] else (
+            "No external landing domain linked" if not suspect_url else "Registered domain structure within normal baseline"
+        )
+        domain_sev = "CRITICAL" if domain_score >= 60 else ("HIGH" if domain_score >= 40 else ("MEDIUM" if domain_score >= 20 else "SAFE"))
+        signals.append({
+            "id": "domain_risk",
+            "name": "Domain Infrastructure & Link Structure",
+            "weight_percent": 15,
+            "raw_score": domain_score,
+            "weighted_points": domain_pts,
+            "points_contributed": domain_pts,
+            "evidence": domain_evidence,
+            "severity": domain_sev,
+            "direction": "increases_risk" if domain_score > 0 else "neutral",
+            "explanation": "Inspects low-reputation scam TLDs (.xyz, .top), typosquatting, and deceptive link structures."
+        })
+
+        raw_composite = round(effective_handle_score * 0.30 + logo_match_percent * 0.30 + scam_score * 0.25 + domain_score * 0.15)
 
     # RULE: Name similarity alone NEVER classifies a candidate as malicious.
     other_evidence_present = (
@@ -400,9 +692,18 @@ def calculate_explainable_risk(
         app_score >= 40 or
         lookalike["has_character_swap"]
     )
-    if not other_evidence_present:
-        # Cap score to low/informational tier
-        composite = min(composite, 28)
+
+    is_capped = False
+    cap_reason = None
+    if not other_evidence_present and raw_composite > 28:
+        composite = 28
+        is_capped = True
+        cap_reason = (
+            f"Score capped from {raw_composite} to 28 by Anti-False-Positive Policy: "
+            "Name similarity alone without corroborating rogue signals (scam keywords, malicious permissions, or trademark infringement) cannot exceed LOW severity tier."
+        )
+    else:
+        composite = min(100, max(0, raw_composite))
 
     severity = "LOW"
     if composite >= 75:
@@ -422,7 +723,7 @@ def calculate_explainable_risk(
         reasons.append(f"{logo_match_percent}% visual logo imitation match")
     if scam_result["matched_patterns"]:
         reasons.append(
-            f"Detected scam phrases: {', '.join(f'\"{p['phrase']}\"' for p in scam_result['matched_patterns'])}"
+            f"Detected scam phrases: {', '.join(p['phrase'] for p in scam_result.get('matched_patterns', []))}"
         )
     if app_flags:
         reasons.extend(app_flags)
@@ -432,17 +733,40 @@ def calculate_explainable_risk(
     if not reasons:
         reasons.append("Routine scan: No high-risk indicators detected on candidate")
 
+    rec_action = derive_recommended_action(severity, channel, signals)
+    summary = synthesize_explanation_summary(suspect_handle, channel, composite, severity, is_capped, signals)
+
+    explanation_payload = {
+        "final_score": composite,
+        "severity": severity,
+        "is_official_excluded": False,
+        "is_capped": is_capped,
+        "cap_reason": cap_reason,
+        "signals": signals,
+        "recommended_action": rec_action,
+        "summary": summary
+    }
+
     return {
         "composite_score": composite,
         "severity": severity,
         "is_official_excluded": False,
+        "is_capped": is_capped,
+        "cap_reason": cap_reason,
         "breakdown": {
             "handle_score": effective_handle_score,
             "logo_score": logo_match_percent,
             "scam_score": scam_score,
             "domain_score": domain_score,
-            "app_score": app_score
+            "app_score": app_score,
+            "signals": signals,
+            "is_capped": is_capped,
+            "cap_reason": cap_reason,
+            "recommended_action": rec_action,
+            "summary": summary,
+            "explanation": explanation_payload
         },
+        "explanation": explanation_payload,
         "lookalike": lookalike,
         "reasons": reasons
     }

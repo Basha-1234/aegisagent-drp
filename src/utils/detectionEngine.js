@@ -1,5 +1,5 @@
-// Core algorithmic detection utilities for BrandGuard AI
-// Aligned with Kampus.VC Digital Risk Protection Evaluation Criteria
+// Core algorithmic detection utilities for BrandGuard AI / AegisAgent DRP
+// Aligned with Kampus.VC Digital Risk Protection Evaluation Criteria & Explainable Risk Scoring
 
 // ==========================================
 // 1. OFFICIAL ASSET EXCLUSION LAYER (Mandatory Rubric Requirement)
@@ -10,26 +10,34 @@ export function isOfficialAsset(suspectIdentifier, brand) {
   const cleanSuspect = suspectIdentifier.toLowerCase().trim().replace(/^@/, '');
   
   // 1. Check official primary handle
-  const cleanOfficialHandle = (brand.officialHandle || '').toLowerCase().trim().replace(/^@/, '');
+  const cleanOfficialHandle = (brand.officialHandle || brand.official_handle || '').toLowerCase().trim().replace(/^@/, '');
   if (cleanSuspect === cleanOfficialHandle) return true;
 
   // 2. Check official support handle
-  const cleanSupportHandle = (brand.supportHandle || '').toLowerCase().trim().replace(/^@/, '');
+  const cleanSupportHandle = (brand.supportHandle || brand.support_handle || '').toLowerCase().trim().replace(/^@/, '');
   if (cleanSuspect === cleanSupportHandle) return true;
 
   // 3. Check official verified handles list
-  if (brand.verifiedHandles && brand.verifiedHandles.some(h => h.toLowerCase().replace(/^@/, '') === cleanSuspect)) {
+  const verified = brand.verifiedHandles || brand.verified_handles || [];
+  if (verified.some(h => h.toLowerCase().replace(/^@/, '').trim() === cleanSuspect)) {
     return true;
   }
 
   // 4. Check official mobile app package IDs
-  if (brand.officialApps && brand.officialApps.some(app => app.appId.toLowerCase() === cleanSuspect || app.appName.toLowerCase() === cleanSuspect)) {
+  const apps = brand.officialApps || brand.official_apps || [];
+  if (apps.some(app => {
+    const appId = (app.appId || app.app_id || '').toLowerCase().trim();
+    const appName = (app.appName || app.app_name || '').toLowerCase().trim();
+    return cleanSuspect === appId || cleanSuspect === appName;
+  })) {
     return true;
   }
 
   // 5. Check official authoritative domains
-  const cleanDomain = (brand.officialDomain || '').toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-  if (cleanSuspect === cleanDomain) return true;
+  const rawDomain = brand.officialDomain || brand.official_domain || '';
+  const cleanDomain = rawDomain.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0].trim();
+  const cleanSuspectDomain = cleanSuspect.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0].trim();
+  if (cleanSuspectDomain === cleanDomain) return true;
 
   return false;
 }
@@ -37,23 +45,21 @@ export function isOfficialAsset(suspectIdentifier, brand) {
 // ==========================================
 // 2. BONUS CREDIT ENGINE: LOOK-ALIKE NAME DETECTION
 // Detects: Character swaps (homoglyphs), Added words, Spacing/delimiter changes
-// Avoids over-flagging normal or legitimate names.
 // ==========================================
 export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHandle) {
-  const suspect = suspectNameOrHandle.toLowerCase().replace(/^@/, '').trim();
-  const official = officialNameOrHandle.toLowerCase().replace(/^@/, '').trim();
+  const suspect = (suspectNameOrHandle || '').toLowerCase().replace(/^@/, '').trim();
+  const official = (officialNameOrHandle || '').toLowerCase().replace(/^@/, '').trim();
 
-  // Common homoglyphs and character swaps
   const charSwapMap = {
     '0': 'o', 'o': '0',
     '1': 'l', 'l': '1', 'i': 'l', 'l': 'i',
     '5': 's', 's': '5',
     '3': 'e', 'e': '3',
     '@': 'a', 'a': '@',
-    'v': 'u', 'vv': 'w'
+    'v': 'u', 'vv': 'w',
+    'ø': 'o', 'ı': 'i'
   };
 
-  // Common squatting added words
   const commonAddedWords = [
     'official', 'support', 'help', 'helpdesk', 'care', 'service', 
     'verify', 'verified', 'secure', 'team', 'desk', 'refund', 
@@ -74,7 +80,7 @@ export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHan
 
   if (!suspect || !official) return variations;
 
-  // Check A: Delimiter / Spacing Changes (e.g. "quick_pay", "quick.pay", "quick-pay")
+  // Check A: Delimiter / Spacing Changes
   const delimiters = ['_', '.', '-', ' '];
   delimiters.forEach(d => {
     if (suspect.includes(d) && !official.includes(d)) {
@@ -94,7 +100,6 @@ export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHan
     if (charSwapMap[ch]) {
       const canonical = charSwapMap[ch];
       const testNormalized = normalizedSuspect.substring(0, i) + canonical + normalizedSuspect.substring(i + 1);
-      // Check if replacing it aligns with official brand stem OR resolves a common squatting word
       if (strippedOfficial.includes(canonical) || commonAddedWords.some(w => testNormalized.includes(w) && !strippedSuspect.includes(w))) {
         swapsFound.push(`${ch} ➔ ${canonical}`);
         normalizedSuspect = testNormalized;
@@ -104,10 +109,10 @@ export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHan
 
   if (swapsFound.length > 0) {
     variations.hasCharacterSwap = true;
-    variations.swappedCharacters = [...new Set(swapsFound)];
+    variations.swappedCharacters = Array.from(new Set(swapsFound));
   }
 
-  // Check C: Added Words Detection (Prefix/Suffix Squatting)
+  // Check C: Squatting Words
   commonAddedWords.forEach(word => {
     if (suspect.includes(word) && !official.includes(word)) {
       variations.hasAddedWords = true;
@@ -115,19 +120,18 @@ export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHan
     }
   });
 
-  // Calculate Look-alike Confidence (Dampened to avoid over-flagging normal names)
+  // Calculate Confidence
   let score = 0;
-  if (normalizedSuspect.includes(strippedOfficial) || strippedOfficial.includes(normalizedSuspect)) {
-    score += 40; // Core brand stem match
+  if (strippedOfficial.includes(normalizedSuspect) || normalizedSuspect.includes(strippedOfficial)) {
+    score += 40;
   }
-
   if (variations.hasCharacterSwap) score += 30;
   if (variations.hasAddedWords) score += 25;
   if (variations.hasDelimiterChanges) score += 15;
 
-  // False-Positive Dampener: If suspect name is extremely long or completely unrelated
+  // Dampener for completely unrelated names
   if (!normalizedSuspect.includes(strippedOfficial) && score < 40) {
-    score = Math.floor(score * 0.3); // dampen down
+    score = Math.floor(score * 0.3);
   }
 
   variations.confidenceScore = Math.min(100, score);
@@ -137,25 +141,25 @@ export function detectLookalikeVariations(suspectNameOrHandle, officialNameOrHan
     variations.explanation.push(`Character swap detected: [${variations.swappedCharacters.join(', ')}]`);
   }
   if (variations.hasAddedWords) {
-    variations.explanation.push(`Added deceptive words: [${variations.detectedAddedWords.join(', ')}]`);
+    variations.explanation.push(`Added deceptive squatting words: [${variations.detectedAddedWords.join(', ')}]`);
   }
   if (variations.hasDelimiterChanges) {
-    variations.explanation.push(`Delimiter/spacing modification using '${variations.delimitersFound.join(', ')}'`);
+    variations.explanation.push(`Delimiter modification using '${variations.delimitersFound.join(', ')}'`);
   }
 
   return variations;
 }
 
 // ==========================================
-// 3. LEVENSHTEIN DISTANCE & NORMALIZED SIMILARITY
+// 3. LEVENSHTEIN DISTANCE METRIC
 // ==========================================
-export function levenshteinDistance(s1, s2) {
-  const a = s1.toLowerCase().trim();
-  const b = s2.toLowerCase().trim();
+export function levenshteinDistance(s1 = '', s2 = '') {
+  const a = (s1 || '').toLowerCase().trim();
+  const b = (s2 || '').toLowerCase().trim();
   const m = a.length;
   const n = b.length;
-  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
 
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
   for (let i = 0; i <= m; i++) dp[i][0] = i;
   for (let j = 0; j <= n; j++) dp[0][j] = j;
 
@@ -169,33 +173,43 @@ export function levenshteinDistance(s1, s2) {
     }
   }
 
-  const dist = dp[m][n];
+  const distance = dp[m][n];
   const maxLen = Math.max(m, n) || 1;
-  const similarity = Math.max(0, Math.round((1 - dist / maxLen) * 100));
-  return { distance: dist, similarity };
+  const similarity = Math.max(0, Math.round((1 - distance / maxLen) * 100));
+
+  return { distance, similarity };
 }
 
 // ==========================================
-// 4. APP STORE PUBLISHER & METADATA AUDITOR (App Store Rubric 30%)
+// 4. APP STORE & PERMISSION AUDITOR
 // ==========================================
 export function analyzeAppStoreThreat({
   suspectAppName,
   suspectPublisher,
   suspectAppId,
   officialApps = [],
-  officialBrandName
+  officialBrandName = '',
+  suspectBio = '',
+  postCaptions = [],
+  permissions = []
 }) {
   const flags = [];
   let riskScore = 0;
+  const missingEvidence = [];
+  const detectedPermissions = [];
 
   // Check 1: Publisher Discrepancy
-  const isAuthorizedPublisher = officialApps.some(app => 
-    app.publisher.toLowerCase().trim() === (suspectPublisher || '').toLowerCase().trim()
-  );
+  if (!suspectPublisher) {
+    missingEvidence.push('Publisher metadata unavailable from store listing');
+  } else {
+    const isAuthorized = officialApps.some(app => 
+      (app.publisher || '').toLowerCase().trim() === suspectPublisher.toLowerCase().trim()
+    );
 
-  if (!isAuthorizedPublisher && suspectPublisher) {
-    flags.push(`Publisher mismatch: "${suspectPublisher}" is not an authorized developer`);
-    riskScore += 45;
+    if (!isAuthorized) {
+      flags.push(`Publisher mismatch: "${suspectPublisher}" is not an authorized enterprise developer`);
+      riskScore += 45;
+    }
   }
 
   // Check 2: App Name Similarity
@@ -207,22 +221,74 @@ export function analyzeAppStoreThreat({
     riskScore += 35;
   }
 
-  // Check 3: Suspicious App ID / Package Name (Typosquatting in bundle ID)
-  const officialPackage = officialApps[0]?.appId || `com.${officialBrandName.toLowerCase().replace(/\s+/g, '')}`;
-  if (suspectAppId && suspectAppId.includes(officialBrandName.toLowerCase().replace(/\s+/g, '')) && suspectAppId !== officialPackage) {
-    flags.push(`Unauthorized Android package namespace: "${suspectAppId}"`);
-    riskScore += 20;
+  // Check 3: Suspicious App ID / Package Name
+  const cleanBrand = officialBrandName.toLowerCase().replace(/\s+/g, '');
+  const officialPackage = officialApps[0]?.appId || `com.${cleanBrand}`;
+  if (suspectAppId) {
+    if (suspectAppId.toLowerCase().includes(cleanBrand) && suspectAppId.toLowerCase() !== officialPackage.toLowerCase()) {
+      flags.push(`Unauthorized Android package namespace: "${suspectAppId}"`);
+      riskScore += 20;
+    }
+  } else {
+    missingEvidence.push('App package identifier unavailable');
   }
+
+  // Check 4: High-Risk Android Permission Audit
+  const HIGH_RISK_PERMISSIONS = {
+    READ_SMS: {
+      weight: 30,
+      severity: 'CRITICAL',
+      desc: 'Intercepts incoming 2FA SMS tokens and banking OTPs'
+    },
+    SYSTEM_ALERT_WINDOW: {
+      weight: 25,
+      severity: 'CRITICAL',
+      desc: 'Draws deceptive overlay injection screens over authentic banking apps'
+    },
+    BIND_ACCESSIBILITY_SERVICE: {
+      weight: 30,
+      severity: 'CRITICAL',
+      desc: 'Abuses accessibility service to hijack user screen and keystrokes'
+    },
+    REQUEST_INSTALL_PACKAGES: {
+      weight: 20,
+      severity: 'HIGH',
+      desc: 'Silently downloads and installs secondary rogue APK droppers'
+    },
+    RECEIVE_BOOT_COMPLETED: {
+      weight: 15,
+      severity: 'HIGH',
+      desc: 'Auto-starts persistent background trojan listener upon device reboot'
+    }
+  };
+
+  const textToSearch = `${suspectBio || ''} ${(postCaptions || []).join(' ')}`.toUpperCase();
+  const allPerms = (permissions || []).map(p => p.toUpperCase());
+
+  Object.entries(HIGH_RISK_PERMISSIONS).forEach(([permKey, permMeta]) => {
+    if (allPerms.some(p => p.includes(permKey)) || textToSearch.includes(permKey)) {
+      detectedPermissions.push({
+        permission: permKey,
+        severity: permMeta.severity,
+        description: permMeta.desc,
+        weight: permMeta.weight
+      });
+      flags.push(`Dangerous Android permission declared: ${permKey} (${permMeta.desc})`);
+      riskScore += permMeta.weight;
+    }
+  });
 
   return {
     score: Math.min(100, riskScore),
     flags,
+    missingEvidence,
+    detectedPermissions,
     isSuspiciousApp: riskScore >= 45
   };
 }
 
 // ==========================================
-// 5. SCAM INTENT & PHISHING KEYWORDS (Social Rubric 30%)
+// 5. SCAM INTENT & PHISHING KEYWORDS
 // ==========================================
 export const SCAM_KEYWORDS = [
   { phrase: 'instant refund', weight: 40, category: 'Financial Scam' },
@@ -298,7 +364,63 @@ export function analyzeDomainRisk(url = '', officialDomain = '') {
 }
 
 // ==========================================
-// 7. COMPOSITE EXPLAINABLE RISK ENGINE (Main Evaluator)
+// 7. EXPLANATION SYNTHESIS & RECOMMENDED ACTIONS
+// ==========================================
+export function deriveRecommendedAction(severity, channel, signals = []) {
+  if (severity === 'OFFICIAL_WHITELISTED') {
+    return 'No action required: Authenticated enterprise brand touchpoint whitelisted by zero-trust policy.';
+  }
+
+  if (channel === 'Rogue Mobile App') {
+    if (severity === 'CRITICAL' || severity === 'HIGH') {
+      return 'Immediate Store Escalation: Dispatch Google Play / APK mirror abuse notice citing unauthorized developer identity and high-risk permission declarations. Blocklist package identifier in enterprise EDR.';
+    } else if (severity === 'MEDIUM') {
+      return 'App Store Monitoring: Request full APK package sample for automated dynamic sandbox analysis; verify developer signing certificate.';
+    } else {
+      return 'Routine Registry Logging: Log package in observation ledger; flag for re-audit if store download counts surge.';
+    }
+  }
+
+  if (channel === 'Phishing Website' || channel === 'Phishing Domain') {
+    if (severity === 'CRITICAL' || severity === 'HIGH') {
+      return 'Emergency Registrar Takedown: Issue statutory DMCA § 512 / Rule 3(2)(b) notice to hosting provider and domain registrar. Submit URL to Google Safe Browsing and Microsoft SmartScreen.';
+    } else {
+      return 'DNS Surveillance: Monitor DNS A-records and SSL certificate transparency logs for active credential harvester deployment.';
+    }
+  }
+
+  // Social Profile
+  if (severity === 'CRITICAL') {
+    return 'Platform Abuse Dispatch: File expedited statutory impersonation complaint to platform abuse desk. Issue immediate customer safety alert regarding active credential/OTP interception.';
+  } else if (severity === 'HIGH') {
+    return 'Legal Enforcement Notice: Dispatch trademark infringement complaint citing brand imitation and deceptive profile bio. Monitor direct messaging activity.';
+  } else if (severity === 'MEDIUM') {
+    return 'Secondary SOC Review: Assign to frontline analyst for 24h activity surveillance. Check for fraudulent giveaway links or customer interaction.';
+  } else {
+    return 'Passive Logging: Entity displays minimal threat indicators. Retain in low-priority observation pool without takedown escalation.';
+  }
+}
+
+export function synthesizeExplanationSummary(suspectHandle, channel, composite, severity, isCapped, signals = []) {
+  if (severity === 'OFFICIAL_WHITELISTED') {
+    return `${suspectHandle} is an authenticated official touchpoint. Zero threat risk attributed.`;
+  }
+
+  const activeSignals = signals.filter(s => s.weightedPoints > 0 && ['CRITICAL', 'HIGH', 'MEDIUM'].includes(s.severity));
+  if (activeSignals.length === 0) {
+    if (isCapped) {
+      return `${suspectHandle} exhibits surface name similarity but zero corroborating threat signals. Risk is strictly capped at ${composite}/100 (${severity}).`;
+    }
+    return `Routine scan for ${suspectHandle}: No actionable malicious threat indicators detected.`;
+  }
+
+  const topNames = activeSignals.slice(0, 2).map(s => s.name).join(', ');
+  const capText = isCapped ? ' (capped by anti-false-positive safety policy)' : '';
+  return `Flagged as ${severity} risk (${composite}/100)${capText} driven primarily by ${topNames}.`;
+}
+
+// ==========================================
+// 8. COMPOSITE EXPLAINABLE RISK ENGINE (Main Evaluator)
 // ==========================================
 export function calculateExplainableRisk({
   suspectHandle,
@@ -315,17 +437,62 @@ export function calculateExplainableRisk({
 }) {
   // 1. Mandatory Check: If this is an official brand asset, IMMEDIATELY return 0 Risk (EXCLUDED)
   if (brand && isOfficialAsset(suspectHandle, brand)) {
+    const brandName = brand.name || 'Brand';
+    const recAction = deriveRecommendedAction('OFFICIAL_WHITELISTED', channel, []);
+    const summary = synthesizeExplanationSummary(suspectHandle, channel, 0, 'OFFICIAL_WHITELISTED', false, []);
+
+    const emptySignals = [
+      {
+        id: 'asset_exclusion',
+        name: 'Official Brand Whitelist',
+        weightPercent: 100,
+        rawScore: 0,
+        weightedPoints: 0.0,
+      pointsContributed: 0.0,
+        evidence: `Matches verified enterprise assets registered for ${brandName}`,
+        severity: 'SAFE',
+        direction: 'neutral',
+        explanation: 'Verified official brand asset; protected by zero-trust exclusion policy.'
+      }
+    ];
+
+    const explanationPayload = {
+      finalScore: 0,
+      severity: 'OFFICIAL_WHITELISTED',
+      isOfficialExcluded: true,
+      isCapped: false,
+      capReason: null,
+      signals: emptySignals,
+      recommendedAction: recAction,
+      summary
+    };
+
     return {
       compositeScore: 0,
       severity: 'OFFICIAL_WHITELISTED',
       isOfficialExcluded: true,
-      breakdown: { handleScore: 0, logoScore: 0, scamScore: 0, domainScore: 0 },
-      reasons: ['Verified Official Brand Asset (Excluded from threat feed by safety policy)'],
+      isCapped: false,
+      capReason: null,
+      breakdown: {
+        handleScore: 0,
+        logoScore: 0,
+        scamScore: 0,
+        domainScore: 0,
+        appScore: 0,
+        signals: emptySignals,
+        isCapped: false,
+        capReason: null,
+        recommendedAction: recAction,
+        summary,
+        explanation: explanationPayload
+      },
+      explanation: explanationPayload,
+      reasons: [`Verified Official Brand Asset for ${brandName} (Excluded from threat feed by safety policy)`],
       lookalike: null
     };
   }
 
-  // 2. Bonus Look-alike Analysis
+  // 2. Look-alike Analysis
   const lookalike = detectLookalikeVariations(suspectHandle, officialHandle);
   
   // 3. String & Logo Matching
@@ -336,28 +503,194 @@ export function calculateExplainableRisk({
   // 4. App Store specific checks if applicable
   let appScore = 0;
   let appFlags = [];
+  let appAudit = {};
   if (channel === 'Rogue Mobile App') {
-    const appAudit = analyzeAppStoreThreat({
+    appAudit = analyzeAppStoreThreat({
       suspectAppName: suspectHandle,
       suspectPublisher,
       suspectAppId: suspectUrl,
       officialApps,
-      officialBrandName: brand?.name || 'Brand'
+      officialBrandName: brand?.name || 'Brand',
+      suspectBio,
+      postCaptions
     });
     appScore = appAudit.score;
     appFlags = appAudit.flags;
   }
 
-  // Weighted Risk Composition
+  // Effective handle score with lookalike boost
   const effectiveHandleScore = Math.min(100, handleSim + (lookalike.isLookalike ? 20 : 0));
   
-  let composite = 0;
+  const signals = [];
+  let rawComposite = 0;
+
   if (channel === 'Rogue Mobile App') {
-    // 35% Publisher/App audit, 30% Logo, 20% Name, 15% Description
-    composite = Math.round(appScore * 0.35 + logoMatchPercent * 0.30 + effectiveHandleScore * 0.20 + scamScore * 0.15);
+    // 1. App Store Publisher & Permissions (35%)
+    const appPts = Math.round(appScore * 0.35 * 10) / 10;
+    const appEvidence = appFlags.length > 0 ? appFlags.join('; ') : (
+      appAudit.missingEvidence?.length > 0 ? appAudit.missingEvidence.join('; ') : 'Publisher and package namespace match registered developer'
+    );
+    const appSev = appScore >= 70 ? 'CRITICAL' : (appScore >= 45 ? 'HIGH' : (appScore >= 20 ? 'MEDIUM' : 'SAFE'));
+    signals.push({
+      id: 'app_store',
+      name: 'App Store Publisher & Permissions',
+      weightPercent: 35,
+      rawScore: appScore,
+      weightedPoints: appPts,
+      pointsContributed: appPts,
+      evidence: appEvidence,
+      severity: appSev,
+      direction: appScore > 0 ? 'increases_risk' : 'neutral',
+      explanation: 'Evaluates developer certificate authenticity, namespace squatting, and dangerous permissions (READ_SMS, SYSTEM_ALERT_WINDOW).'
+    });
+
+    // 2. App Icon & Visual Trademark (30%)
+    const logoPts = Math.round(logoMatchPercent * 0.30 * 10) / 10;
+    const logoSev = logoMatchPercent >= 85 ? 'CRITICAL' : (logoMatchPercent >= 70 ? 'HIGH' : (logoMatchPercent >= 50 ? 'MEDIUM' : 'LOW'));
+    signals.push({
+      id: 'visual_logo',
+      name: 'App Icon & Visual Trademark',
+      weightPercent: 30,
+      rawScore: logoMatchPercent,
+      weightedPoints: logoPts,
+      pointsContributed: logoPts,
+      evidence: `${logoMatchPercent}% visual app icon similarity against official trademark`,
+      severity: logoSev,
+      direction: logoMatchPercent >= 50 ? 'increases_risk' : 'neutral',
+      explanation: 'Unauthorized trademark icon reproduction intended to deceive mobile app store users.'
+    });
+
+    // 3. Package & App Name Similarity (20%)
+    const handlePts = Math.round(effectiveHandleScore * 0.20 * 10) / 10;
+    const handleEvidence = lookalike.explanation?.length > 0 ? lookalike.explanation.join('; ') : `${handleSim}% title string similarity to official application name`;
+    const handleSev = effectiveHandleScore >= 70 ? 'HIGH' : (effectiveHandleScore >= 40 ? 'MEDIUM' : 'LOW');
+    signals.push({
+      id: 'app_naming',
+      name: 'Package & App Name Similarity',
+      weightPercent: 20,
+      rawScore: effectiveHandleScore,
+      weightedPoints: handlePts,
+      pointsContributed: handlePts,
+      evidence: handleEvidence,
+      severity: handleSev,
+      direction: effectiveHandleScore >= 40 ? 'increases_risk' : 'neutral',
+      explanation: 'Character squatting and typosquatting targeting official mobile app search queries.'
+    });
+
+    // 4. Manifest Intent & Store Description (15%)
+    const scamPts = Math.round(scamScore * 0.15 * 10) / 10;
+    const scamEvidence = matchedPatterns.length > 0 
+      ? `Matched predatory phrases: ${matchedPatterns.map(p => p.phrase).join(', ')}`
+      : 'No predatory scam keywords matched in listing description';
+    const scamSev = scamScore >= 60 ? 'CRITICAL' : (scamScore >= 30 ? 'HIGH' : 'SAFE');
+    signals.push({
+      id: 'permissions_scam',
+      name: 'Manifest Intent & Store Description',
+      weightPercent: 15,
+      rawScore: scamScore,
+      weightedPoints: scamPts,
+      pointsContributed: scamPts,
+      evidence: scamEvidence,
+      severity: scamSev,
+      direction: scamScore > 0 ? 'increases_risk' : 'neutral',
+      explanation: 'Social engineering and fraudulent promotion copy detected in public app store listing.'
+    });
+
+    rawComposite = Math.round(appScore * 0.35 + logoMatchPercent * 0.30 + effectiveHandleScore * 0.20 + scamScore * 0.15);
   } else {
-    // Social / Web: 30% Handle, 30% Logo, 25% Scam NLP, 15% Domain
-    composite = Math.round(effectiveHandleScore * 0.30 + logoMatchPercent * 0.30 + scamScore * 0.25 + domainScore * 0.15);
+    // 1. Handle & Homoglyph Lookalike (30%)
+    const handlePts = Math.round(effectiveHandleScore * 0.30 * 10) / 10;
+    const handleEvidence = lookalike.explanation?.length > 0 ? lookalike.explanation.join('; ') : `${handleSim}% username similarity to official handle ${officialHandle || ''}`;
+    const handleSev = effectiveHandleScore >= 80 ? 'CRITICAL' : (effectiveHandleScore >= 60 ? 'HIGH' : (effectiveHandleScore >= 40 ? 'MEDIUM' : 'LOW'));
+    signals.push({
+      id: 'handle_lookalike',
+      name: 'Handle & Homoglyph Lookalike',
+      weightPercent: 30,
+      rawScore: effectiveHandleScore,
+      weightedPoints: handlePts,
+      pointsContributed: handlePts,
+      evidence: handleEvidence,
+      severity: handleSev,
+      direction: effectiveHandleScore >= 40 ? 'increases_risk' : 'neutral',
+      explanation: 'Evaluates deceptive character swaps, squatting keywords, and edit distance.'
+    });
+
+    // 2. Visual Trademark & Logo Diff (30%)
+    const logoPts = Math.round(logoMatchPercent * 0.30 * 10) / 10;
+    const logoSev = logoMatchPercent >= 85 ? 'CRITICAL' : (logoMatchPercent >= 70 ? 'HIGH' : (logoMatchPercent >= 50 ? 'MEDIUM' : 'LOW'));
+    signals.push({
+      id: 'visual_logo',
+      name: 'Visual Trademark & Logo Diff',
+      weightPercent: 30,
+      rawScore: logoMatchPercent,
+      weightedPoints: logoPts,
+      pointsContributed: logoPts,
+      evidence: `${logoMatchPercent}% visual logo similarity against authentic brand trademark`,
+      severity: logoSev,
+      direction: logoMatchPercent >= 50 ? 'increases_risk' : 'neutral',
+      explanation: 'Unauthorized reproduction of registered visual brand assets across unauthorized profiles.'
+    });
+
+    // 3. Scam Intent & Phishing Keywords (25%)
+    const scamPts = Math.round(scamScore * 0.25 * 10) / 10;
+    const scamEvidence = matchedPatterns.length > 0
+      ? `Matched predatory phrases: ${matchedPatterns.map(p => `"${p.phrase}"`).join(', ')}`
+      : 'No predatory fraud keywords matched in public profile text';
+    const scamSev = scamScore >= 60 ? 'CRITICAL' : (scamScore >= 40 ? 'HIGH' : (scamScore >= 20 ? 'MEDIUM' : 'SAFE'));
+    signals.push({
+      id: 'scam_intent',
+      name: 'Scam Intent & Phishing Keywords',
+      weightPercent: 25,
+      rawScore: scamScore,
+      weightedPoints: scamPts,
+      pointsContributed: scamPts,
+      evidence: scamEvidence,
+      severity: scamSev,
+      direction: scamScore > 0 ? 'increases_risk' : 'neutral',
+      explanation: 'NLP detection of social engineering phrases (instant refund, send OTP, urgent KYC).'
+    });
+
+    // 4. Domain Infrastructure & Link Structure (15%)
+    const domainPts = Math.round(domainScore * 0.15 * 10) / 10;
+    const domainEvidence = domainFlags.length > 0 ? domainFlags.join('; ') : (
+      !suspectUrl ? 'No external landing domain linked' : 'Registered domain structure within normal baseline'
+    );
+    const domainSev = domainScore >= 60 ? 'CRITICAL' : (domainScore >= 40 ? 'HIGH' : (domainScore >= 20 ? 'MEDIUM' : 'SAFE'));
+    signals.push({
+      id: 'domain_risk',
+      name: 'Domain Infrastructure & Link Structure',
+      weightPercent: 15,
+      rawScore: domainScore,
+      weightedPoints: domainPts,
+      pointsContributed: domainPts,
+      evidence: domainEvidence,
+      severity: domainSev,
+      direction: domainScore > 0 ? 'increases_risk' : 'neutral',
+      explanation: 'Inspects low-reputation scam TLDs (.xyz, .top), typosquatting, and deceptive link structures.'
+    });
+
+    rawComposite = Math.round(effectiveHandleScore * 0.30 + logoMatchPercent * 0.30 + scamScore * 0.25 + domainScore * 0.15);
+  }
+
+  // RULE: Name similarity alone NEVER classifies a candidate as malicious.
+  const otherEvidencePresent = (
+    logoMatchPercent >= 70 ||
+    scamScore >= 30 ||
+    domainScore >= 40 ||
+    appScore >= 40 ||
+    lookalike.hasCharacterSwap
+  );
+
+  let isCapped = false;
+  let capReason = null;
+  let composite = rawComposite;
+
+  if (!otherEvidencePresent && rawComposite > 28) {
+    composite = 28;
+    isCapped = true;
+    capReason = `Score capped from ${rawComposite} to 28 by Anti-False-Positive Policy: Name similarity alone without corroborating rogue signals (scam keywords, malicious permissions, or trademark infringement) cannot exceed LOW severity tier.`;
+  } else {
+    composite = Math.min(100, Math.max(0, rawComposite));
   }
 
   let severity = 'LOW';
@@ -366,7 +699,7 @@ export function calculateExplainableRisk({
   else if (composite >= 30) severity = 'MEDIUM';
 
   const reasons = [];
-  if (lookalike.explanation.length > 0) {
+  if (lookalike.explanation?.length > 0) {
     reasons.push(...lookalike.explanation);
   } else if (handleSim >= 70) {
     reasons.push(`${handleSim}% username similarity to official handle`);
@@ -383,17 +716,44 @@ export function calculateExplainableRisk({
     reasons.push(...domainFlags);
   }
 
+  if (reasons.length === 0) {
+    reasons.push('Routine scan: No high-risk indicators detected on candidate');
+  }
+
+  const recAction = deriveRecommendedAction(severity, channel, signals);
+  const summary = synthesizeExplanationSummary(suspectHandle, channel, composite, severity, isCapped, signals);
+
+  const explanationPayload = {
+    finalScore: composite,
+    severity,
+    isOfficialExcluded: false,
+    isCapped,
+    capReason,
+    signals,
+    recommendedAction: recAction,
+    summary
+  };
+
   return {
     compositeScore: composite,
     severity,
     isOfficialExcluded: false,
+    isCapped,
+    capReason,
     breakdown: {
       handleScore: effectiveHandleScore,
       logoScore: logoMatchPercent,
       scamScore,
       domainScore,
-      appScore
+      appScore,
+      signals,
+      isCapped,
+      capReason,
+      recommendedAction: recAction,
+      summary,
+      explanation: explanationPayload
     },
+    explanation: explanationPayload,
     lookalike,
     reasons
   };

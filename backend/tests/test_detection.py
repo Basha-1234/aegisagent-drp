@@ -153,3 +153,117 @@ def test_explainable_risk_high_severity_when_signals_align():
     assert res["composite_score"] >= 70
     assert any("refund" in r.lower() or "scam" in r.lower() for r in res["reasons"])
     assert any("logo" in r.lower() for r in res["reasons"])
+
+
+def test_explainable_risk_attribution_decomposition():
+    res = calculate_explainable_risk(
+        suspect_handle="@Razorpay_Helpdesk",
+        official_handle="@Razorpay",
+        suspect_bio="Official 24/7 payment support. Refund claims and KYC verification.",
+        post_captions=["Click link to verify wallet"],
+        suspect_url="https://razorpay-help.top/login",
+        official_domain="razorpay.com",
+        logo_match_percent=88,
+        channel="Social Profile",
+        brand=MOCK_BRAND
+    )
+    explanation = res.get("explanation")
+    assert explanation is not None
+    assert "final_score" in explanation
+    assert "severity" in explanation
+    assert "signals" in explanation
+    assert "recommended_action" in explanation
+    assert "summary" in explanation
+
+    signals = explanation["signals"]
+    assert len(signals) >= 3
+
+    # Check signal weights sum to 100%
+    total_weight = sum(s["weight_percent"] for s in signals)
+    assert total_weight == 100
+
+    # Check signal mathematical points contribution
+    for s in signals:
+        expected_points = round((s["raw_score"] * s["weight_percent"]) / 100.0, 1)
+        assert abs(s["points_contributed"] - expected_points) < 0.1
+        assert s["evidence"] != ""
+        assert s["explanation"] != ""
+
+    # Verify recommended action exists and is actionable
+    assert len(explanation["recommended_action"]) > 10
+
+
+def test_anti_false_positive_score_capping():
+    # Only name similarity, no scam keywords, modest logo match (40% < 70%), normal domain
+    res = calculate_explainable_risk(
+        suspect_handle="@RazorpayApp",
+        official_handle="@Razorpay",
+        suspect_bio="General fan community page.",
+        post_captions=["Fintech notes"],
+        suspect_url="https://normalblog.com",
+        official_domain="razorpay.com",
+        logo_match_percent=40,
+        channel="Social Profile",
+        brand=MOCK_BRAND
+    )
+    explanation = res["explanation"]
+    assert res["composite_score"] == 28
+    assert res["severity"] == "LOW"
+    assert explanation["is_capped"] is True
+    assert "Anti-False-Positive" in explanation["cap_reason"]
+    assert "Name similarity alone" in explanation["cap_reason"]
+
+
+def test_android_dangerous_permissions_audit():
+    # Rogue APK requesting READ_SMS and SYSTEM_ALERT_WINDOW
+    res = analyze_app_store_threat(
+        suspect_app_name="Razorpay Instant Merchant",
+        suspect_publisher="Unknown Shady Dev",
+        suspect_app_id="com.razorpay.instant.pay",
+        official_apps=MOCK_BRAND["official_apps"],
+        official_brand_name=MOCK_BRAND["name"],
+        permissions=["android.permission.READ_SMS", "android.permission.SYSTEM_ALERT_WINDOW", "android.permission.INTERNET"]
+    )
+    assert res["is_suspicious_app"] is True
+    assert res["score"] >= 80
+    assert any("READ_SMS" in f for f in res["flags"])
+    assert any("SYSTEM_ALERT_WINDOW" in f for f in res["flags"])
+
+
+def test_official_brand_asset_zero_attribution():
+    res = calculate_explainable_risk(
+        suspect_handle="@Razorpay",
+        official_handle="@Razorpay",
+        suspect_bio="Official handle of Razorpay.",
+        post_captions=["Welcome to Razorpay"],
+        suspect_url="https://razorpay.com",
+        official_domain="razorpay.com",
+        logo_match_percent=100,
+        channel="Social Profile",
+        brand=MOCK_BRAND
+    )
+    assert res["composite_score"] == 0
+    assert res["severity"] == "OFFICIAL_WHITELISTED"
+    assert res["is_official_excluded"] is True
+    assert res["explanation"]["is_official_excluded"] is True
+    assert "whitelisted" in res["explanation"]["recommended_action"].lower()
+
+
+def test_deterministic_scoring_reproducibility():
+    args = dict(
+        suspect_handle="@Razorpay_Payouts_Fast",
+        official_handle="@Razorpay",
+        suspect_bio="Immediate payouts support. Contact us for refund.",
+        post_captions=["Refund expedited"],
+        suspect_url="https://razorpay-fast.top",
+        official_domain="razorpay.com",
+        logo_match_percent=82,
+        channel="Social Profile",
+        brand=MOCK_BRAND
+    )
+    run1 = calculate_explainable_risk(**args)
+    run2 = calculate_explainable_risk(**args)
+    assert run1["composite_score"] == run2["composite_score"]
+    assert run1["severity"] == run2["severity"]
+    assert run1["explanation"]["signals"] == run2["explanation"]["signals"]
+    assert run1["explanation"]["recommended_action"] == run2["explanation"]["recommended_action"]

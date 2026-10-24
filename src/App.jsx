@@ -9,8 +9,19 @@ import SupportDashboard from './pages/SupportDashboard';
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
 
 function MainRouter() {
-  const { user } = useAuth();
+  const { user, isAuthLoading } = useAuth();
   const { isDark } = useTheme();
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#030814] text-cyan-400 font-mono text-sm">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+          <span>Verifying Session...</span>
+        </div>
+      </div>
+    );
+  }
 
   // If unauthenticated, show the confirmed 3D Emerald Auth Gateway
   if (!user) {

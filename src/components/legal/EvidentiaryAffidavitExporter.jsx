@@ -11,46 +11,124 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
     suspectName: 'Razorpay Helpdesk & Settlement Assist',
     suspectHandle: '@Razorpay_Support_24x7',
     platform: 'X (Twitter)',
-    channel: 'Social Profile'
+    channel: 'Social Profile',
+    logoMatchPercent: 94,
+    compositeScore: 88,
+    severity: 'CRITICAL',
+    reasons: ['Logo similarity 94%', 'Brand name collision']
   };
+
+  const activeBrand = brand || {
+    name: 'Razorpay Technologies',
+    officialDomain: 'razorpay.com'
+  };
+
+  const sha256Proof = '8f4c2b9a71e3d085942f1a6c5e7b8921df047ca8391b4562098d7fe129ab3461';
 
   const handleExport = (format) => {
     setDownloading(format);
     setTimeout(() => {
       try {
         if (format === 'PDF') {
-          const doc = new jsPDF();
+          const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+          });
+
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const margin = 18;
+          let y = 20;
+
+          // Header Bar
+          doc.setFillColor(15, 23, 42); // slate-900
+          doc.rect(0, 0, pageWidth, 24, 'F');
           doc.setFont('helvetica', 'bold');
-          doc.setFontSize(16);
-          doc.text('STATUTORY EVIDENTIARY AFFIDAVIT DOCKET', 15, 20);
-          
+          doc.setFontSize(13);
+          doc.setTextColor(245, 158, 11); // amber-400
+          doc.text('STATUTORY EVIDENTIARY AFFIDAVIT DOCKET', margin, 15);
+
+          y = 34;
+          doc.setTextColor(15, 23, 42);
           doc.setFontSize(10);
           doc.setFont('helvetica', 'normal');
-          doc.text(`Generated: ${new Date().toUTCString()}`, 15, 28);
-          doc.text(`Complainant Tenant: ${brand?.name || 'Razorpay Technologies'}`, 15, 36);
-          doc.text(`Suspect Entity: ${activeTarget.suspectHandle} (${activeTarget.platform})`, 15, 44);
-          doc.text(`Statutory Mandate: Rule 3(2)(b) Indian IT Rules 2021 & DMCA §512`, 15, 52);
-          doc.text(`Cryptographic Evidence Hash: sha256:8f4c2b9a71e3d085942f1a6c5e7b8921df047ca8`, 15, 60);
-          
+          doc.text(`Generated Timestamp: ${new Date().toUTCString()}`, margin, y);
+          y += 6;
+          doc.text(`Complainant Organization: ${activeBrand.name} (${activeBrand.officialDomain || 'official'})`, margin, y);
+          y += 6;
+          doc.text(`Suspected Asset: ${activeTarget.suspectHandle} on ${activeTarget.platform}`, margin, y);
+          y += 6;
+          doc.text(`Channel: ${activeTarget.channel} | Case ID: AEGIS-${activeTarget.id}`, margin, y);
+          y += 6;
+          doc.text(`Statutory Mandate: Rule 3(2)(b) Indian IT Rules 2021 & DMCA Section 512`, margin, y);
+          y += 6;
+          doc.text(`Cryptographic Evidence Hash: sha256:${sha256Proof.slice(0, 36)}...`, margin, y);
+          y += 10;
+
+          doc.setDrawColor(203, 213, 225);
+          doc.line(margin, y, pageWidth - margin, y);
+          y += 8;
+
           doc.setFont('helvetica', 'bold');
-          doc.text('EXHIBIT SUMMARY:', 15, 72);
+          doc.setFontSize(11);
+          doc.text('CERTIFIED FORENSIC EXHIBITS:', margin, y);
+          y += 8;
+
           doc.setFont('helvetica', 'normal');
-          doc.text('1. Logo Diff Heatmap: 92% tampering divergence matrix', 15, 80);
-          doc.text('2. AndroidManifest Audit: Malicious READ_SMS keystore discrepancy', 15, 88);
-          doc.text('3. Coordinated Attack Syndicate: 5-node Kraken-09 cross-platform correlation', 15, 96);
-          
+          doc.setFontSize(9.5);
+
+          const exhibits = [
+            `Exhibit A (Visual Logo Delta): ${activeTarget.logoMatchPercent || 0}% trademark divergence matrix verified against registered corporate logo.`,
+            `Exhibit B (Platform Telemetry): Suspect identifier "${activeTarget.suspectHandle}" with observed channel: ${activeTarget.channel}.`,
+            `Exhibit C (Composite Risk Analysis): Multi-signal risk score of ${activeTarget.compositeScore || 75}/100 (${activeTarget.severity || 'HIGH'}).`,
+            `Exhibit D (Forensic Indicators): ${Array.isArray(activeTarget.reasons) ? activeTarget.reasons.join(', ') : 'High similarity indicators'}.`
+          ];
+
+          for (let ex of exhibits) {
+            const lines = doc.splitTextToSize(ex, pageWidth - (margin * 2));
+            for (let l of lines) {
+              doc.text(l, margin, y);
+              y += 5.5;
+            }
+            y += 2;
+          }
+
+          y += 8;
           doc.setFont('helvetica', 'italic');
-          doc.text('Sealed and verified by AegisAgent DRP Autonomous Enforcement Engine', 15, 110);
-          
+          doc.setFontSize(8.5);
+          doc.setTextColor(100, 116, 139);
+          doc.text('Sealed and cryptographically authenticated by AegisAgent DRP Autonomous Enforcement Engine.', margin, y);
+          y += 5;
+          doc.text('Demonstration Draft — Not Sent. For Trust & Safety Review and Court Admissibility.', margin, y);
+
           doc.save(`AEGIS_AFFIDAVIT_${activeTarget.id}.pdf`);
         } else if (format === 'JSON') {
           const payload = {
             docketId: `AEGIS-${activeTarget.id}-LEGAL`,
-            complainant: brand?.name || 'Razorpay Technologies',
-            suspect: activeTarget,
-            statutoryNotice: 'Rule 3(2)(b) Indian IT Rules 2021 / DMCA Section 512',
-            timestamp: new Date().toISOString(),
-            sha256Proof: '8f4c2b9a71e3d085942f1a6c5e7b8921df047ca8391b4562098d7fe129ab3461'
+            status: 'Demonstration Draft — Not Sent',
+            complainant: {
+              name: activeBrand.name,
+              domain: activeBrand.officialDomain
+            },
+            suspect: {
+              id: activeTarget.id,
+              name: activeTarget.suspectName,
+              handle: activeTarget.suspectHandle,
+              platform: activeTarget.platform,
+              channel: activeTarget.channel,
+              url: activeTarget.suspectUrl,
+              logoMatchPercent: activeTarget.logoMatchPercent,
+              compositeScore: activeTarget.compositeScore,
+              severity: activeTarget.severity,
+              reasons: activeTarget.reasons
+            },
+            statutoryNotices: [
+              'Rule 3(2)(b) Indian IT Rules 2021',
+              'DMCA 17 U.S.C. Section 512',
+              'Lanham Act 15 U.S.C. Section 1125(a)'
+            ],
+            cryptographicEvidenceHash: sha256Proof,
+            timestamp: new Date().toISOString()
           };
           const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
@@ -66,31 +144,31 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
       setDownloading(false);
       setDownloadSuccess(format);
       setTimeout(() => setDownloadSuccess(null), 3000);
-    }, 600);
+    }, 400);
   };
 
   const artifacts = [
     {
-      name: 'Logo Pixel Delta Heatmap Snapshot',
-      type: 'PNG (144-cell RGB Delta)',
-      hash: 'sha256: 4a9e88...312f',
+      name: `Visual Logo Pixel Delta (${activeTarget.logoMatchPercent || 0}% Overlap)`,
+      type: '144-Cell Color Space Matrix',
+      hash: `sha256: 4a9e88...${activeTarget.id.slice(-4)}`,
       verified: true
     },
     {
-      name: 'AndroidManifest Keystore Fingerprint',
-      type: 'APK Signature Mismatch',
+      name: `${activeTarget.platform} Profile Telemetry Capture`,
+      type: `${activeTarget.channel} Evidence Snapshot`,
       hash: 'sha256: 9b2d11...f08a',
       verified: true
     },
     {
-      name: 'Punycode & DNS Resolution Evidence',
-      type: 'ICANN WHOIS Archive',
+      name: 'DNS & Host Infrastructure Snapshot',
+      type: 'Network Routing & WHOIS Record',
       hash: 'sha256: 77a0c3...d41b',
       verified: true
     },
     {
-      name: 'Syndicate Kraken-09 Attack Topology',
-      type: 'Graph Evidence JSON',
+      name: 'Coordinated Attack Syndicate Correlation',
+      type: 'Multi-Node Threat Topology',
       hash: 'sha256: 12f5e9...66ce',
       verified: true
     }
@@ -116,7 +194,8 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => handleExport('json')}
+            onClick={() => handleExport('JSON')}
+            disabled={downloading === 'JSON'}
             className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-mono text-slate-300 hover:text-white flex items-center gap-1.5 transition cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-cyan-400" />
@@ -125,7 +204,8 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
 
           <button
             type="button"
-            onClick={() => handleExport('pdf')}
+            onClick={() => handleExport('PDF')}
+            disabled={downloading === 'PDF'}
             className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-md"
           >
             <Download className="w-3.5 h-3.5" />
@@ -139,9 +219,9 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
         <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-mono flex items-center justify-between animate-in fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Successfully generated and downloaded {downloadSuccess.toUpperCase()} evidence bundle!</span>
+            <span>Successfully generated and downloaded {downloadSuccess} evidence bundle for {activeTarget.id}!</span>
           </div>
-          <span className="text-[10px] text-slate-400">Digest: 8f4c2b9a71e3d085942f</span>
+          <span className="text-[10px] text-slate-400">Digest: {sha256Proof.slice(0, 20)}...</span>
         </div>
       )}
 
@@ -170,26 +250,26 @@ export default function EvidentiaryAffidavitExporter({ threat, brand }) {
       {/* Chain-of-Custody Timeline Log */}
       <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-2 text-xs font-mono">
         <div className="text-slate-400 uppercase text-[10px] font-bold flex items-center justify-between pb-2 border-b border-slate-800">
-          <span>Chain-of-Custody Audit Trail</span>
+          <span>Chain-of-Custody Audit Trail: {activeTarget.id}</span>
           <span className="text-emerald-400">SOC 2 Type II Certified Logging</span>
         </div>
 
         <div className="space-y-2 text-[11px] text-slate-300">
           <div className="flex items-center justify-between">
             <span className="text-slate-400">1. Ingested by Autonomous Radar:</span>
-            <span className="text-white">2026-10-12T09:14:00Z (Sensors: Instagram Stream)</span>
+            <span className="text-white">{activeTarget.detectionDate || '2026-10-12T09:14:00Z'} (Sensors: {activeTarget.platform})</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-slate-400">2. Pixel Delta Heatmap Certified:</span>
-            <span className="text-cyan-300">2026-10-12T09:15:32Z (144-Cell Matrix Verified)</span>
+            <span className="text-cyan-300">Overlap {activeTarget.logoMatchPercent || 0}% Verified</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-slate-400">3. Legal Review &amp; Statutory Citing:</span>
-            <span className="text-amber-300">2026-10-12T09:18:10Z (By Sarah Vance, Legal Counsel)</span>
+            <span className="text-amber-300">Status: {activeTarget.status}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">4. Final Docket Sealed:</span>
-            <span className="text-emerald-400 font-bold">2026-10-12T09:19:05Z (Immutable SHA-256 Stamp)</span>
+            <span className="text-slate-400">4. Cryptographic Seal Applied:</span>
+            <span className="text-emerald-400 font-bold">SHA-256 Digest Certified</span>
           </div>
         </div>
       </div>

@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { BRANDS, INITIAL_THREATS } from '../data/mockData';
+import { api } from '../utils/apiClient';
+import { normalizeFinding } from '../utils/normalizeFinding';
 import TakedownEnforcementFunnel from '../components/legal/TakedownEnforcementFunnel';
 import StatutoryAffidavitGenerator from '../components/legal/StatutoryAffidavitGenerator';
 import PlatformDispatchConsole from '../components/legal/PlatformDispatchConsole';
@@ -27,7 +29,9 @@ import {
   Globe, 
   AtSign, 
   Lock, 
-  ShieldAlert
+  ShieldAlert,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 
 export default function LegalDashboard() {
@@ -41,18 +45,115 @@ export default function LegalDashboard() {
   // Options: 'funnel' | 'affidavit' | 'dispatch' | 'velocity' | 'donut' | 'exporter' | 'all'
   const [activeModule, setActiveModule] = useState('funnel');
 
+  // Backend findings state for dynamic cross-dashboard sync
+  const [backendFindings, setBackendFindings] = useState(null);
+  const [isLoadingCases, setIsLoadingCases] = useState(false);
+  const [isApiConnected, setIsApiConnected] = useState(false);
+
   // Active case selection
   const [selectedCaseId, setSelectedCaseId] = useState('THREAT-101');
 
-  // Brand-specific threats as legal cases
-  const brandCases = useMemo(() => {
-    return INITIAL_THREATS.filter(t => t.brandId === currentBrand.id);
+  // Funnel stage filter
+  const [selectedStageFilter, setSelectedStageFilter] = useState('all');
+
+  // Load findings from backend API dynamically
+  const loadCases = async () => {
+    setIsLoadingCases(true);
+    try {
+      const health = await api.getHealth();
+      if (health.status === 'ok') {
+        setIsApiConnected(true);
+      }
+      const findings = await api.getFindings({ brandId: currentBrand.id });
+      setBackendFindings(findings);
+    } catch (err) {
+      console.warn('Backend API call failed:', err);
+      setIsApiConnected(false);
+      if (err.status === 401 || err.message?.includes('401')) {
+        setBackendFindings(null);
+        return;
+      }
+      if (user?.isDemoSession) {
+        setBackendFindings(null);
+      } else {
+        setBackendFindings([]);
+      }
+    } finally {
+      setIsLoadingCases(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCases();
   }, [currentBrand.id]);
+
+  // Brand-specific threats normalized as legal cases
+  const brandCases = useMemo(() => {
+    if (backendFindings && backendFindings.length > 0) {
+      return backendFindings.map(f => normalizeFinding(f, currentBrand));
+    }
+    if (user?.isDemoSession) {
+      return INITIAL_THREATS.filter(t => t.brandId === currentBrand.id).map(t => normalizeFinding(t, currentBrand));
+    }
+    return [];
+  }, [backendFindings, currentBrand, user?.isDemoSession]);
+
+  // Cases filtered by stage filter if active
+  const filteredCases = useMemo(() => {
+    if (selectedStageFilter === 'all') return brandCases;
+    switch (selectedStageFilter) {
+      case 'triaged':
+        return brandCases.filter(c => c.status === 'NEW' || c.status === 'INVESTIGATING');
+      case 'drafted':
+        return brandCases.filter(c => c.status === 'CONFIRMED_THREAT');
+      case 'dispatched':
+        return brandCases.filter(c => c.status === 'TAKEDOWN_REQUESTED' || c.status === 'TAKEDOWN_SENT');
+      case 'review':
+        return brandCases.filter(c => c.status === 'TAKEDOWN_REQUESTED');
+      case 'delisted':
+        return brandCases.filter(c => c.status === 'RESOLVED');
+      default:
+        return brandCases;
+    }
+  }, [brandCases, selectedStageFilter]);
+
+  // Keep selectedCaseId in sync
+  useEffect(() => {
+    if (filteredCases.length > 0) {
+      const exists = filteredCases.some(t => t.id === selectedCaseId);
+      if (!exists) {
+        setSelectedCaseId(filteredCases[0].id);
+      }
+    }
+  }, [filteredCases, selectedCaseId]);
 
   // Currently selected case object
   const activeCase = useMemo(() => {
-    return brandCases.find(t => t.id === selectedCaseId) || brandCases[0] || INITIAL_THREATS[0];
-  }, [brandCases, selectedCaseId]);
+    return filteredCases.find(t => t.id === selectedCaseId) || filteredCases[0] || brandCases[0] || {
+      id: 'THREAT-101',
+      suspectName: 'Suspect Entity',
+      suspectHandle: '@suspect',
+      platform: 'Social Platform',
+      channel: 'Social Profile',
+      status: 'CONFIRMED_THREAT'
+    };
+  }, [filteredCases, selectedCaseId, brandCases]);
+
+  // Handle live case status update (e.g. dispatched, confirmed, resolved)
+  const handleCaseStatusUpdate = async (caseId, newStatus) => {
+    try {
+      await api.updateFindingStatus(caseId, newStatus);
+    } catch (err) {
+      console.warn('Backend status update offline, updating local UI:', err);
+    } finally {
+      setBackendFindings(prev => {
+        const base = prev && prev.length > 0 
+          ? prev 
+          : INITIAL_THREATS.filter(t => t.brandId === currentBrand.id).map(t => normalizeFinding(t, currentBrand));
+        return base.map(f => (f.id === caseId ? { ...f, review_status: newStatus, status: newStatus } : f));
+      });
+    }
+  };
 
   // Dashboard Toggle Navigation Items - High Contrast Solid Badges
   const legalModules = [
@@ -68,10 +169,10 @@ export default function LegalDashboard() {
     },
     {
       id: 'affidavit',
-      name: 'Statutory Affidavit Builder',
-      sublabel: 'DMCA & IT Rules Generator',
+      name: 'Statutory Affidavit & Draft Studio',
+      sublabel: 'Official Sample & IT Rules/DMCA',
       icon: FileText,
-      badge: 'Sealed',
+      badge: 'Editable',
       badgeColor: isDark 
         ? 'border-amber-500/40 bg-amber-950/60 text-amber-300' 
         : 'border-amber-300 bg-amber-100 text-amber-900 font-bold shadow-xs'
@@ -84,7 +185,7 @@ export default function LegalDashboard() {
       badge: '4 Gateways',
       badgeColor: isDark 
         ? 'border-cyan-500/40 bg-cyan-950/60 text-cyan-300' 
-        : 'border-sky-300 bg-sky-100 text-sky-900 font-bold shadow-xs'
+        : 'border-sky-300 bg-sky-100 text-sky-950 font-bold shadow-xs'
     },
     {
       id: 'velocity',
@@ -163,55 +264,74 @@ export default function LegalDashboard() {
           <p className={`text-sm sm:text-base mt-1.5 max-w-3xl leading-relaxed ${
             isDark ? 'text-slate-300' : 'text-slate-600'
           }`}>
-            Logged in as <strong>{user?.name || 'Sarah Vance'}</strong> (Head of Legal). Review pre-compiled statutory affidavits citing Rule 3(2)(b) of the Indian IT Rules (2021) and DMCA §512 for 1-click platform API dispatch.
+            Logged in as <strong>{user?.name || 'Sarah Vance'}</strong> (Head of Legal). Review and edit persistent takedown drafts matching Kampus.VC demonstration standards, Rule 3(2)(b) Indian IT Rules (2021), and DMCA §512 for 1-click platform API dispatch.
           </p>
         </div>
 
-        {/* Legal Telemetry Indicators */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
-            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
-          }`}>
-            <div className={`text-xl font-bold font-mono ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>12 Cases</div>
-            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
+        {/* Legal Telemetry Indicators & Refresh */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className={`p-3.5 rounded-xl border text-center min-w-[100px] transition ${
+              isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
             }`}>
-              <FileText className={`w-3 h-3 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Active Docket
+              <div className={`text-xl font-bold font-mono ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
+                {brandCases.length} Cases
+              </div>
+              <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+                isDark ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <FileText className={`w-3 h-3 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Active Docket
+              </div>
+            </div>
+
+            <div className={`p-3.5 rounded-xl border text-center min-w-[100px] transition ${
+              isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+            }`}>
+              <div className={`text-xl font-bold font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>3.8 Hours</div>
+              <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+                isDark ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <Clock className={`w-3 h-3 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} /> MTTR Velocity
+              </div>
+            </div>
+
+            <div className={`p-3.5 rounded-xl border text-center min-w-[100px] transition ${
+              isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+            }`}>
+              <div className={`text-xl font-bold font-mono ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>91.4%</div>
+              <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+                isDark ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <CheckCircle2 className={`w-3 h-3 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} /> Delist Rate
+              </div>
+            </div>
+
+            <div className={`p-3.5 rounded-xl border text-center min-w-[100px] transition ${
+              isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+            }`}>
+              <div className={`text-xl font-bold font-mono ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>&lt; 60 sec</div>
+              <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
+                isDark ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <Zap className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} /> API Dispatch
+              </div>
             </div>
           </div>
 
-          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
-            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
-          }`}>
-            <div className={`text-xl font-bold font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>3.8 Hours</div>
-            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
-            }`}>
-              <Clock className={`w-3 h-3 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} /> MTTR Velocity
-            </div>
-          </div>
-
-          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
-            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
-          }`}>
-            <div className={`text-xl font-bold font-mono ${isDark ? 'text-cyan-400' : 'text-blue-700'}`}>91.4%</div>
-            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
-            }`}>
-              <CheckCircle2 className={`w-3 h-3 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} /> Delist Rate
-            </div>
-          </div>
-
-          <div className={`p-3.5 rounded-xl border text-center min-w-[110px] transition ${
-            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
-          }`}>
-            <div className={`text-xl font-bold font-mono ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>&lt; 60 sec</div>
-            <div className={`text-xs uppercase font-bold flex items-center justify-center gap-1.5 mt-0.5 ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
-            }`}>
-              <Zap className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} /> API Dispatch
-            </div>
-          </div>
+          {/* Sync Button */}
+          <button
+            type="button"
+            onClick={loadCases}
+            disabled={isLoadingCases}
+            title="Re-sync legal docket with live SOC analyst triage from database"
+            className={`p-3 rounded-xl border flex items-center justify-center transition cursor-pointer ${
+              isDark 
+                ? 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700' 
+                : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100 shadow-xs'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoadingCases ? 'animate-spin text-amber-400' : ''}`} />
+          </button>
         </div>
       </div>
 
@@ -221,7 +341,7 @@ export default function LegalDashboard() {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         
         {/* ========================================================== */}
-        {/* LEFT: LEGAL DASHBOARD MODULE TOGGLE DRAWER (~390px - NO TRUNCATION) */}
+        {/* LEFT: LEGAL DASHBOARD MODULE TOGGLE DRAWER (~390px)        */}
         {/* ========================================================== */}
         <div className="w-full lg:w-[390px] shrink-0 space-y-4">
           
@@ -328,11 +448,11 @@ export default function LegalDashboard() {
                 <FileText className={`w-3.5 h-3.5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Active Legal Docket
               </span>
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
-                isDark 
+                activeCase.status === 'CONFIRMED_THREAT' || activeCase.status === 'TAKEDOWN_REQUESTED'
                   ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300' 
-                  : 'bg-emerald-100 border-emerald-300 text-emerald-950 shadow-xs'
+                  : 'bg-amber-950/80 border-amber-500/40 text-amber-300'
               }`}>
-                {activeCase.id}
+                {activeCase.status}
               </span>
             </div>
 
@@ -345,9 +465,9 @@ export default function LegalDashboard() {
                   : 'bg-white border-slate-300 text-slate-900 focus:border-amber-600 shadow-xs font-semibold'
               }`}
             >
-              {brandCases.map((t) => (
+              {filteredCases.map((t) => (
                 <option key={t.id} value={t.id}>
-                  [{t.id}] {t.suspectHandle} ({t.channel})
+                  [{t.status}] {t.suspectHandle} ({t.platform})
                 </option>
               ))}
             </select>
@@ -358,7 +478,9 @@ export default function LegalDashboard() {
               <div className={`font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{activeCase.suspectName}</div>
               <div className={`flex items-center justify-between text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <span>Platform: {activeCase.platform}</span>
-                <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Evidence: Sealed</span>
+                <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                  Risk: {activeCase.compositeScore || 75}/100
+                </span>
               </div>
             </div>
           </div>
@@ -445,27 +567,39 @@ export default function LegalDashboard() {
             </div>
           </div>
 
-          {/* DYNAMIC VIEW ROUTING: SHOW ONLY THE SELECTED COMPONENT */}
+          {/* DYNAMIC VIEW ROUTING: SHOW SELECTED COMPONENT */}
           <div className="transition-all duration-300">
             
             {/* 1. ENFORCEMENT STAGE FUNNEL */}
             {activeModule === 'funnel' && (
               <div className="space-y-4">
-                <TakedownEnforcementFunnel />
+                <TakedownEnforcementFunnel 
+                  cases={brandCases}
+                  selectedStage={selectedStageFilter}
+                  onSelectStage={setSelectedStageFilter}
+                />
               </div>
             )}
 
-            {/* 2. STATUTORY AFFIDAVIT BUILDER */}
+            {/* 2. STATUTORY AFFIDAVIT & DRAFT STUDIO */}
             {activeModule === 'affidavit' && (
               <div className="space-y-4">
-                <StatutoryAffidavitGenerator threat={activeCase} brand={currentBrand} />
+                <StatutoryAffidavitGenerator 
+                  threat={activeCase} 
+                  brand={currentBrand} 
+                  onStatusUpdate={handleCaseStatusUpdate}
+                />
               </div>
             )}
 
             {/* 3. PLATFORM API DISPATCH DOCK */}
             {activeModule === 'dispatch' && (
               <div className="space-y-4">
-                <PlatformDispatchConsole threat={activeCase} brand={currentBrand} />
+                <PlatformDispatchConsole 
+                  threat={activeCase} 
+                  brand={currentBrand} 
+                  onStatusUpdate={handleCaseStatusUpdate}
+                />
               </div>
             )}
 
@@ -486,23 +620,41 @@ export default function LegalDashboard() {
             {/* 6. EVIDENTIARY DOCKET & SEALS */}
             {activeModule === 'exporter' && (
               <div className="space-y-4">
-                <EvidentiaryAffidavitExporter threat={activeCase} brand={currentBrand} />
+                <EvidentiaryAffidavitExporter 
+                  threat={activeCase} 
+                  brand={currentBrand} 
+                />
               </div>
             )}
 
             {/* 7. UNIFIED LEGAL COMMAND MATRIX */}
             {activeModule === 'all' && (
               <div className="space-y-6">
-                <TakedownEnforcementFunnel />
+                <TakedownEnforcementFunnel 
+                  cases={brandCases}
+                  selectedStage={selectedStageFilter}
+                  onSelectStage={setSelectedStageFilter}
+                />
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                  <StatutoryAffidavitGenerator threat={activeCase} brand={currentBrand} />
-                  <PlatformDispatchConsole threat={activeCase} brand={currentBrand} />
+                  <StatutoryAffidavitGenerator 
+                    threat={activeCase} 
+                    brand={currentBrand} 
+                    onStatusUpdate={handleCaseStatusUpdate}
+                  />
+                  <PlatformDispatchConsole 
+                    threat={activeCase} 
+                    brand={currentBrand} 
+                    onStatusUpdate={handleCaseStatusUpdate}
+                  />
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                   <EnforcementVelocityChart />
                   <PlatformDistributionDonut />
                 </div>
-                <EvidentiaryAffidavitExporter threat={activeCase} brand={currentBrand} />
+                <EvidentiaryAffidavitExporter 
+                  threat={activeCase} 
+                  brand={currentBrand} 
+                />
               </div>
             )}
 

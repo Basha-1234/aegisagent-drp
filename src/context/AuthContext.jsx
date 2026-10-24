@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../utils/apiClient';
 
 // Pre-configured enterprise demo personas for 1-click evaluation
 export const DEMO_PERSONAS = {
@@ -44,39 +45,105 @@ export const DEMO_PERSONAS = {
   }
 };
 
+export function formatUserFromBackend(userRecord, isDemo = false) {
+  const initials = userRecord.full_name
+    ? userRecord.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : 'AG';
+
+  const roleTitle = userRecord.role === 'admin'
+    ? 'Security Administrator'
+    : userRecord.role === 'ciso'
+      ? 'Chief Information Security Officer'
+      : userRecord.role === 'legal'
+        ? 'Head of Legal & Compliance'
+        : 'Senior Threat Analyst';
+
+  const permissions = userRecord.role === 'admin' || userRecord.role === 'ciso'
+    ? ['ALL_PERMISSIONS', 'MANAGE_USERS', 'SET_THRESHOLDS', 'SOC2_AUDIT_EXPORT', 'BILLING']
+    : userRecord.role === 'legal'
+      ? ['REVIEW_AFFIDAVITS', 'APPROVE_TAKEDOWNS', 'DISPATCH_API', 'EXPORT_EVIDENCE']
+      : ['READ_THREATS', 'TRIAGE_EVIDENCE', 'AUDIT_DIFF', 'CLUSTER_SYNDICATE'];
+
+  return {
+    id: userRecord.id,
+    name: userRecord.full_name,
+    title: roleTitle,
+    email: userRecord.email,
+    role: userRecord.role,
+    department: userRecord.organization ? userRecord.organization.name : 'Corporate Security',
+    avatar: initials,
+    organizationId: userRecord.organization_id,
+    organization: userRecord.organization,
+    permissions,
+    isDemoSession: isDemo
+  };
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // Check local storage or default to null (unauthenticated)
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('aegis_auth_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-
+  const [user, setUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [activeBrandId, setActiveBrandId] = useState('razorpay');
 
-  // Simulated organization pending access requests
-  const [accessRequests, setAccessRequests] = useState([
-    {
-      id: 'req-101',
-      name: 'Rohan Sharma',
-      email: 'rohan.sharma@razorpay.com',
-      department: 'Fraud Investigations',
-      requestedRole: 'analyst',
-      submittedAt: '10 minutes ago',
-      status: 'PENDING_APPROVAL'
-    },
-    {
-      id: 'req-102',
-      name: 'Priya Patel',
-      email: 'priya.patel@razorpay.com',
-      department: 'Customer Escalations',
-      requestedRole: 'support',
-      submittedAt: '45 minutes ago',
-      status: 'PENDING_APPROVAL'
-    }
-  ]);
+  // Verify stored session on initial mount using authoritative backend GET /api/auth/me
+  useEffect(() => {
+    let isMounted = true;
 
+    async function initAuth() {
+      const token = api.getAuthToken();
+      if (!token) {
+        if (isMounted) {
+          setUser(null);
+          setIsAuthLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const me = await api.getMe();
+        if (isMounted && me && me.id) {
+          const backendUser = formatUserFromBackend(me, false);
+          setUser(backendUser);
+        } else {
+          if (isMounted) {
+            api.setAuthToken(null);
+            setUser(null);
+            localStorage.removeItem('aegis_auth_user');
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          api.setAuthToken(null);
+          setUser(null);
+          localStorage.removeItem('aegis_auth_user');
+        }
+      } finally {
+        if (isMounted) {
+          setIsAuthLoading(false);
+        }
+      }
+    }
+
+    initAuth();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Listen for session expiration events dispatched by apiClient on 401
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      api.setAuthToken(null);
+      localStorage.removeItem('aegis_auth_user');
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('aegis:auth_expired', handleAuthExpired);
+      return () => window.removeEventListener('aegis:auth_expired', handleAuthExpired);
+    }
+  }, []);
+
+  // Sync user object to local cache
   useEffect(() => {
     if (user) {
       localStorage.setItem('aegis_auth_user', JSON.stringify(user));
@@ -85,83 +152,68 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  // Standard corporate login
-  const login = (email, password) => {
+  // Standard corporate login using backend API
+  const login = async (email, password) => {
     const normalized = email.trim().toLowerCase();
-    
-    // Check against demo accounts
-    const matchedRole = Object.values(DEMO_PERSONAS).find(p => p.email.toLowerCase() === normalized);
-    if (matchedRole) {
-      setUser(matchedRole);
-      return { success: true, user: matchedRole };
-    }
 
-    // Default corporate tenant login fallback
-    if (
-      normalized.endsWith('@razorpay.com') || 
-      normalized.endsWith('@phonepe.com') || 
-      normalized.endsWith('@revolut.com') ||
-      normalized.endsWith('@quickpay.com')
-    ) {
-      const newUser = {
-        id: `usr-${Date.now()}`,
-        name: email.split('@')[0].replace('.', ' '),
-        title: 'Security Operator',
-        email: normalized,
-        role: 'analyst',
-        department: 'Security Operations',
-        avatar: 'SO',
-        permissions: ['READ_THREATS', 'TRIAGE_EVIDENCE']
-      };
-      setUser(newUser);
-      return { success: true, user: newUser };
+    try {
+      const resp = await api.login(normalized, password);
+      if (resp && resp.access_token) {
+        api.setAuthToken(resp.access_token);
+        const backendUser = formatUserFromBackend(resp.user, false);
+        setUser(backendUser);
+        return { success: true, user: backendUser };
+      }
+      return { success: false, message: 'Invalid response from authentication server.' };
+    } catch (err) {
+      return { success: false, message: err.message || 'Invalid email or password.' };
     }
-
-    return { success: false, message: 'Please use an approved corporate email (e.g., @razorpay.com, @phonepe.com, @revolut.com)' };
   };
 
-  // Instant 1-click persona quick-switch for presentations/evaluations
-  const loginAsRole = (roleKey) => {
-    if (DEMO_PERSONAS[roleKey]) {
-      setUser(DEMO_PERSONAS[roleKey]);
-      return true;
+  // Instant 1-click persona quick-switch for evaluations
+  const loginAsRole = async (roleKey) => {
+    const persona = DEMO_PERSONAS[roleKey];
+    if (!persona) return { success: false, message: 'Unknown role persona.' };
+
+    try {
+      // First attempt real API login using seeded demo credentials
+      const resp = await api.login(persona.email, 'AegisDemo2026!');
+      if (resp && resp.access_token) {
+        api.setAuthToken(resp.access_token);
+        const backendUser = formatUserFromBackend(resp.user, true);
+        setUser(backendUser);
+        return { success: true, user: backendUser };
+      }
+    } catch (err) {
+      // Offline fallback: only permitted in non-production local development
+      if (!import.meta.env.PROD) {
+        const demoUser = {
+          ...persona,
+          isDemoSession: true
+        };
+        setUser(demoUser);
+        return { success: true, user: demoUser };
+      }
+      return { success: false, message: 'Demo persona authentication is disabled in production.' };
     }
-    return false;
+    return { success: false, message: 'Could not complete demo authentication.' };
   };
 
   const logout = () => {
+    api.setAuthToken(null);
     setUser(null);
-  };
-
-  // Submit a new employee workspace access request
-  const submitAccessRequest = (requestData) => {
-    const newReq = {
-      id: `req-${Date.now()}`,
-      ...requestData,
-      submittedAt: 'Just now',
-      status: 'PENDING_APPROVAL'
-    };
-    setAccessRequests(prev => [newReq, ...prev]);
-    return { success: true, request: newReq };
-  };
-
-  // CISO action: approve a pending request
-  const approveAccessRequest = (requestId, assignedRole = 'analyst') => {
-    setAccessRequests(prev => prev.filter(r => r.id !== requestId));
-    return { success: true };
+    localStorage.removeItem('aegis_auth_user');
   };
 
   return (
     <AuthContext.Provider value={{
       user,
+      isAuthLoading,
       login,
       loginAsRole,
       logout,
       activeBrandId,
       setActiveBrandId,
-      accessRequests,
-      submitAccessRequest,
-      approveAccessRequest,
       demoPersonas: DEMO_PERSONAS
     }}>
       {children}

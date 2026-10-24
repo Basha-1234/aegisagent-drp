@@ -1,16 +1,20 @@
 import json
 from datetime import datetime, timezone
 from typing import List
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Depends, status
+import sqlite3
+
 from backend.app.database import get_db_connection
+from backend.app.auth import get_current_user, AuthenticatedUser
 from backend.app.schemas import BrandCreate, BrandResponse
 
 router = APIRouter(prefix="/api/brands", tags=["Brands"])
 
 
-def _row_to_brand_dict(row) -> dict:
+def _row_to_brand_dict(row: sqlite3.Row) -> dict:
     return {
         "id": row["id"],
+        "organization_id": row["organization_id"] if "organization_id" in row.keys() else None,
         "name": row["name"],
         "industry": row["industry"],
         "official_handle": row["official_handle"],
@@ -25,11 +29,14 @@ def _row_to_brand_dict(row) -> dict:
 
 
 @router.get("", response_model=List[BrandResponse])
-def list_brands():
+def list_brands(current_user: AuthenticatedUser = Depends(get_current_user)):
     conn = get_db_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM brands ORDER BY name ASC")
+        cur.execute(
+            "SELECT * FROM brands WHERE organization_id = ? ORDER BY name ASC",
+            (current_user.organization_id,)
+        )
         rows = cur.fetchall()
         return [_row_to_brand_dict(r) for r in rows]
     finally:
@@ -37,7 +44,10 @@ def list_brands():
 
 
 @router.post("", response_model=BrandResponse, status_code=status.HTTP_201_CREATED)
-def create_brand(payload: BrandCreate):
+def create_brand(
+    payload: BrandCreate,
+    current_user: AuthenticatedUser = Depends(get_current_user)
+):
     conn = get_db_connection()
     try:
         cur = conn.cursor()
@@ -52,13 +62,14 @@ def create_brand(payload: BrandCreate):
         cur.execute(
             """
             INSERT INTO brands (
-                id, name, industry, official_handle, support_handle,
+                id, organization_id, name, industry, official_handle, support_handle,
                 official_domain, verified_handles, official_apps,
                 logo_url, risk_threshold, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 payload.id,
+                current_user.organization_id,
                 payload.name,
                 payload.industry,
                 payload.official_handle,
@@ -73,7 +84,10 @@ def create_brand(payload: BrandCreate):
         )
         conn.commit()
 
-        cur.execute("SELECT * FROM brands WHERE id = ?", (payload.id,))
+        cur.execute(
+            "SELECT * FROM brands WHERE id = ? AND organization_id = ?",
+            (payload.id, current_user.organization_id)
+        )
         new_row = cur.fetchone()
         return _row_to_brand_dict(new_row)
     finally:
@@ -81,11 +95,17 @@ def create_brand(payload: BrandCreate):
 
 
 @router.get("/{brand_id}", response_model=BrandResponse)
-def get_brand(brand_id: str):
+def get_brand(
+    brand_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user)
+):
     conn = get_db_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM brands WHERE id = ?", (brand_id,))
+        cur.execute(
+            "SELECT * FROM brands WHERE id = ? AND organization_id = ?",
+            (brand_id, current_user.organization_id)
+        )
         row = cur.fetchone()
         if not row:
             raise HTTPException(

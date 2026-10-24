@@ -1,17 +1,23 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Depends, status
+
 from backend.app.schemas import MonitoringRunRequest, MonitoringRunResponse
 from backend.app.services.monitoring import execute_monitoring_pipeline
+from backend.app.auth import get_current_user, AuthenticatedUser
 
 router = APIRouter(prefix="/api/monitoring", tags=["Monitoring"])
 
 
 @router.post("/social/run", response_model=MonitoringRunResponse)
-def trigger_social_monitoring(payload: MonitoringRunRequest):
+def trigger_social_monitoring(
+    payload: MonitoringRunRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user)
+):
     try:
         run_result = execute_monitoring_pipeline(
             brand_id=payload.brand_id,
             channel="social",
-            use_demo_fixtures=payload.use_demo_fixtures
+            use_demo_fixtures=payload.use_demo_fixtures,
+            organization_id=current_user.organization_id
         )
         return run_result
     except ValueError as ve:
@@ -27,12 +33,16 @@ def trigger_social_monitoring(payload: MonitoringRunRequest):
 
 
 @router.post("/apps/run", response_model=MonitoringRunResponse)
-def trigger_apps_monitoring(payload: MonitoringRunRequest):
+def trigger_apps_monitoring(
+    payload: MonitoringRunRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user)
+):
     try:
         run_result = execute_monitoring_pipeline(
             brand_id=payload.brand_id,
             channel="apps",
-            use_demo_fixtures=payload.use_demo_fixtures
+            use_demo_fixtures=payload.use_demo_fixtures,
+            organization_id=current_user.organization_id
         )
         return run_result
     except ValueError as ve:

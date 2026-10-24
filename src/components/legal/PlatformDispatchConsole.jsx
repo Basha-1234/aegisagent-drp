@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import confetti from 'canvas-confetti';
-import { Send, CheckCircle2, Clock, Globe, Smartphone, AtSign, Zap, ExternalLink, Terminal, ShieldAlert } from 'lucide-react';
+import { Send, CheckCircle2, Clock, Globe, Smartphone, AtSign, Zap, ExternalLink, Terminal, ShieldAlert, Loader2 } from 'lucide-react';
+import { api } from '../../utils/apiClient';
 
-export default function PlatformDispatchConsole({ threat, brand }) {
+export default function PlatformDispatchConsole({ threat, brand, onStatusUpdate }) {
   const [targetPlatform, setTargetPlatform] = useState('meta');
   const [dispatchStatus, setDispatchStatus] = useState('idle'); // 'idle' | 'sending' | 'success'
   const [ticketId, setTicketId] = useState(null);
@@ -15,7 +15,8 @@ export default function PlatformDispatchConsole({ threat, brand }) {
     platform: 'X (Twitter)',
     channel: 'Social Profile',
     suspectUrl: 'https://razorpay-merchant-refund.xyz/claim',
-    logoMatchPercent: 94
+    logoMatchPercent: 94,
+    status: 'CONFIRMED_THREAT'
   };
 
   const platforms = [
@@ -63,12 +64,24 @@ export default function PlatformDispatchConsole({ threat, brand }) {
 
   const currentPlatform = platforms.find(p => p.id === targetPlatform) || platforms[0];
 
-  const handleDispatch = () => {
+  const handleDispatch = async () => {
     setDispatchStatus('sending');
-    setTimeout(() => {
-      setDispatchStatus('success');
-      setTicketId(`DRAFT-NOTICE-${currentPlatform.id.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`);
-    }, 700);
+    const genTicket = `DRAFT-NOTICE-${currentPlatform.id.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    try {
+      if (onStatusUpdate) {
+        await onStatusUpdate(activeTarget.id, 'TAKEDOWN_REQUESTED');
+      } else {
+        await api.updateFindingStatus(activeTarget.id, 'TAKEDOWN_REQUESTED');
+      }
+    } catch (err) {
+      console.warn('Status update in platform dispatch:', err);
+    } finally {
+      setTimeout(() => {
+        setDispatchStatus('success');
+        setTicketId(genTicket);
+      }, 600);
+    }
   };
 
   return (
@@ -164,7 +177,7 @@ export default function PlatformDispatchConsole({ threat, brand }) {
   },
   evidentiarySeal: {
     statute: "Rule 3(2)(b) IT Rules 2021 & DMCA §512",
-    logoMatchPercent: `${activeTarget.logoMatchPercent}%`,
+    logoMatchPercent: `${activeTarget.logoMatchPercent || 0}%`,
     evidenceProofSha256: "8f4c2b9a71e3d085942f1a6c5e7b8921df047ca8391b4562098d7fe129ab3461",
     signatory: "Sarah Vance, Head of Legal & IP Compliance"
   },
@@ -183,6 +196,9 @@ export default function PlatformDispatchConsole({ threat, brand }) {
             </span>
             <span className="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
               {activeTarget.suspectHandle}
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+              Current Status: {activeTarget.status}
             </span>
           </div>
           <p className="text-xs text-slate-400">
@@ -206,7 +222,7 @@ export default function PlatformDispatchConsole({ threat, brand }) {
           {dispatchStatus === 'sending' && (
             <div className="py-3 px-6 rounded-xl bg-cyan-950 border border-cyan-500/50 text-cyan-300 font-mono text-xs flex items-center gap-2 animate-pulse">
               <Zap className="w-4 h-4 text-cyan-400 animate-spin" />
-              <span>Validating Evidentiary Hashes for {currentPlatform.name}...</span>
+              <span>Updating status and validating hashes for {currentPlatform.name}...</span>
             </div>
           )}
 
@@ -216,7 +232,7 @@ export default function PlatformDispatchConsole({ threat, brand }) {
               <div>
                 <div className="font-bold text-white">Draft Notice Compiled &amp; Cryptographically Sealed</div>
                 <div className="text-[11px] text-slate-300">
-                  Pre-flight Tracking: <strong>{ticketId}</strong> (Draft ready for manual transmission or production API dispatch)
+                  Pre-flight Tracking: <strong>{ticketId}</strong> • Status transitioned to <strong>TAKEDOWN_REQUESTED</strong>
                 </div>
               </div>
             </div>

@@ -23,10 +23,11 @@ const DRP_QUOTES = [
 ];
 
 export default function AuthPage() {
-  const { loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
+  const { login, loginAsRole, activeBrandId, setActiveBrandId } = useAuth();
 
   // Interactive credentials state
   const [email, setEmail] = useState('alex.chen@razorpay.com');
+  const [password, setPassword] = useState('AegisDemo2026!');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isBrandMenuOpen, setIsBrandMenuOpen] = useState(false);
@@ -43,33 +44,40 @@ export default function AuthPage() {
 
   const activeBrand = BRANDS.find(b => b.id === activeBrandId) || BRANDS[0];
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     if (e) e.preventDefault();
     setAuthError('');
     setIsAuthenticating(true);
 
-    setTimeout(() => {
-      const lower = email.toLowerCase();
-      if (lower.includes('legal') || lower.includes('vance')) {
-        loginAsRole('legal');
-      } else if (lower.includes('support') || lower.includes('brooks')) {
-        loginAsRole('support');
-      } else if (lower.includes('ciso') || lower.includes('elena') || lower.includes('admin')) {
-        loginAsRole('ciso');
-      } else {
-        loginAsRole('analyst');
+    try {
+      const result = await login(email, password);
+      if (!result.success) {
+        setAuthError(result.message || 'Invalid corporate credentials.');
       }
-    }, 350);
+    } catch (err) {
+      setAuthError(err.message || 'Unable to connect to authentication server.');
+    } finally {
+      setIsAuthenticating(false);
+    }
   };
 
-  const handleQuickRole = (roleKey) => {
+  const handleQuickRole = async (roleKey) => {
     const persona = DEMO_PERSONAS[roleKey];
     if (persona) {
       setEmail(persona.email);
+      setPassword('AegisDemo2026!');
       setIsAuthenticating(true);
-      setTimeout(() => {
-        loginAsRole(roleKey);
-      }, 250);
+      setAuthError('');
+      try {
+        const result = await loginAsRole(roleKey);
+        if (!result.success) {
+          setAuthError(result.message || 'Demo authentication failed.');
+        }
+      } catch (err) {
+        setAuthError(err.message || 'Authentication error.');
+      } finally {
+        setIsAuthenticating(false);
+      }
     }
   };
 
@@ -98,54 +106,76 @@ export default function AuthPage() {
           <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
           <span
             className="text-xs sm:text-sm font-mono font-bold tracking-wider text-cyan-200 uppercase"
-            style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)' }}
+            style={{ textShadow: '0 2px 4px #000000, 0 0 10px rgba(0,0,0,1)' }}
           >
-            AegisAgent DRP • Enterprise Digital Risk Protection
+            AegisAgent DRP Core v2.0 • Security Gateway
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <div
-            className="hidden sm:flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 font-semibold"
-            style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
-          >
-            <span>SOC 2 Type II Certified</span>
-            <span className="text-cyan-400">•</span>
-            <span className="text-cyan-300 font-bold">All Defense Engines Operational</span>
-          </div>
+        <div className="flex items-center gap-4">
           <ThemeToggle />
+          <span
+            className="text-xs font-mono text-slate-300 font-semibold hidden sm:inline-block"
+            style={{ textShadow: '0 2px 4px #000000, 0 0 8px rgba(0,0,0,1)' }}
+          >
+            Autonomous Brand Defense System
+          </span>
         </div>
       </header>
 
-      {/* 2. Main Desktop Stage: Quotations below Logo on Left + Enlarged Login Card on Right */}
-      <main className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between py-6 lg:py-10 gap-8 lg:gap-12">
+      {/* Center Hero Grid (Two Columns: Brand Identity on Left, Card on Right) */}
+      <div className="relative z-20 max-w-7xl mx-auto w-full px-6 sm:px-12 py-6 my-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
 
-        {/* LEFT COLUMN: Highly Visible Pure Text Quotation Below Shield (No Background Card) */}
-        <div className="w-full lg:max-w-lg lg:mb-4 select-none animate-in fade-in duration-500">
+        {/* LEFT COLUMN: Brand Identity & Autonomous Defense Directives */}
+        <div className="space-y-4 max-w-xl">
 
-          {/* Directive Header & Dot Switcher with High-Contrast Colors */}
-          <div className="flex items-center gap-2.5 mb-2.5">
-            <span
-              className="text-xs sm:text-sm font-mono text-cyan-300 tracking-widest uppercase flex items-center gap-1.5 font-bold"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 14px rgba(0,0,0,0.9)' }}
-            >
-              <Shield className="w-4 h-4 text-cyan-300" />
-              DRP Threat Directive
+          {/* Glowing Badge Capsule */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-500/40 text-blue-300 text-xs font-mono font-bold shadow-[0_0_20px_rgba(59,130,246,0.5)] backdrop-blur-md">
+            <Shield className="w-3.5 h-3.5 text-cyan-400" />
+            <span>ENTERPRISE DIGITAL RISK PROTECTION</span>
+          </div>
+
+          {/* Massive Display Title */}
+          <h2
+            className="text-4xl sm:text-5xl lg:text-[54px] font-black text-white tracking-tight leading-[1.08]"
+            style={{
+              textShadow: '0 4px 16px #000000, 0 0 30px rgba(0,0,0,1), 0 0 45px rgba(2,6,23,1), 0 2px 4px #000000'
+            }}
+          >
+            AI-Driven <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-300">
+              Brand Protection
             </span>
-            <span className="text-slate-400 font-bold">•</span>
+          </h2>
 
-            {/* Interactive dot switcher */}
-            <div className="flex items-center gap-2">
+          {/* Subtitle Statement */}
+          <p
+            className="text-base sm:text-lg text-slate-100 font-medium leading-relaxed"
+            style={{
+              textShadow: '0 2px 8px #000000, 0 0 20px rgba(0,0,0,1), 0 0 35px rgba(2,6,23,1), 0 1px 2px #000000'
+            }}
+          >
+            Autonomous radar continuously diffing deceptive social profiles, rogue APK stores, and homoglyphs with statutory legal dispatch.
+          </p>
+
+          {/* Interactive DRP Directive Indicators (3 Dots) */}
+          <div className="pt-2 flex items-center gap-3">
+            <span
+              className="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold"
+              style={{ textShadow: '0 2px 6px #000000, 0 0 12px rgba(0,0,0,1)' }}
+            >
+              Directives:
+            </span>
+            <div className="flex gap-2">
               {DRP_QUOTES.map((_, idx) => (
                 <button
                   key={idx}
-                  type="button"
                   onClick={() => setActiveQuoteIdx(idx)}
-                  className={`h-2 rounded-full transition-all cursor-pointer ${
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                     activeQuoteIdx === idx
-                      ? 'w-6 bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,1)]'
-                      : 'w-2 bg-slate-300/80 hover:bg-white shadow-[0_1px_4px_rgba(0,0,0,0.8)]'
+                      ? 'w-7 bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.9)]'
+                      : 'w-2 bg-slate-400 hover:bg-slate-300 shadow-[0_0_6px_rgba(0,0,0,0.8)]'
                   }`}
-                  title={`View directive ${idx + 1}`}
+                  aria-label={`Go to quote ${idx + 1}`}
                 />
               ))}
             </div>
@@ -240,7 +270,7 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Interactive SSO Login Form */}
+            {/* Interactive Real SSO Login Form */}
             <form onSubmit={handleSignIn} className="mt-5 space-y-3.5">
               {authError && (
                 <div className="p-2.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs sm:text-sm flex items-center gap-2">
@@ -255,7 +285,19 @@ export default function AuthPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Corporate email"
+                  placeholder="Corporate email (e.g. alex.chen@razorpay.com)"
+                  required
+                  className="w-full px-4 py-3.5 rounded-2xl bg-[#0a1528]/95 border border-blue-500/60 focus:border-blue-400 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_15px_rgba(37,99,235,0.25)] transition font-sans"
+                />
+              </div>
+
+              {/* Password input */}
+              <div className="relative">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
                   required
                   className="w-full px-4 py-3.5 rounded-2xl bg-[#0a1528]/95 border border-blue-500/60 focus:border-blue-400 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-[0_0_15px_rgba(37,99,235,0.25)] transition font-sans"
                 />
@@ -288,7 +330,7 @@ export default function AuthPage() {
                   DEMO EVALUATION PERSONAS
                 </span>
                 <span className="text-[10px] text-amber-300 font-mono px-2.5 py-0.5 rounded-full bg-amber-950/70 border border-amber-800/50 font-semibold">
-                  Simulated Auth
+                  Authenticated Evaluation
                 </span>
               </div>
 
@@ -296,7 +338,7 @@ export default function AuthPage() {
               <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs text-slate-300 flex items-start gap-2 mb-3 leading-relaxed">
                 <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-white font-bold">Demo Authentication:</strong> Preconfigured personas for hackathon judges to evaluate role workspaces. (Production enterprise deployment requires backend IdP / OAuth).
+                  <strong className="text-white font-bold">Evaluation Personas:</strong> Preconfigured accounts for evaluating role workspaces via real backend API authentication.
                 </span>
               </div>
 
@@ -320,24 +362,24 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickRole('legal')}
-                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-amber-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-blue-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-100 group-hover:text-amber-400 flex items-center justify-between text-sm sm:text-[15px]">
-                    <span>2. Legal</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono font-bold">DMCA</span>
+                  <div className="font-bold text-slate-100 group-hover:text-blue-400 flex items-center justify-between text-sm sm:text-[15px]">
+                    <span>2. Legal Counsel</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono font-bold">LAW</span>
                   </div>
                   <div className="text-xs text-slate-400 truncate mt-1">Sarah Vance</div>
                 </button>
 
-                {/* 3. Customer Support */}
+                {/* 3. Support & Frontline */}
                 <button
                   type="button"
                   onClick={() => handleQuickRole('support')}
-                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-blue-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-amber-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-100 group-hover:text-blue-400 flex items-center justify-between text-sm sm:text-[15px]">
-                    <span>3. Support</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono font-bold">Radar</span>
+                  <div className="font-bold text-slate-100 group-hover:text-amber-400 flex items-center justify-between text-sm sm:text-[15px]">
+                    <span>3. Frontline Ops</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono font-bold">OPS</span>
                   </div>
                   <div className="text-xs text-slate-400 truncate mt-1">Marcus Brooks</div>
                 </button>
@@ -346,11 +388,11 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickRole('ciso')}
-                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-emerald-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
+                  className="p-3 sm:p-3.5 rounded-2xl bg-slate-950/75 border border-slate-800/90 hover:border-purple-500/60 hover:bg-slate-900/90 text-left transition group cursor-pointer"
                 >
-                  <div className="font-bold text-slate-100 group-hover:text-emerald-400 flex items-center justify-between text-sm sm:text-[15px]">
-                    <span>4. CISO</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold">Admin</span>
+                  <div className="font-bold text-slate-100 group-hover:text-purple-400 flex items-center justify-between text-sm sm:text-[15px]">
+                    <span>4. CISO Exec</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-800 font-mono font-bold">CISO</span>
                   </div>
                   <div className="text-xs text-slate-400 truncate mt-1">Elena Rostova</div>
                 </button>
@@ -361,21 +403,22 @@ export default function AuthPage() {
           </div>
         </div>
 
-      </main>
+      </div>
 
-      {/* Bottom Footer Ribbon with High Contrast */}
-      <footer
-        className="relative z-20 w-full px-6 sm:px-12 pb-4 flex items-center justify-between text-xs font-mono text-slate-200 font-semibold"
-        style={{ textShadow: '0 2px 8px #000000, 0 0 12px rgba(0,0,0,1)' }}
-      >
-        <div>
-          <span>AegisAgent DRP v2.4</span>
-          <span className="mx-2 text-cyan-400">•</span>
-          <span className="text-cyan-300 font-bold">Enterprise Social &amp; App Store Radar</span>
-        </div>
-        <div>
-          <span className="text-slate-300">Kampus.VC Hackathon Edition</span>
-        </div>
+      {/* Bottom Subdued Footnote */}
+      <footer className="relative z-20 w-full px-6 sm:px-12 pb-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span
+          className="text-xs font-mono text-slate-400"
+          style={{ textShadow: '0 2px 4px #000000, 0 0 8px rgba(0,0,0,1)' }}
+        >
+          Protected by Enterprise Zero-Trust Architecture • All Actions Audited
+        </span>
+        <span
+          className="text-xs font-mono text-slate-400"
+          style={{ textShadow: '0 2px 4px #000000, 0 0 8px rgba(0,0,0,1)' }}
+        >
+          HacXLerate 2026 Kampus.VC DRP Challenge
+        </span>
       </footer>
 
     </div>

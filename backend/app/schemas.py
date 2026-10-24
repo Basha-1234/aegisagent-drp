@@ -3,6 +3,54 @@ from pydantic import BaseModel, Field
 
 
 # -------------------------------------------------------------
+# Organization & User Schemas (Stage 1 Multi-Tenancy & Auth)
+# -------------------------------------------------------------
+class OrganizationResponse(BaseModel):
+    id: str
+    name: str
+    created_at: str
+    updated_at: str
+
+
+class UserResponse(BaseModel):
+    id: str
+    organization_id: str
+    email: str
+    full_name: str
+    role: str
+    is_active: bool
+    created_at: str
+    updated_at: str
+    organization: Optional[OrganizationResponse] = None
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(..., min_length=3, max_length=255)
+    password: str = Field(..., min_length=1)
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in_minutes: int
+    user: UserResponse
+
+
+class InvestigationLogResponse(BaseModel):
+    id: str
+    organization_id: str
+    finding_id: str
+    user_id: Optional[str] = None
+    actor_email: str
+    actor_role: str
+    action: str
+    previous_state: Optional[Dict[str, Any]] = None
+    new_state: Optional[Dict[str, Any]] = None
+    rationale: Optional[str] = None
+    created_at: str
+
+
+# -------------------------------------------------------------
 # Brand Schemas
 # -------------------------------------------------------------
 class OfficialAppSchema(BaseModel):
@@ -32,7 +80,35 @@ class BrandCreate(BrandBase):
 
 class BrandResponse(BrandBase):
     id: str
+    organization_id: Optional[str] = None
     created_at: str
+
+
+# -------------------------------------------------------------
+# Risk Explanation Schemas
+# -------------------------------------------------------------
+class RiskSignalExplanation(BaseModel):
+    id: str
+    name: str
+    weight_percent: int
+    raw_score: int
+    weighted_points: float
+    points_contributed: Optional[float] = None
+    evidence: str
+    severity: str
+    direction: str = "increases_risk"
+    explanation: str
+
+
+class RiskExplanation(BaseModel):
+    final_score: int
+    severity: str
+    is_official_excluded: bool = False
+    is_capped: bool = False
+    cap_reason: Optional[str] = None
+    signals: List[RiskSignalExplanation] = Field(default_factory=list)
+    recommended_action: str
+    summary: str
 
 
 # -------------------------------------------------------------
@@ -41,12 +117,15 @@ class BrandResponse(BrandBase):
 class FindingReviewUpdate(BaseModel):
     review_status: str = Field(
         ...,
-        pattern=r"^(NEW|INVESTIGATING|CONFIRMED_THREAT|TAKEDOWN_SENT|FALSE_POSITIVE|RESOLVED)$"
+        pattern=r"^(NEW|INVESTIGATING|CONFIRMED_THREAT|TAKEDOWN_SENT|TAKEDOWN_REQUESTED|FALSE_POSITIVE|BENIGN_DISMISSED|RESOLVED)$"
     )
+    rationale: Optional[str] = None
+    notes: Optional[str] = None
 
 
 class FindingResponse(BaseModel):
     id: str
+    organization_id: Optional[str] = None
     brand_id: str
     run_id: Optional[str] = None
     platform: str
@@ -66,6 +145,7 @@ class FindingResponse(BaseModel):
     is_official_excluded: bool = False
     reasons: List[str] = Field(default_factory=list)
     breakdown: Dict[str, Any] = Field(default_factory=dict)
+    explanation: Optional[RiskExplanation] = None
     provenance: str = "demo_fixture"
     created_at: str
     updated_at: str
@@ -81,6 +161,7 @@ class MonitoringRunRequest(BaseModel):
 
 class MonitoringRunResponse(BaseModel):
     id: str
+    organization_id: Optional[str] = None
     brand_id: str
     channel: str
     status: str
@@ -108,6 +189,124 @@ class ReportResponse(BaseModel):
     chain_of_custody_hash: str
     generated_at: str
     disclaimer: str
+
+
+# -------------------------------------------------------------
+# Takedown Report Draft Schemas
+# -------------------------------------------------------------
+class TakedownReportCreate(BaseModel):
+    finding_id: str = Field(..., min_length=1, max_length=100)
+    brand_id: Optional[str] = Field(None, max_length=100)
+    recipient_platform: Optional[str] = Field(None, max_length=100)
+    subject: Optional[str] = Field(None, max_length=255)
+    content_markdown: Optional[str] = Field(None, min_length=10)
+    analyst_name: Optional[str] = Field(None, max_length=120)
+    analyst_designation: Optional[str] = Field(None, max_length=120)
+    document_status: str = Field(
+        default="Demonstration Draft — Not Sent",
+        pattern=r"^Demonstration Draft — Not Sent$"
+    )
+    review_state: str = Field(
+        default="DRAFT",
+        pattern=r"^(DRAFT|UNDER_REVIEW|REVIEWED|SUPERSEDED)$"
+    )
+
+
+class TakedownReportUpdate(BaseModel):
+    content_markdown: Optional[str] = Field(None, min_length=10)
+    subject: Optional[str] = Field(None, min_length=1, max_length=255)
+    recipient_platform: Optional[str] = Field(None, min_length=1, max_length=100)
+    analyst_name: Optional[str] = Field(None, max_length=120)
+    analyst_designation: Optional[str] = Field(None, max_length=120)
+    review_state: Optional[str] = Field(
+        None,
+        pattern=r"^(DRAFT|UNDER_REVIEW|REVIEWED|SUPERSEDED)$"
+    )
+    document_status: Optional[str] = Field(
+        None,
+        pattern=r"^Demonstration Draft — Not Sent$"
+    )
+
+
+class TakedownReportResponse(BaseModel):
+    id: str
+    organization_id: Optional[str] = None
+    finding_id: str
+    brand_id: str
+    document_status: str = "Demonstration Draft — Not Sent"
+    recipient_platform: str
+    subject: str
+    content_markdown: str
+    analyst_name: Optional[str] = None
+    analyst_designation: Optional[str] = None
+    review_state: str = "DRAFT"
+    created_at: str
+    updated_at: str
+
+
+# -------------------------------------------------------------
+# Safe URL Fetching & SSRF Protection Schemas (Stage 2A)
+# -------------------------------------------------------------
+class SafeFetchHopSchema(BaseModel):
+    hop_number: int
+    url: str
+    status_code: int
+    resolved_ip: str
+
+
+class SafeFetchResultSchema(BaseModel):
+    submitted_url: str
+    is_valid: bool
+    final_url: Optional[str] = None
+    status_code: Optional[int] = None
+    content_type: Optional[str] = None
+    content_length_bytes: int = 0
+    body_sample: Optional[str] = None
+    redirect_chain: List[SafeFetchHopSchema] = Field(default_factory=list)
+    failure_category: Optional[str] = None
+    error_detail: Optional[str] = None
+    is_verified_safe_content: bool = False
+
+
+# -------------------------------------------------------------
+# Deterministic URL Comparison Schemas
+# -------------------------------------------------------------
+class URLComparisonRequest(BaseModel):
+    suspicious_url: str = Field(..., min_length=1, description="Suspicious URL to analyze")
+    official_url: Optional[str] = Field(None, description="Explicit verified official domain or URL")
+    brand_id: Optional[str] = Field(None, description="Brand ID to look up verified official domain from registry")
+    brand_name: Optional[str] = Field(None, description="Brand name for reporting context")
+
+
+class ComparisonSignalSchema(BaseModel):
+    id: str
+    name: str
+    severity: str
+    explanation: str
+
+
+class RegistrableDomainComparisonSchema(BaseModel):
+    official_registrable_domain: Optional[str] = None
+    suspicious_registrable_domain: Optional[str] = None
+    is_same_registrable_domain: bool = False
+    official_subdomain: Optional[str] = None
+    suspicious_subdomain: Optional[str] = None
+    official_suffix: Optional[str] = None
+    suspicious_suffix: Optional[str] = None
+
+
+class URLComparisonResponse(BaseModel):
+    status: str = Field(..., description="'MATCH', 'SUSPICIOUS', or 'INCONCLUSIVE'")
+    normalized_official_url: Optional[str] = None
+    normalized_suspicious_url: Optional[str] = None
+    official_hostname: Optional[str] = None
+    suspicious_hostname: Optional[str] = None
+    registrable_domain_comparison: RegistrableDomainComparisonSchema
+    signals: List[ComparisonSignalSchema] = Field(default_factory=list)
+    heuristic_similarity_ratio: int = 0
+    missing_evidence: List[str] = Field(default_factory=list)
+    limitations: List[str] = Field(default_factory=list)
+    summary: str
 
 
 # -------------------------------------------------------------

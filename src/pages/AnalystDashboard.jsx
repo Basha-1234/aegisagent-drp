@@ -79,7 +79,7 @@ export default function AnalystDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Round 2 Features: High-Risk Alert, Priority Queue, Takedown Draft, Investigation History
-  const [priorityQueueOnly, setPriorityQueueOnly] = useState(false);
+  const [priorityQueueOnly, setPriorityQueueOnly] = useState(true);
   const [sortByRisk, setSortByRisk] = useState(true);
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState([]);
   const [isTakedownDraftOpen, setIsTakedownDraftOpen] = useState(false);
@@ -798,16 +798,19 @@ export default function AnalystDashboard() {
 
               {/* Action Buttons: Takedown Draft & Docket & History */}
               <div className="pt-2 space-y-1.5">
-                {activeThreat.status === 'CONFIRMED_THREAT' && (
-                  <button
-                    type="button"
-                    onClick={() => setIsTakedownDraftOpen(true)}
-                    className="w-full py-1.5 px-2 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>Draft Takedown Report</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeThreat.status !== 'CONFIRMED_THREAT') {
+                      handleStatusUpdate(activeThreat.id, 'CONFIRMED_THREAT');
+                    }
+                    setIsTakedownDraftOpen(true);
+                  }}
+                  className="w-full py-1.5 px-2 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Draft Takedown Report {activeThreat.status !== 'CONFIRMED_THREAT' && '(Confirms Threat)'}</span>
+                </button>
 
                 <div className="grid grid-cols-2 gap-1.5">
                   <button
@@ -1397,11 +1400,11 @@ export default function AnalystDashboard() {
                                     isDark ? 'bg-slate-900 border-slate-700 text-cyan-300' : 'bg-white border-slate-300 text-slate-800'
                                   }`}
                                 >
-                                  <option value="NEW">NEW</option>
-                                  <option value="INVESTIGATING">INVESTIGATING</option>
-                                  <option value="CONFIRMED_THREAT">CONFIRMED</option>
-                                  <option value="BENIGN_DISMISSED">DISMISSED</option>
-                                  <option value="TAKEDOWN_REQUESTED">TAKEDOWN</option>
+                                  <option value="NEW">NEW (Unreviewed)</option>
+                                  <option value="INVESTIGATING">INVESTIGATING (Under Review)</option>
+                                  <option value="CONFIRMED_THREAT">CONFIRMED (True Positive)</option>
+                                  <option value="BENIGN_DISMISSED">DISMISSED (False Positive)</option>
+                                  <option value="TAKEDOWN_REQUESTED">TAKEDOWN DISPATCHED</option>
                                 </select>
                               </div>
 
